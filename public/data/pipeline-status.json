@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-03T23:27:12.999Z",
+  "jobId": "78c2d4ad-ba3a-4729-9155-3ce818cd897b",
+  "status": "succeeded",
+  "summary": {
+    "products": 23,
+    "prices": 23,
+    "benchmarks": 8,
+    "errors": [],
+    "quarantined": 0,
+    "coverage": {
+      "freshPrices": 23,
+      "measuredBenchmarks": 8,
+      "ready": 23,
+      "stalePrices": 0,
+      "missingPrices": 0,
+      "total": 23,
+      "benchmarkTargets": 8,
+      "reviewedSpecs": 0
+    }
+  },
+  "reviews": []
+}

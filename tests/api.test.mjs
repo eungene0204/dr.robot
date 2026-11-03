@@ -5,6 +5,7 @@ import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 const testDir=mkdtempSync(join(tmpdir(),'buildmate-test-'));
 process.env.BUILDMATE_DATA_DIR=testDir;
+process.env.DATA_MODE='demo';
 const {server}=await import('../backend/server.mjs');
 let root;
 before(async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));root=`http://127.0.0.1:${server.address().port}`});

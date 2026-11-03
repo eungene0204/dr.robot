@@ -1,0 +1,177 @@
+{
+  "schemaVersion": 1,
+  "products": [
+    {
+      "id": "c1",
+      "category": "cpu",
+      "name": "AMD 라이젠5 7500F 멀티팩 정품",
+      "danawaPcode": "21694499",
+      "benchmarkName": "AMD Ryzen 5 7500F"
+    },
+    {
+      "id": "c2",
+      "category": "cpu",
+      "name": "AMD 라이젠5-6세대 9600X (그래니트 릿지)",
+      "danawaPcode": "62794079",
+      "registryReviewed": true,
+      "benchmarkName": "AMD Ryzen 5 9600X"
+    },
+    {
+      "id": "c3",
+      "category": "cpu",
+      "name": "AMD 라이젠7-6세대 9700X (그래니트 릿지)",
+      "danawaPcode": "62794082",
+      "registryReviewed": true,
+      "benchmarkName": "AMD Ryzen 7 9700X"
+    },
+    {
+      "id": "c4",
+      "category": "cpu",
+      "name": "AMD 라이젠5-5세대 8600G (피닉스)",
+      "danawaPcode": "60170204",
+      "registryReviewed": true,
+      "benchmarkName": "AMD Ryzen 5 8600G"
+    },
+    {
+      "id": "b1",
+      "category": "board",
+      "name": "MSI PRO B650M-A WIFI",
+      "danawaPcode": "17971184",
+      "registryReviewed": true
+    },
+    {
+      "id": "b2",
+      "category": "board",
+      "name": "ASRock B650 Pro RS + WiFi 6E 모듈 패키지 디앤디컴",
+      "danawaPcode": "19648718",
+      "registryReviewed": true
+    },
+    {
+      "id": "r2",
+      "category": "ram",
+      "name": "TeamGroup T-CREATE DDR5 - 6000 CL30 EXPERT 패키지 서린",
+      "danawaPcode": "20546438",
+      "registryReviewed": true
+    },
+    {
+      "id": "r1",
+      "category": "ram",
+      "name": "삼성 전자 DDR5 - 5600",
+      "danawaPcode": "18911780",
+      "registryReviewed": true
+    },
+    {
+      "id": "r3",
+      "category": "ram",
+      "name": "TeamGroup T-CREATE DDR5 - 6000 CL40 EXPERT 패키지 서린",
+      "danawaPcode": "105969299",
+      "registryReviewed": true
+    },
+    {
+      "id": "g1",
+      "category": "gpu",
+      "name": "MSI 지포스 RTX 5060 벤투스 2X OC V1 D7 8GB",
+      "danawaPcode": "122676813",
+      "registryReviewed": true,
+      "benchmarkName": "NVIDIA GeForce RTX 5060"
+    },
+    {
+      "id": "g2",
+      "category": "gpu",
+      "name": "MSI 지포스 RTX 5060 Ti 벤투스 2X OC 플러스 D7 16GB",
+      "danawaPcode": "81990338",
+      "registryReviewed": true,
+      "benchmarkName": "NVIDIA GeForce RTX 5060 Ti"
+    },
+    {
+      "id": "g3",
+      "category": "gpu",
+      "name": "ZOTAC GAMING 지포스 RTX 5070 SOLID OC D7 12GB",
+      "danawaPcode": "77319413",
+      "registryReviewed": true,
+      "benchmarkName": "NVIDIA GeForce RTX 5070"
+    },
+    {
+      "id": "g4",
+      "category": "gpu",
+      "name": "ZOTAC GAMING 지포스 RTX 5070 Ti SOLID OC D7 16GB",
+      "danawaPcode": "76464143",
+      "registryReviewed": true,
+      "benchmarkName": "NVIDIA GeForce RTX 5070 Ti"
+    },
+    {
+      "id": "s1",
+      "category": "ssd",
+      "name": "삼성 전자 990 EVO Plus M.2 NVMe",
+      "danawaPcode": "69869543",
+      "registryReviewed": true
+    },
+    {
+      "id": "s2",
+      "category": "ssd",
+      "name": "삼성 전자 990 EVO Plus M.2 NVMe",
+      "danawaPcode": "69869573",
+      "registryReviewed": true
+    },
+    {
+      "id": "p1",
+      "category": "psu",
+      "name": "마이크로닉스 Classic II 풀 체인지 700W 80PLUS실버 ATX3.1",
+      "danawaPcode": "96986309",
+      "registryReviewed": true
+    },
+    {
+      "id": "p2",
+      "category": "psu",
+      "name": "시소닉 NEW FOCUS V4 GX-750 GOLD 풀모듈러 ATX3.1",
+      "danawaPcode": "67576934",
+      "registryReviewed": true
+    },
+    {
+      "id": "p3",
+      "category": "psu",
+      "name": "시소닉 NEW FOCUS V4 GX-850 GOLD 풀모듈러 ATX3.1",
+      "danawaPcode": "67577021",
+      "registryReviewed": true
+    },
+    {
+      "id": "k1",
+      "category": "case",
+      "name": "darkFlash DS900 ARGB 강화유리",
+      "danawaPcode": "32861099",
+      "registryReviewed": true
+    },
+    {
+      "id": "k2",
+      "category": "case",
+      "name": "darkFlash DS900 ARGB 강화유리",
+      "danawaPcode": "32861129",
+      "registryReviewed": true
+    },
+    {
+      "id": "f1",
+      "category": "cooler",
+      "name": "DEEPCOOL AG400 G2",
+      "danawaPcode": "106047347",
+      "registryReviewed": true
+    },
+    {
+      "id": "f2",
+      "category": "cooler",
+      "name": "Thermalright Peerless Assassin 120 SE WHITE ARGB 서린",
+      "danawaPcode": "16852175",
+      "registryReviewed": true
+    },
+    {
+      "id": "o1",
+      "category": "os",
+      "name": "Microsoft Windows 11 Home",
+      "danawaPcode": "16742642",
+      "registryReviewed": true
+    }
+  ],
+  "benchmarkReferences": {
+    "cpu": "c2",
+    "gpu": "g2"
+  }
+}
