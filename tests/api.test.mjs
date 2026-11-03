@@ -1,0 +1,15 @@
+import test,{after,before} from 'node:test';
+import assert from 'node:assert/strict';
+import {mkdtempSync,rmSync} from 'node:fs';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+const testDir=mkdtempSync(join(tmpdir(),'buildmate-test-'));
+process.env.BUILDMATE_DATA_DIR=testDir;
+const {server}=await import('../backend/server.mjs');
+let root;
+before(async()=>{await new Promise(r=>server.listen(0,'127.0.0.1',r));root=`http://127.0.0.1:${server.address().port}`});
+after(()=>new Promise(r=>server.close(()=>{rmSync(testDir,{recursive:true,force:true});r()})));
+const post=(path,body)=>fetch(root+path,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+test('API: 키 없이도 로컬 요구 분석·견적·영구 저장이 동작한다',async()=>{const req=await (await post('/api/requirements',{text:'게임 QHD 200만 원'})).json();assert.equal(req.budget,2000000);const r=await post('/api/recommend',{requirement:req,settings:{assembly:30000}});assert.equal(r.status,200);const {plans}=await r.json();const save=await post('/api/quotes',{plan:plans[0],req,settings:{assembly:30000}});assert.equal(save.status,201);const entry=await save.json();const rows=await(await fetch(root+'/api/quotes')).json();assert.ok(rows.some(q=>q.id===entry.id));});
+test('API: 조작된 부품 ID와 예산은 저장할 수 없다',async()=>{const req={profile:'gaming',budget:2000000};const {plans}=await(await post('/api/recommend',{requirement:req})).json();const plan=plans[0];plan.parts.cpu.id='forged';assert.equal((await post('/api/quotes',{plan,req})).status,400);});
+test('API: 잘못된 입력과 외부 Origin을 거부한다',async()=>{assert.equal((await post('/api/requirements',{text:''})).status,400);assert.equal((await fetch(root+'/api/health',{headers:{Origin:'https://example.org'}})).status,403)});

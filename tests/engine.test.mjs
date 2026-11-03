@@ -1,0 +1,14 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {catalog} from '../src/catalog.mjs';
+import {parseRequirement,recommend,validate,total} from '../src/engine.mjs';
+const settings={assembly:30000};
+test('한글 예산과 용도를 구조화한다',()=>{const r=parseRequirement('프리미어 4K 편집, 250만 원, 화이트');assert.equal(r.budget,2500000);assert.equal(r.profile,'editing');assert.equal(r.resolution,'4K');assert.equal(r.white,true)});
+test('반환하는 모든 조합은 예산과 호환성 조건을 만족한다',()=>{for(const profile of ['gaming','editing','office','ai'])for(const budget of [600000,1000000,2000000,3000000]){const req=parseRequirement('',{profile,budget,allowOver:false});for(const p of recommend(req,settings).filter(Boolean)){assert.ok(p.total<=budget);assert.equal(p.total,total(p.parts,settings));assert.ok(validate(p.parts).every(c=>c.ok));if(profile==='ai')assert.ok(p.parts.gpu.vram>=16)}}});
+test('강화안 예산 초과는 명시적 허용시에만 가능하다',()=>{const req=parseRequirement('게임 200만 원',{allowOver:true});const plans=recommend(req,settings);assert.ok(plans[0].total<=req.budget);assert.ok(plans[1].total<=req.budget*1.1);assert.ok(plans[2].total<=req.budget*.9)});
+test('저예산은 허위 견적을 만들지 않는다',()=>{assert.deepEqual(recommend(parseRequirement('게임 20만 원'),settings),[null,null,null])});
+test('부품 교체로 발생한 전원 커넥터·GPU 간섭을 검출한다',()=>{const p=recommend(parseRequirement('게임 200만 원'),settings)[0];const parts={...p.parts,gpu:catalog.find(x=>x.id==='g4'),psu:catalog.find(x=>x.id==='p1'),case:catalog.find(x=>x.id==='k1')};assert.equal(validate(parts).find(x=>x.label==='GPU 공간').ok,false);assert.equal(validate(parts).find(x=>x.label==='보조 전원').ok,false);assert.equal(validate(parts).find(x=>x.label==='파워 용량').ok,false)});
+test('미검수·품절 데이터는 추천에서 제외한다',()=>{const items=catalog.map(x=>({...x,verified:false}));assert.deepEqual(recommend(parseRequirement('게임 200만 원'),settings,items),[null,null,null])});
+test('동일한 조합을 중복 반환하지 않는다',()=>{const plans=recommend(parseRequirement('게임 200만 원'),settings).filter(Boolean);assert.equal(new Set(plans.map(p=>Object.values(p.parts).map(x=>x.id).join('|'))).size,plans.length)});
+test('잘못된 예산은 거부한다',()=>{assert.throws(()=>recommend({budget:NaN}));assert.throws(()=>recommend({budget:-1}))});
+test('성능 강화안은 균형안보다 성능이 높아야 한다',()=>{for(const budget of [1000000,1500000,2000000,3000000]){const [a,b]=recommend(parseRequirement('게임',{budget,allowOver:true}),settings);if(a&&b)assert.ok(b.performance>a.performance)}});
