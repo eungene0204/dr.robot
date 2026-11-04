@@ -70,25 +70,44 @@ export function recommend(req,settings={},items=catalog){
  }
  visit(0,{},0);
  const used=new Set();
+ // Compare known CPU/GPU performance separately so capacity alone never masks a downgrade.
+ const chipScore=p=>p.dataMode==='live'?p.benchmark?.normalizedScore:p.score;
+ const noChipDowngrade=(next,base)=>next.id===base.id||(Number.isFinite(chipScore(next))&&Number.isFinite(chipScore(base))&&chipScore(next)>=chipScore(base));
+ const upgrades=(next,base)=>{
+  if(!base)return [];
+  const n=next.parts,b=base.parts;
+  if(!noChipDowngrade(n.cpu,b.cpu)||!noChipDowngrade(n.gpu,b.gpu)||n.ram.capacity<b.ram.capacity||n.ssd.capacity<b.ssd.capacity)return [];
+  const changes=[];
+  if(n.cpu.id!==b.cpu.id&&chipScore(n.cpu)>chipScore(b.cpu))changes.push(`CPU: ${b.cpu.name} → ${n.cpu.name}`);
+  if(n.gpu.id!==b.gpu.id&&chipScore(n.gpu)>chipScore(b.gpu))changes.push(`GPU: ${b.gpu.name} → ${n.gpu.name}`);
+  if(n.ram.capacity>b.ram.capacity)changes.push(`메모리: ${b.ram.capacity}GB → ${n.ram.capacity}GB`);
+  return changes;
+ };
  const pick=(mode,min,max)=>{
-  const options=combos.filter(c=>c.total>=min&&c.total<=max&&(mode!=='enhanced'||!balanced||(c.performance??0)>(balanced.performance??0))&&!used.has(categories.map(k=>c.parts[k].id).join('|')));
+  let options=combos.filter(c=>c.total>=min&&c.total<=max&&(mode!=='enhanced'||(balanced&&upgrades(c,balanced).length>0))&&!used.has(categories.map(k=>c.parts[k].id).join('|')));
+  if(mode==='balanced'){
+   const measured=options.filter(c=>Number.isFinite(c.performance));
+   if(measured.length){const peak=measured.reduce((max,c)=>Math.max(max,c.performance),0);options=measured.filter(c=>c.performance>=peak*.95);}
+  }
   options.sort((a,b)=>{
-   const score=c=>mode==='saving'?(c.performance??0)/(c.total/1000000):(c.performance??0)+(c.parts.ram.capacity>=64?2:0)+(req.white&&c.parts.cooler.color==='white'?1:0);
+   if(mode==='balanced')return a.total-b.total||(b.performance??0)-(a.performance??0);
+   const score=c=>mode==='saving'?(c.performance??0)/(c.total/1000000):(c.performance??0);
    return score(b)-score(a)||a.total-b.total;
   });
   const best=options[0];if(!best)return null;
   used.add(categories.map(k=>best.parts[k].id).join('|'));
-  return {...best,id:mode,checks:validateBuild(best.parts,req),targetMet:true};
+  return {...best,id:mode,checks:validateBuild(best.parts,req),targetMet:true,...(mode==='enhanced'?{upgrades:upgrades(best,balanced)}:{})};
  };
- const balanced=pick('balanced',req.budget*.95,req.budget)||pick('balanced',0,req.budget);
+ // Preserve near-peak performance while avoiding spending merely to fill the budget.
+ const balanced=pick('balanced',0,req.budget);
  const enhanced=pick('enhanced',0,cap);
  const saving=pick('saving',req.budget*.8,req.budget*.9)||pick('saving',0,Math.min(req.budget*.9,balanced?.total-1||req.budget*.9));
- return [balanced,enhanced,saving].map((x,i)=>x?{...x,id:['balanced','enhanced','saving'][i],targetMet:i===0?x.total>=req.budget*.95:i===2?x.total>=req.budget*.8&&x.total<=req.budget*.9:true}:null);
+ return [balanced,enhanced,saving].map((x,i)=>x?{...x,id:['balanced','enhanced','saving'][i],targetMet:i===0?true:i===2?x.total>=req.budget*.8&&x.total<=req.budget*.9:true}:null);
 }
 export const planNames=['최적 균형안','성능 강화안','절약안'];
 export function explain(plan,req,index){
  if(!plan)return '현재 카탈로그와 예산 조건에서는 유효한 구성을 찾지 못했습니다. 예산이나 조건을 조정해 주세요.';
  const p=plan.parts;
  const primary=req.profile==='ai'?`${p.gpu.vram}GB VRAM을 확보해 로컬 AI 용도를 우선했습니다.`:req.profile==='office'?'내장 그래픽으로 별도 GPU 비용을 줄이고 사무 작업에 집중했습니다.':req.profile==='editing'?`${p.ram.capacity}GB 메모리와 ${p.ssd.capacity/1000}TB SSD로 편집 작업 공간을 확보했습니다.`:`${p.cpu.name}와 ${p.gpu.name} 조합입니다.`;
- return primary+' '+(index===2?`균형안보다 비용 부담을 낮추는 선택지입니다.`:index===1?'허용된 예산 안에서 비교 지수가 높은 구성을 선택했습니다.':'용도 적합도와 비용을 함께 고려했습니다.');
+ return primary+' '+(index===2?`균형안보다 비용 부담을 낮추는 선택지입니다.`:index===1?(plan.upgrades?.length?`균형안에서 ${plan.upgrades.join(' · ')} 업그레이드했습니다.`:'허용된 예산 안에서 CPU·GPU 성능 또는 메모리 용량을 높였습니다.'):'용도 적합도와 비용을 함께 고려했습니다.');
 }

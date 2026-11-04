@@ -11,4 +11,20 @@ test('부품 교체로 발생한 전원 커넥터·GPU 간섭을 검출한다',(
 test('미검수·품절 데이터는 추천에서 제외한다',()=>{const items=catalog.map(x=>({...x,verified:false}));assert.deepEqual(recommend(parseRequirement('게임 200만 원'),settings,items),[null,null,null])});
 test('동일한 조합을 중복 반환하지 않는다',()=>{const plans=recommend(parseRequirement('게임 200만 원'),settings).filter(Boolean);assert.equal(new Set(plans.map(p=>Object.values(p.parts).map(x=>x.id).join('|'))).size,plans.length)});
 test('잘못된 예산은 거부한다',()=>{assert.throws(()=>recommend({budget:NaN}));assert.throws(()=>recommend({budget:-1}))});
-test('성능 강화안은 균형안보다 성능이 높아야 한다',()=>{for(const budget of [1000000,1500000,2000000,3000000]){const [a,b]=recommend(parseRequirement('게임',{budget,allowOver:true}),settings);if(a&&b)assert.ok(b.performance>a.performance)}});
+test('성능 강화안은 성능 또는 메모리 용량을 높여야 한다',()=>{for(const budget of [1000000,1500000,2000000,3000000]){const [a,b]=recommend(parseRequirement('게임',{budget,allowOver:true}),settings);if(a&&b)assert.ok(b.performance>a.performance||(b.performance===a.performance&&b.parts.ram.capacity>a.parts.ram.capacity))}});
+test('실제 350만 원 카탈로그에서 균형안과 CPU 강화안을 구분한다',async()=>{
+ const {readFileSync}=await import('node:fs');const snapshot=JSON.parse(readFileSync(new URL('../public/data/catalog.json',import.meta.url)));
+ for(const p of snapshot.parts){if(p.priceEvidence)p.priceEvidence.observedAt=new Date().toISOString();if(p.benchmark)p.benchmark.observedAt=new Date().toISOString();}
+ const req=parseRequirement('게임 350만 원 화이트');const [balanced,enhanced]=recommend(req,settings,snapshot.parts);
+ assert.ok(balanced);assert.ok(enhanced,'균형안이 최고 등급을 선점해 CPU 강화안이 사라지면 안 된다');
+ assert.ok(enhanced.performance>balanced.performance);assert.equal(enhanced.parts.cpu.id,'c3');assert.ok(enhanced.total<=req.budget);
+});
+test('CPU와 GPU가 같아도 메모리 용량 증가를 강화안으로 제안한다',()=>{
+ const ids=['c2','b1','r2','g2','s1','p2','k1','f1','o0'];
+ const items=catalog.filter(p=>ids.includes(p.id));const ram=items.find(p=>p.category==='ram');
+ items.push({...ram,id:'ram-upgrade',capacity:ram.capacity*2,price:ram.price+50000});
+ const [balanced,enhanced]=recommend(parseRequirement('게임 200만 원'),settings,items);
+ assert.ok(balanced);assert.ok(enhanced,'메모리 확장 강화안이 필요하다');
+ assert.equal(enhanced.parts.cpu.id,balanced.parts.cpu.id);assert.equal(enhanced.parts.gpu.id,balanced.parts.gpu.id);
+ assert.ok(enhanced.parts.ram.capacity>balanced.parts.ram.capacity);
+});
