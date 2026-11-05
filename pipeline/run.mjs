@@ -1,4 +1,4 @@
-import {readFile,writeFile,mkdir,rename,open,unlink,stat} from 'node:fs/promises';
+import {readFile,writeFile,mkdir,rename,open,unlink,stat} from '../backend/document-files.mjs';
 import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createReadStream} from 'node:fs';

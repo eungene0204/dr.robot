@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp,rm,readFile,writeFile} from 'node:fs/promises';
+import {mkdtemp,rm,readFile,writeFile} from '../backend/document-files.mjs';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {daily,seoulDay} from '../pipeline/daily.mjs';

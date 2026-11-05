@@ -1,4 +1,4 @@
-import {readFile,writeFile,rename} from 'node:fs/promises';
+import {readFile,writeFile,rename} from '../backend/document-files.mjs';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createHash} from 'node:crypto';

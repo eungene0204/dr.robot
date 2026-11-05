@@ -7,12 +7,12 @@ export function useCatalog(){
  const [discovery,setDiscovery]=useState(null);
  const [snapshot,setSnapshot]=useState(null);const [error,setError]=useState('');const [loading,setLoading]=useState(!demo);const [clock,setClock]=useState(Date.now());const [report,setReport]=useState(null);const [priceHistory,setPriceHistory]=useState({});const [source,setSource]=useState(null);
  const refresh=useCallback(async()=>{if(demo)return;setLoading(true);let data,active;
-  for(const [url,kind]of [['/api/catalog','server'],['/data/catalog.json','snapshot']]){try{data=await fetchJson(url);hydrateSnapshot(data);active=kind;break;}catch{data=null;}}
-  if(data){setSnapshot(data);setSource(active);setError('');}else setError('실제 데이터에 연결하지 못했습니다. 수집 파이프라인 상태를 확인해 주세요.');
+  for(const [url,kind]of [['/api/catalog','server']]){try{data=await fetchJson(url);hydrateSnapshot(data);active=kind;break;}catch{data=null;}}
+  if(data){setSnapshot(data);setSource(active);setError('');}else setError('DB 서버에 연결하지 못했습니다. 서버와 수집 파이프라인 상태를 확인해 주세요.');
   setLoading(false);setClock(Date.now());
-  try{setReport(await fetchJson(active==='server'?'/api/pipeline/status':'/data/pipeline-status.json'));}catch{}
-  try{setPriceHistory(await fetchJson('/data/price-history.json'));}catch{}
-  try{setDiscovery(await fetchJson('/data/discovery-status.json'));}catch{}
+  try{setReport(await fetchJson('/api/pipeline/status'));}catch{}
+  try{setPriceHistory(await fetchJson('/api/prices/snapshot'));}catch{}
+  try{setDiscovery(await fetchJson('/api/discovery/status'));}catch{}
  },[demo]);
  useEffect(()=>{refresh();const t=setInterval(refresh,60000);return()=>clearInterval(t)},[refresh]);
  const dataset=useMemo(()=>{if(demo)return {mode:'demo',parts:demoCatalog,coverage:{},policy:{}};if(!snapshot)return null;try{return hydrateSnapshot(snapshot,clock)}catch{return null}},[snapshot,demo,clock]);

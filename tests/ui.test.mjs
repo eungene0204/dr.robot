@@ -8,15 +8,15 @@ const waitFor=async predicate=>{for(let i=0;i<100;i++){if(predicate())return;awa
 test('UI: 상담 → 3안 비교 → 호환성 재검증 → 견적서 발행',async()=>{
  const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/?demo=1',runScripts:'outside-only',pretendToBeVisual:true});
  try{
- const w=dom.window;w.fetch=async()=>{throw new Error('offline demo')};w.crypto.randomUUID=()=>crypto.randomUUID();
+ const w=dom.window;const savedQuotes=[];w.fetch=async(url,options={})=>{if(url==='/api/health')return {ok:true,json:async()=>({ok:true,mode:'demo'})};if(url==='/api/quotes'&&options.method==='POST'){const entry=JSON.parse(options.body);savedQuotes.push(entry);return {ok:true,json:async()=>entry}}if(url==='/api/quotes')return {ok:true,json:async()=>savedQuotes};throw new Error('offline demo')};w.crypto.randomUUID=()=>crypto.randomUUID();
  w.eval(bundle.outputFiles[0].text);await wait(60);
  const button=text=>[...w.document.querySelectorAll('button')].find(b=>b.textContent.includes(text));
- assert.equal(w.document.documentElement.dataset.theme,'dark');
- button('라이트 모드').click();await wait(30);
  assert.equal(w.document.documentElement.dataset.theme,'light');
- assert.equal(JSON.parse(w.localStorage.getItem('dr-theme')),'light');
  button('다크 모드').click();await wait(30);
  assert.equal(w.document.documentElement.dataset.theme,'dark');
+ assert.equal(w.localStorage.getItem('dr-theme-v2'),null);
+ button('라이트 모드').click();await wait(30);
+ assert.equal(w.document.documentElement.dataset.theme,'light');
  assert.ok(w.document.querySelector('#request'));
  button('조건 설정').click();await wait(30);
  assert.equal(w.document.querySelectorAll('.profile-options .chosen').length,0);
@@ -57,8 +57,8 @@ test('UI: 상담 → 3안 비교 → 호환성 재검증 → 견적서 발행',a
  assert.equal(button('선택안 견적서 발행').disabled,false);
  button('선택안 견적서 발행').click();await wait(40);
  assert.ok(w.document.querySelector('.quote-modal'));
- assert.ok(w.document.querySelector('.quote-warning').textContent.includes('가상 가격'));
- assert.equal(JSON.parse(w.localStorage.getItem('bm-history')).length,1);
+ assert.equal(savedQuotes.length,1);
+ assert.equal(w.localStorage.getItem('bm-history'),null);
  w.document.querySelector('[aria-label="닫기"]').click();await wait(30);
  button('새 견적 상담').click();await wait(30);
  assert.equal(w.document.querySelectorAll('.chat-message').length,0);
@@ -78,11 +78,10 @@ test('UI: 기본 모드는 실제 스냅샷을 로드하고 출처·가격·벤�
  button('배그 · 롤').click();await wait(30);w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await waitFor(()=>w.document.querySelector('.plan-price'));
  assert.ok(w.document.querySelector('.plan-price'));
  assert.ok(w.document.querySelector('.plan-meta').textContent.includes('Blender'));
- const preview=w.document.querySelector('.comparison .product-name-button');assert.ok(preview);preview.click();await wait(30);
- const popup=w.document.querySelector('.product-original-popover');assert.ok(popup);
- assert.match(popup.querySelector('iframe').src,/https:\/\/prod\.danawa\.com\/info\/\?pcode=\d+/);
- w.document.querySelector('[aria-label="제품 미리보기 닫기"]').click();await wait(30);
- assert.equal(w.document.querySelector('.product-original-popover'),null);
+ let opened;w.open=(...args)=>{opened=args};
+ const preview=w.document.querySelector('.comparison .product-name-button');assert.ok(preview);preview.click();
+ assert.match(opened[0],/https:\/\/prod\.danawa\.com\/info\/\?pcode=\d+/);
+ assert.equal(opened[1],'_blank');assert.match(opened[2],/popup=yes/);
  w.document.querySelector('[aria-label="프로세서 대체 부품 목록"]').click();await wait(30);
  const search=w.document.querySelector('[aria-label="대체 부품 검색"]');
  const type=value=>{Object.getOwnPropertyDescriptor(w.HTMLInputElement.prototype,'value').set.call(search,value);search.dispatchEvent(new w.Event('input',{bubbles:true}));};

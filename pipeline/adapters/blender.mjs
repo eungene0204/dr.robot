@@ -1,3 +1,7 @@
+import {archiveAsset,readFile as readDocument,writeFile as writeDocument} from '../../backend/document-files.mjs';
+import {mkdtemp,writeFile as writeTemporary,readFile as readTemporary,rm} from 'node:fs/promises';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
 import {createWriteStream} from 'node:fs';
 import {stat,rename,writeFile} from 'node:fs/promises';
 import {Readable,Transform} from 'node:stream';
@@ -13,9 +17,9 @@ export async function downloadBlender(client,path,{force=false}={}){
  // Website crawl exclusions for the snapshots directory prevent indexing, not use of the published data archive.
  const r=await client.raw(BLENDER_URL);let count=0;const hash=createHash('sha256');
  await pipeline(Readable.fromWeb(r.body),new Transform({transform(chunk,enc,next){count+=chunk.length;if(count>250_000_000)return next(new Error('벤치마크 ZIP 용량 제한'));hash.update(chunk);next(null,chunk);}}),createWriteStream(path+'.tmp'));
- await rename(path+'.tmp',path);await writeFile(path+'.meta.json',JSON.stringify({sourceUrl:BLENDER_URL,hash:hash.digest('hex'),observedAt:new Date().toISOString(),lastModified:r.headers.get('last-modified'),bytes:count}));return {cached:false,bytes:count};
+ await rename(path+'.tmp',path);await archiveAsset(path);await writeDocument(path+'.meta.json',JSON.stringify({sourceUrl:BLENDER_URL,hash:hash.digest('hex'),observedAt:new Date().toISOString(),lastModified:r.headers.get('last-modified'),bytes:count}));return {cached:false,bytes:count};
 }
-export function runBlenderParser(path,registry,output){return new Promise((resolve,reject)=>{const child=spawn('python3',[fileURLToPath(new URL('../tools/blender.py',import.meta.url)),path,registry,output],{stdio:['ignore','pipe','pipe']});let stdout='',stderr='';child.stdout.on('data',v=>stdout+=v);child.stderr.on('data',v=>stderr+=v);child.on('error',reject);child.on('close',code=>code===0?resolve(stdout.trim()):reject(new Error('Blender 파싱 실패: '+stderr.slice(-1000))));});}
+export async function runBlenderParser(path,registry,output){const folder=await mkdtemp(join(tmpdir(),'drobot-blender-'));const registryFile=join(folder,'registry.json');const outputFile=join(folder,'aggregate.json');await writeTemporary(registryFile,await readDocument(registry));try{const result=await new Promise((resolve,reject)=>{const child=spawn('python3',[fileURLToPath(new URL('../tools/blender.py',import.meta.url)),path,registryFile,outputFile],{stdio:['ignore','pipe','pipe']});let stdout='',stderr='';child.stdout.on('data',v=>stdout+=v);child.stderr.on('data',v=>stderr+=v);child.on('error',reject);child.on('close',code=>code===0?resolve(stdout.trim()):reject(new Error('Blender 파싱 실패: '+stderr.slice(-1000))));});await writeDocument(output,await readTemporary(outputFile));return result;}finally{await rm(folder,{recursive:true,force:true})}}
 export function selectBenchmarks(groups,{minimumSamples=3}={}){
  const valid=groups.filter(r=>r.samples>=minimumSamples&&Number.isFinite(r.score)&&r.score>0&&(['CPU','OPTIX'].includes(r.backend)));
  const versions=[...new Set(valid.map(r=>r.version))];

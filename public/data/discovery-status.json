@@ -1,20 +1,20 @@
 {
-  "updatedAt": "2026-11-05T10:23:30.993Z",
-  "discovered": 12805,
+  "updatedAt": "2026-11-05T12:12:47.008Z",
+  "discovered": 13627,
   "collectionWindow": {
     "start": "2024-11-05",
     "end": "2026-11-05",
     "years": 2,
     "basis": "manufacturer-release-date; listing-month kept separately",
     "confirmedRelease": 0,
-    "recentListing": 3213,
-    "boundaryListingMonth": 94,
-    "olderListing": 3320,
+    "recentListing": 3345,
+    "boundaryListingMonth": 95,
+    "olderListing": 3387,
     "dateUnknown": 0,
     "complete": false
   },
-  "collected": 6603,
-  "failed": 1060,
-  "pending": 41,
-  "rejected": 5101
+  "collected": 6803,
+  "failed": 1180,
+  "pending": 77,
+  "rejected": 5567
 }

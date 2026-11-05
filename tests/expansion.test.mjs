@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtemp,writeFile,readFile,rm} from 'node:fs/promises';
+import {mkdtemp,writeFile,readFile,rm} from '../backend/document-files.mjs';
 import {join} from 'node:path';
 import {tmpdir} from 'node:os';
 import {expandCatalog,benchmarkName,canAdvance} from '../pipeline/expand.mjs';

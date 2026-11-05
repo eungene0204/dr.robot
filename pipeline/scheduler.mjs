@@ -1,4 +1,4 @@
-import {readFile,writeFile,mkdir,rename} from 'node:fs/promises';
+import {readFile,writeFile,mkdir,rename} from '../backend/document-files.mjs';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {daily,seoulDay} from './daily.mjs';

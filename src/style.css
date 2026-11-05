@@ -248,3 +248,6 @@ button.plan-part-row:hover,button.plan-part-row[aria-expanded=true]{background:v
 .vendor-tabs{display:flex;gap:6px;padding:0 16px 12px}.vendor-tabs button{border:1px solid var(--line);background:var(--surface);color:var(--muted);padding:7px 13px;border-radius:6px}.vendor-tabs button.active{background:var(--surface-raised);color:var(--text);border-color:var(--blue-border,var(--line))}
 .toast-warning{background:#991b1b!important;border:1px solid #ef4444;color:#fff!important}
 .persistent-warning{position:sticky;bottom:12px;left:auto;transform:none;width:100%;max-width:none;margin:14px 0 0;z-index:15;justify-content:flex-start;line-height:1.6}
+
+.regenerate-notice{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px;padding:14px 18px;border:1px solid var(--line);border-radius:8px;background:var(--surface-raised);color:var(--text);font-size:14px;line-height:1.6}
+.toast .outline{flex-shrink:0}

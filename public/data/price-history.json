@@ -46029,5 +46029,1678 @@
       "observed_at": "2026-11-05T09:55:34.395Z",
       "source_url": "https://prod.danawa.com/info/?pcode=125786"
     }
+  ],
+  "dw-124697613": [
+    {
+      "amount": 34410,
+      "observed_at": "2026-11-05T10:02:52.093Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=124697613"
+    }
+  ],
+  "dw-124697606": [
+    {
+      "amount": 35680,
+      "observed_at": "2026-11-05T10:02:54.126Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=124697606"
+    }
+  ],
+  "dw-124376354": [
+    {
+      "amount": 32290,
+      "observed_at": "2026-11-05T10:03:16.315Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=124376354"
+    }
+  ],
+  "dw-122720272": [
+    {
+      "amount": 30352,
+      "observed_at": "2026-11-05T10:03:40.078Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122720272"
+    }
+  ],
+  "dw-122688560": [
+    {
+      "amount": 1702160,
+      "observed_at": "2026-11-05T10:03:44.126Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122688560"
+    }
+  ],
+  "dw-122682518": [
+    {
+      "amount": 1976600,
+      "observed_at": "2026-11-05T10:03:46.348Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122682518"
+    }
+  ],
+  "dw-122682487": [
+    {
+      "amount": 2124820,
+      "observed_at": "2026-11-05T10:03:48.128Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122682487"
+    }
+  ],
+  "dw-122678392": [
+    {
+      "amount": 1927840,
+      "observed_at": "2026-11-05T10:03:50.131Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122678392"
+    }
+  ],
+  "dw-122623280": [
+    {
+      "amount": 2087990,
+      "observed_at": "2026-11-05T10:04:00.134Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122623280"
+    }
+  ],
+  "dw-116861278": [
+    {
+      "amount": 20750,
+      "observed_at": "2026-11-05T10:04:02.092Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=116861278"
+    }
+  ],
+  "dw-108448589": [
+    {
+      "amount": 48620,
+      "observed_at": "2026-11-05T10:04:06.099Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=108448589"
+    }
+  ],
+  "dw-108407753": [
+    {
+      "amount": 52000,
+      "observed_at": "2026-11-05T10:04:16.134Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=108407753"
+    }
+  ],
+  "dw-108407666": [
+    {
+      "amount": 44900,
+      "observed_at": "2026-11-05T10:04:18.113Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=108407666"
+    }
+  ],
+  "dw-108407498": [
+    {
+      "amount": 40900,
+      "observed_at": "2026-11-05T10:04:20.126Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=108407498"
+    }
+  ],
+  "dw-108228833": [
+    {
+      "amount": 1472000,
+      "observed_at": "2026-11-05T10:04:32.110Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=108228833"
+    }
+  ],
+  "dw-104949902": [
+    {
+      "amount": 3650000,
+      "observed_at": "2026-11-05T10:04:38.097Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=104949902"
+    }
+  ],
+  "dw-104949851": [
+    {
+      "amount": 3350000,
+      "observed_at": "2026-11-05T10:04:40.121Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=104949851"
+    }
+  ],
+  "dw-104949797": [
+    {
+      "amount": 2950000,
+      "observed_at": "2026-11-05T10:04:42.117Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=104949797"
+    }
+  ],
+  "dw-104949746": [
+    {
+      "amount": 2250000,
+      "observed_at": "2026-11-05T10:04:44.115Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=104949746"
+    }
+  ],
+  "dw-104949713": [
+    {
+      "amount": 1950000,
+      "observed_at": "2026-11-05T10:04:46.116Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=104949713"
+    }
+  ],
+  "dw-104949668": [
+    {
+      "amount": 2400000,
+      "observed_at": "2026-11-05T10:04:48.114Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=104949668"
+    }
+  ],
+  "dw-104949521": [
+    {
+      "amount": 2050000,
+      "observed_at": "2026-11-05T10:04:50.155Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=104949521"
+    }
+  ],
+  "dw-103183016": [
+    {
+      "amount": 1867290,
+      "observed_at": "2026-11-05T10:05:06.119Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=103183016"
+    }
+  ],
+  "dw-101545415": [
+    {
+      "amount": 3599990,
+      "observed_at": "2026-11-05T10:05:14.124Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=101545415"
+    }
+  ],
+  "dw-101544020": [
+    {
+      "amount": 2120000,
+      "observed_at": "2026-11-05T10:05:16.140Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=101544020"
+    }
+  ],
+  "dw-101187416": [
+    {
+      "amount": 19020,
+      "observed_at": "2026-11-05T10:05:18.182Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=101187416"
+    }
+  ],
+  "dw-100693304": [
+    {
+      "amount": 39990,
+      "observed_at": "2026-11-05T10:05:20.168Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=100693304"
+    }
+  ],
+  "dw-99787493": [
+    {
+      "amount": 3199990,
+      "observed_at": "2026-11-05T10:05:30.927Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=99787493"
+    }
+  ],
+  "dw-99751133": [
+    {
+      "amount": 2049990,
+      "observed_at": "2026-11-05T10:05:32.164Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=99751133"
+    }
+  ],
+  "dw-99287318": [
+    {
+      "amount": 99750,
+      "observed_at": "2026-11-05T10:05:38.142Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=99287318"
+    }
+  ],
+  "dw-98227004": [
+    {
+      "amount": 755990,
+      "observed_at": "2026-11-05T10:05:48.177Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=98227004"
+    }
+  ],
+  "dw-96854594": [
+    {
+      "amount": 2699990,
+      "observed_at": "2026-11-05T10:05:54.409Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=96854594"
+    }
+  ],
+  "dw-96854348": [
+    {
+      "amount": 2799990,
+      "observed_at": "2026-11-05T10:05:56.541Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=96854348"
+    }
+  ],
+  "dw-96853196": [
+    {
+      "amount": 1950000,
+      "observed_at": "2026-11-05T10:05:58.220Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=96853196"
+    }
+  ],
+  "dw-96308552": [
+    {
+      "amount": 34330,
+      "observed_at": "2026-11-05T10:06:04.175Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=96308552"
+    }
+  ],
+  "dw-95055920": [
+    {
+      "amount": 2249990,
+      "observed_at": "2026-11-05T10:06:12.170Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=95055920"
+    }
+  ],
+  "dw-93443267": [
+    {
+      "amount": 183000,
+      "observed_at": "2026-11-05T10:06:22.174Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=93443267"
+    }
+  ],
+  "dw-93387449": [
+    {
+      "amount": 6031660,
+      "observed_at": "2026-11-05T10:06:24.183Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=93387449"
+    }
+  ],
+  "dw-93386657": [
+    {
+      "amount": 2650000,
+      "observed_at": "2026-11-05T10:06:26.174Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=93386657"
+    }
+  ],
+  "dw-93177263": [
+    {
+      "amount": 1860500,
+      "observed_at": "2026-11-05T10:06:28.227Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=93177263"
+    }
+  ],
+  "dw-92686391": [
+    {
+      "amount": 38990,
+      "observed_at": "2026-11-05T10:06:36.485Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=92686391"
+    }
+  ],
+  "dw-91767431": [
+    {
+      "amount": 1390000,
+      "observed_at": "2026-11-05T10:06:48.187Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=91767431"
+    }
+  ],
+  "dw-89863778": [
+    {
+      "amount": 3590000,
+      "observed_at": "2026-11-05T10:07:06.208Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=89863778"
+    }
+  ],
+  "dw-89863169": [
+    {
+      "amount": 1730000,
+      "observed_at": "2026-11-05T10:07:08.198Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=89863169"
+    }
+  ],
+  "dw-89862308": [
+    {
+      "amount": 1510000,
+      "observed_at": "2026-11-05T10:07:10.193Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=89862308"
+    }
+  ],
+  "dw-89525606": [
+    {
+      "amount": 2754760,
+      "observed_at": "2026-11-05T10:07:14.263Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=89525606"
+    }
+  ],
+  "dw-78986309": [
+    {
+      "amount": 2949990,
+      "observed_at": "2026-11-05T10:07:26.380Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=78986309"
+    }
+  ],
+  "dw-78986129": [
+    {
+      "amount": 1800000,
+      "observed_at": "2026-11-05T10:07:28.217Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=78986129"
+    }
+  ],
+  "dw-75469262": [
+    {
+      "amount": 3964350,
+      "observed_at": "2026-11-05T10:07:52.230Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=75469262"
+    }
+  ],
+  "dw-75466109": [
+    {
+      "amount": 2909490,
+      "observed_at": "2026-11-05T10:07:54.272Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=75466109"
+    }
+  ],
+  "dw-75466049": [
+    {
+      "amount": 2302620,
+      "observed_at": "2026-11-05T10:07:56.287Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=75466049"
+    }
+  ],
+  "dw-71278103": [
+    {
+      "amount": 32240,
+      "observed_at": "2026-11-05T10:08:14.318Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=71278103"
+    }
+  ],
+  "dw-67979864": [
+    {
+      "amount": 97900,
+      "observed_at": "2026-11-05T10:08:20.251Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=67979864"
+    }
+  ],
+  "dw-67979786": [
+    {
+      "amount": 95900,
+      "observed_at": "2026-11-05T10:08:22.227Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=67979786"
+    }
+  ],
+  "dw-67979672": [
+    {
+      "amount": 79900,
+      "observed_at": "2026-11-05T10:08:24.261Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=67979672"
+    }
+  ],
+  "dw-66040097": [
+    {
+      "amount": 35000,
+      "observed_at": "2026-11-05T10:08:28.324Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=66040097"
+    }
+  ],
+  "dw-66039971": [
+    {
+      "amount": 52800,
+      "observed_at": "2026-11-05T10:08:30.266Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=66039971"
+    }
+  ],
+  "dw-62072093": [
+    {
+      "amount": 2705380,
+      "observed_at": "2026-11-05T10:08:46.287Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=62072093"
+    }
+  ],
+  "dw-54814802": [
+    {
+      "amount": 1919040,
+      "observed_at": "2026-11-05T10:08:58.259Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=54814802"
+    }
+  ],
+  "dw-54813635": [
+    {
+      "amount": 2794790,
+      "observed_at": "2026-11-05T10:09:00.253Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=54813635"
+    }
+  ],
+  "dw-48642497": [
+    {
+      "amount": 1444720,
+      "observed_at": "2026-11-05T10:09:10.351Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=48642497"
+    }
+  ],
+  "dw-44408345": [
+    {
+      "amount": 43000,
+      "observed_at": "2026-11-05T10:09:12.324Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=44408345"
+    }
+  ],
+  "dw-36709001": [
+    {
+      "amount": 149000,
+      "observed_at": "2026-11-05T10:09:14.611Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=36709001"
+    }
+  ],
+  "dw-34816799": [
+    {
+      "amount": 39000,
+      "observed_at": "2026-11-05T10:09:16.338Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=34816799"
+    }
+  ],
+  "dw-33483455": [
+    {
+      "amount": 22000,
+      "observed_at": "2026-11-05T10:09:20.272Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=33483455"
+    }
+  ],
+  "dw-29983502": [
+    {
+      "amount": 9350,
+      "observed_at": "2026-11-05T10:09:48.393Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=29983502"
+    }
+  ],
+  "dw-28829426": [
+    {
+      "amount": 349000,
+      "observed_at": "2026-11-05T10:09:50.655Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=28829426"
+    }
+  ],
+  "dw-21699143": [
+    {
+      "amount": 124415,
+      "observed_at": "2026-11-05T10:10:02.328Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=21699143"
+    }
+  ],
+  "dw-20358233": [
+    {
+      "amount": 45030,
+      "observed_at": "2026-11-05T10:10:20.298Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=20358233"
+    }
+  ],
+  "dw-19806944": [
+    {
+      "amount": 119110,
+      "observed_at": "2026-11-05T10:10:28.332Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=19806944"
+    }
+  ],
+  "dw-18826778": [
+    {
+      "amount": 88790,
+      "observed_at": "2026-11-05T10:10:46.377Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=18826778"
+    }
+  ],
+  "dw-18477077": [
+    {
+      "amount": 187000,
+      "observed_at": "2026-11-05T10:10:56.385Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=18477077"
+    }
+  ],
+  "dw-17702204": [
+    {
+      "amount": 106570,
+      "observed_at": "2026-11-05T10:11:12.368Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=17702204"
+    }
+  ],
+  "dw-16331021": [
+    {
+      "amount": 78360,
+      "observed_at": "2026-11-05T10:11:24.345Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=16331021"
+    }
+  ],
+  "dw-14816009": [
+    {
+      "amount": 26500,
+      "observed_at": "2026-11-05T10:11:46.420Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=14816009"
+    }
+  ],
+  "dw-13549109": [
+    {
+      "amount": 10180,
+      "observed_at": "2026-11-05T10:11:54.663Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=13549109"
+    }
+  ],
+  "dw-12223073": [
+    {
+      "amount": 55584,
+      "observed_at": "2026-11-05T10:12:10.444Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=12223073"
+    }
+  ],
+  "dw-11941214": [
+    {
+      "amount": 98000,
+      "observed_at": "2026-11-05T10:12:16.497Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=11941214"
+    }
+  ],
+  "dw-8449863": [
+    {
+      "amount": 33990,
+      "observed_at": "2026-11-05T10:13:10.442Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=8449863"
+    }
+  ],
+  "dw-6088467": [
+    {
+      "amount": 249990,
+      "observed_at": "2026-11-05T10:13:46.621Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=6088467"
+    }
+  ],
+  "dw-5616649": [
+    {
+      "amount": 16330,
+      "observed_at": "2026-11-05T10:14:06.517Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=5616649"
+    }
+  ],
+  "dw-5466131": [
+    {
+      "amount": 55990,
+      "observed_at": "2026-11-05T10:14:16.468Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=5466131"
+    }
+  ],
+  "dw-4545328": [
+    {
+      "amount": 19000,
+      "observed_at": "2026-11-05T10:15:46.534Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=4545328"
+    }
+  ],
+  "dw-3420611": [
+    {
+      "amount": 41830,
+      "observed_at": "2026-11-05T10:17:56.592Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=3420611"
+    }
+  ],
+  "dw-1401797": [
+    {
+      "amount": 180020,
+      "observed_at": "2026-11-05T10:33:46.277Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=1401797"
+    }
+  ],
+  "dw-124046967": [
+    {
+      "amount": 2064790,
+      "observed_at": "2026-11-05T10:55:16.235Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=124046967"
+    }
+  ],
+  "dw-124046859": [
+    {
+      "amount": 2814720,
+      "observed_at": "2026-11-05T10:55:18.332Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=124046859"
+    }
+  ],
+  "dw-122712346": [
+    {
+      "amount": 1831450,
+      "observed_at": "2026-11-05T10:55:38.304Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122712346"
+    }
+  ],
+  "dw-122711371": [
+    {
+      "amount": 2032490,
+      "observed_at": "2026-11-05T10:55:40.270Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122711371"
+    }
+  ],
+  "dw-122711352": [
+    {
+      "amount": 1939670,
+      "observed_at": "2026-11-05T10:55:42.307Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122711352"
+    }
+  ],
+  "dw-122694919": [
+    {
+      "amount": 1943310,
+      "observed_at": "2026-11-05T10:55:48.358Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122694919"
+    }
+  ],
+  "dw-122694897": [
+    {
+      "amount": 1838660,
+      "observed_at": "2026-11-05T10:55:50.311Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122694897"
+    }
+  ],
+  "dw-122694888": [
+    {
+      "amount": 1434860,
+      "observed_at": "2026-11-05T10:55:52.406Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122694888"
+    }
+  ],
+  "dw-122694864": [
+    {
+      "amount": 2421060,
+      "observed_at": "2026-11-05T10:55:54.432Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122694864"
+    }
+  ],
+  "dw-122688595": [
+    {
+      "amount": 1806810,
+      "observed_at": "2026-11-05T10:55:56.487Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122688595"
+    }
+  ],
+  "dw-122688586": [
+    {
+      "amount": 2108930,
+      "observed_at": "2026-11-05T10:55:58.469Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122688586"
+    }
+  ],
+  "dw-122688520": [
+    {
+      "amount": 2202660,
+      "observed_at": "2026-11-05T10:56:00.308Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122688520"
+    }
+  ],
+  "dw-122678515": [
+    {
+      "amount": 1795890,
+      "observed_at": "2026-11-05T10:56:06.765Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122678515"
+    }
+  ],
+  "dw-122678491": [
+    {
+      "amount": 1692150,
+      "observed_at": "2026-11-05T10:56:08.293Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122678491"
+    }
+  ],
+  "dw-122678435": [
+    {
+      "amount": 2346440,
+      "observed_at": "2026-11-05T10:56:10.431Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122678435"
+    }
+  ],
+  "dw-122678368": [
+    {
+      "amount": 1517430,
+      "observed_at": "2026-11-05T10:56:12.463Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122678368"
+    }
+  ],
+  "dw-122617364": [
+    {
+      "amount": 2794790,
+      "observed_at": "2026-11-05T10:56:36.277Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122617364"
+    }
+  ],
+  "dw-108693653": [
+    {
+      "amount": 1424790,
+      "observed_at": "2026-11-05T10:56:46.326Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=108693653"
+    }
+  ],
+  "dw-108448733": [
+    {
+      "amount": 58700,
+      "observed_at": "2026-11-05T10:56:52.273Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=108448733"
+    }
+  ],
+  "dw-108448718": [
+    {
+      "amount": 56580,
+      "observed_at": "2026-11-05T10:56:54.280Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=108448718"
+    }
+  ],
+  "dw-108448586": [
+    {
+      "amount": 46560,
+      "observed_at": "2026-11-05T10:56:56.288Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=108448586"
+    }
+  ],
+  "dw-108448535": [
+    {
+      "amount": 43930,
+      "observed_at": "2026-11-05T10:56:58.331Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=108448535"
+    }
+  ],
+  "dw-108448481": [
+    {
+      "amount": 31710,
+      "observed_at": "2026-11-05T10:57:00.198Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=108448481"
+    }
+  ],
+  "dw-105817001": [
+    {
+      "amount": 2184740,
+      "observed_at": "2026-11-05T10:57:14.320Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=105817001"
+    }
+  ],
+  "dw-105816902": [
+    {
+      "amount": 2729730,
+      "observed_at": "2026-11-05T10:57:16.364Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=105816902"
+    }
+  ],
+  "dw-104988860": [
+    {
+      "amount": 3484750,
+      "observed_at": "2026-11-05T10:57:20.447Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=104988860"
+    }
+  ],
+  "dw-101545640": [
+    {
+      "amount": 5105300,
+      "observed_at": "2026-11-05T10:57:26.407Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=101545640"
+    }
+  ],
+  "dw-98548667": [
+    {
+      "amount": 2090000,
+      "observed_at": "2026-11-05T10:57:32.320Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=98548667"
+    }
+  ],
+  "dw-98548580": [
+    {
+      "amount": 1699000,
+      "observed_at": "2026-11-05T10:57:34.455Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=98548580"
+    }
+  ],
+  "dw-96853898": [
+    {
+      "amount": 2320000,
+      "observed_at": "2026-11-05T10:57:46.326Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=96853898"
+    }
+  ],
+  "dw-95284802": [
+    {
+      "amount": 2208120,
+      "observed_at": "2026-11-05T10:57:56.379Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=95284802"
+    }
+  ],
+  "dw-94812359": [
+    {
+      "amount": 2704800,
+      "observed_at": "2026-11-05T10:58:00.408Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=94812359"
+    }
+  ],
+  "dw-93177212": [
+    {
+      "amount": 1453730,
+      "observed_at": "2026-11-05T10:58:10.545Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=93177212"
+    }
+  ],
+  "dw-93177092": [
+    {
+      "amount": 1814090,
+      "observed_at": "2026-11-05T10:58:12.437Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=93177092"
+    }
+  ],
+  "dw-92686817": [
+    {
+      "amount": 30680,
+      "observed_at": "2026-11-05T10:58:16.283Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=92686817"
+    }
+  ],
+  "dw-92686625": [
+    {
+      "amount": 58760,
+      "observed_at": "2026-11-05T10:58:18.342Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=92686625"
+    }
+  ],
+  "dw-92686502": [
+    {
+      "amount": 43920,
+      "observed_at": "2026-11-05T10:58:20.282Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=92686502"
+    }
+  ],
+  "dw-92621657": [
+    {
+      "amount": 64000,
+      "observed_at": "2026-11-05T10:58:22.439Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=92621657"
+    }
+  ],
+  "dw-92621501": [
+    {
+      "amount": 53200,
+      "observed_at": "2026-11-05T10:58:24.246Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=92621501"
+    }
+  ],
+  "dw-92621480": [
+    {
+      "amount": 47500,
+      "observed_at": "2026-11-05T10:58:26.335Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=92621480"
+    }
+  ],
+  "dw-91421210": [
+    {
+      "amount": 1545420,
+      "observed_at": "2026-11-05T10:58:32.310Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=91421210"
+    }
+  ],
+  "dw-91042487": [
+    {
+      "amount": 1944760,
+      "observed_at": "2026-11-05T10:58:38.324Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=91042487"
+    }
+  ],
+  "dw-90157022": [
+    {
+      "amount": 62000,
+      "observed_at": "2026-11-05T10:58:42.277Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=90157022"
+    }
+  ],
+  "dw-82471217": [
+    {
+      "amount": 702000,
+      "observed_at": "2026-11-05T10:58:52.307Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=82471217"
+    }
+  ],
+  "dw-75466889": [
+    {
+      "amount": 3651460,
+      "observed_at": "2026-11-05T10:59:02.535Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=75466889"
+    }
+  ],
+  "dw-75466043": [
+    {
+      "amount": 1913980,
+      "observed_at": "2026-11-05T10:59:04.440Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=75466043"
+    }
+  ],
+  "dw-70333247": [
+    {
+      "amount": 3544720,
+      "observed_at": "2026-11-05T10:59:24.372Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=70333247"
+    }
+  ],
+  "dw-69563237": [
+    {
+      "amount": 36000,
+      "observed_at": "2026-11-05T10:59:26.421Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=69563237"
+    }
+  ],
+  "dw-63419480": [
+    {
+      "amount": 58240,
+      "observed_at": "2026-11-05T10:59:34.344Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=63419480"
+    }
+  ],
+  "dw-62071886": [
+    {
+      "amount": 2994720,
+      "observed_at": "2026-11-05T10:59:40.450Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=62071886"
+    }
+  ],
+  "dw-56501372": [
+    {
+      "amount": 4744740,
+      "observed_at": "2026-11-05T10:59:50.438Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=56501372"
+    }
+  ],
+  "dw-51398936": [
+    {
+      "amount": 32900,
+      "observed_at": "2026-11-05T11:00:22.535Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=51398936"
+    }
+  ],
+  "dw-31961609": [
+    {
+      "amount": 2270000,
+      "observed_at": "2026-11-05T11:00:58.559Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=31961609"
+    }
+  ],
+  "dw-31344824": [
+    {
+      "amount": 35000,
+      "observed_at": "2026-11-05T11:01:00.544Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=31344824"
+    }
+  ],
+  "dw-25664168": [
+    {
+      "amount": 1913900,
+      "observed_at": "2026-11-05T11:01:16.662Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=25664168"
+    }
+  ],
+  "dw-17450573": [
+    {
+      "amount": 955700,
+      "observed_at": "2026-11-05T11:02:18.653Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=17450573"
+    }
+  ],
+  "dw-15444635": [
+    {
+      "amount": 50830,
+      "observed_at": "2026-11-05T11:02:44.706Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=15444635"
+    }
+  ],
+  "dw-15268130": [
+    {
+      "amount": 119000,
+      "observed_at": "2026-11-05T11:02:50.958Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=15268130"
+    }
+  ],
+  "dw-14110970": [
+    {
+      "amount": 51140,
+      "observed_at": "2026-11-05T11:02:56.961Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=14110970"
+    }
+  ],
+  "dw-13061924": [
+    {
+      "amount": 74660,
+      "observed_at": "2026-11-05T11:03:14.863Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=13061924"
+    }
+  ],
+  "dw-12397271": [
+    {
+      "amount": 84000,
+      "observed_at": "2026-11-05T11:03:18.956Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=12397271"
+    }
+  ],
+  "dw-11292813": [
+    {
+      "amount": 29660,
+      "observed_at": "2026-11-05T11:03:20.872Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=11292813"
+    }
+  ],
+  "dw-11292792": [
+    {
+      "amount": 28000,
+      "observed_at": "2026-11-05T11:03:22.930Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=11292792"
+    }
+  ],
+  "dw-10550649": [
+    {
+      "amount": 69690,
+      "observed_at": "2026-11-05T11:03:24.773Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=10550649"
+    }
+  ],
+  "dw-10268796": [
+    {
+      "amount": 78000,
+      "observed_at": "2026-11-05T11:03:27.445Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=10268796"
+    }
+  ],
+  "dw-9802053": [
+    {
+      "amount": 43710,
+      "observed_at": "2026-11-05T11:03:28.895Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=9802053"
+    }
+  ],
+  "dw-9286965": [
+    {
+      "amount": 31760,
+      "observed_at": "2026-11-05T11:03:32.917Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=9286965"
+    }
+  ],
+  "dw-7834054": [
+    {
+      "amount": 37390,
+      "observed_at": "2026-11-05T11:03:36.871Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=7834054"
+    }
+  ],
+  "dw-7828099": [
+    {
+      "amount": 51690,
+      "observed_at": "2026-11-05T11:03:38.845Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=7828099"
+    }
+  ],
+  "dw-7020658": [
+    {
+      "amount": 45900,
+      "observed_at": "2026-11-05T11:03:41.069Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=7020658"
+    }
+  ],
+  "dw-6763879": [
+    {
+      "amount": 54720,
+      "observed_at": "2026-11-05T11:03:42.989Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=6763879"
+    }
+  ],
+  "dw-4447526": [
+    {
+      "amount": 32990,
+      "observed_at": "2026-11-05T11:03:52.928Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=4447526"
+    }
+  ],
+  "dw-124788856": [
+    {
+      "amount": 809060,
+      "observed_at": "2026-11-05T11:14:45.241Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=124788856"
+    }
+  ],
+  "dw-124754425": [
+    {
+      "amount": 36990,
+      "observed_at": "2026-11-05T11:14:47.118Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=124754425"
+    }
+  ],
+  "dw-124335096": [
+    {
+      "amount": 141740,
+      "observed_at": "2026-11-05T11:15:08.981Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=124335096"
+    }
+  ],
+  "dw-122678405": [
+    {
+      "amount": 1616620,
+      "observed_at": "2026-11-05T11:15:27.052Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122678405"
+    }
+  ],
+  "dw-122640258": [
+    {
+      "amount": 1759490,
+      "observed_at": "2026-11-05T11:15:33.046Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122640258"
+    }
+  ],
+  "dw-122640256": [
+    {
+      "amount": 1352720,
+      "observed_at": "2026-11-05T11:15:34.975Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122640256"
+    }
+  ],
+  "dw-122623363": [
+    {
+      "amount": 1558540,
+      "observed_at": "2026-11-05T11:15:38.985Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=122623363"
+    }
+  ],
+  "dw-105180554": [
+    {
+      "amount": 1864770,
+      "observed_at": "2026-11-05T11:16:09.135Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=105180554"
+    }
+  ],
+  "dw-104949449": [
+    {
+      "amount": 2050000,
+      "observed_at": "2026-11-05T11:16:11.118Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=104949449"
+    }
+  ],
+  "dw-104949353": [
+    {
+      "amount": 2590000,
+      "observed_at": "2026-11-05T11:16:13.010Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=104949353"
+    }
+  ],
+  "dw-104949293": [
+    {
+      "amount": 1990000,
+      "observed_at": "2026-11-05T11:16:15.032Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=104949293"
+    }
+  ],
+  "dw-104949110": [
+    {
+      "amount": 1601000,
+      "observed_at": "2026-11-05T11:16:17.049Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=104949110"
+    }
+  ],
+  "dw-102007286": [
+    {
+      "amount": 143000,
+      "observed_at": "2026-11-05T11:16:23.164Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=102007286"
+    }
+  ],
+  "dw-101545088": [
+    {
+      "amount": 2590000,
+      "observed_at": "2026-11-05T11:16:25.095Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=101545088"
+    }
+  ],
+  "dw-101544812": [
+    {
+      "amount": 1980000,
+      "observed_at": "2026-11-05T11:16:27.033Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=101544812"
+    }
+  ],
+  "dw-100193024": [
+    {
+      "amount": 63000,
+      "observed_at": "2026-11-05T11:16:29.062Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=100193024"
+    }
+  ],
+  "dw-100192727": [
+    {
+      "amount": 44000,
+      "observed_at": "2026-11-05T11:16:31.052Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=100192727"
+    }
+  ],
+  "dw-99750791": [
+    {
+      "amount": 2078110,
+      "observed_at": "2026-11-05T11:16:33.090Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=99750791"
+    }
+  ],
+  "dw-98246258": [
+    {
+      "amount": 440640,
+      "observed_at": "2026-11-05T11:16:43.119Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=98246258"
+    }
+  ],
+  "dw-98241593": [
+    {
+      "amount": 288000,
+      "observed_at": "2026-11-05T11:16:45.044Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=98241593"
+    }
+  ],
+  "dw-98241527": [
+    {
+      "amount": 288000,
+      "observed_at": "2026-11-05T11:16:47.016Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=98241527"
+    }
+  ],
+  "dw-98241509": [
+    {
+      "amount": 288000,
+      "observed_at": "2026-11-05T11:16:49.036Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=98241509"
+    }
+  ],
+  "dw-98231576": [
+    {
+      "amount": 1524620,
+      "observed_at": "2026-11-05T11:16:51.118Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=98231576"
+    }
+  ],
+  "dw-97905170": [
+    {
+      "amount": 2720000,
+      "observed_at": "2026-11-05T11:16:53.082Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=97905170"
+    }
+  ],
+  "dw-97905128": [
+    {
+      "amount": 2974000,
+      "observed_at": "2026-11-05T11:16:55.029Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=97905128"
+    }
+  ],
+  "dw-96853022": [
+    {
+      "amount": 1410000,
+      "observed_at": "2026-11-05T11:17:03.096Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=96853022"
+    }
+  ],
+  "dw-96583916": [
+    {
+      "amount": 36630,
+      "observed_at": "2026-11-05T11:17:05.058Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=96583916"
+    }
+  ],
+  "dw-96422237": [
+    {
+      "amount": 1851400,
+      "observed_at": "2026-11-05T11:17:11.042Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=96422237"
+    }
+  ],
+  "dw-96422063": [
+    {
+      "amount": 1413690,
+      "observed_at": "2026-11-05T11:17:13.360Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=96422063"
+    }
+  ],
+  "dw-96421859": [
+    {
+      "amount": 1742200,
+      "observed_at": "2026-11-05T11:17:15.094Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=96421859"
+    }
+  ],
+  "dw-95056196": [
+    {
+      "amount": 2899990,
+      "observed_at": "2026-11-05T11:17:23.056Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=95056196"
+    }
+  ],
+  "dw-95054711": [
+    {
+      "amount": 1669990,
+      "observed_at": "2026-11-05T11:17:25.334Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=95054711"
+    }
+  ],
+  "dw-94027178": [
+    {
+      "amount": 1409900,
+      "observed_at": "2026-11-05T11:17:33.120Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=94027178"
+    }
+  ],
+  "dw-93387440": [
+    {
+      "amount": 4899000,
+      "observed_at": "2026-11-05T11:17:35.239Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=93387440"
+    }
+  ],
+  "dw-93386678": [
+    {
+      "amount": 2169000,
+      "observed_at": "2026-11-05T11:17:37.332Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=93386678"
+    }
+  ],
+  "dw-93385763": [
+    {
+      "amount": 1939000,
+      "observed_at": "2026-11-05T11:17:39.082Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=93385763"
+    }
+  ],
+  "dw-93176495": [
+    {
+      "amount": 1790430,
+      "observed_at": "2026-11-05T11:17:41.194Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=93176495"
+    }
+  ],
+  "dw-92624312": [
+    {
+      "amount": 1945130,
+      "observed_at": "2026-11-05T11:17:43.110Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=92624312"
+    }
+  ],
+  "dw-92624201": [
+    {
+      "amount": 1506510,
+      "observed_at": "2026-11-05T11:17:45.044Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=92624201"
+    }
+  ],
+  "dw-91769042": [
+    {
+      "amount": 3040000,
+      "observed_at": "2026-11-05T11:17:53.115Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=91769042"
+    }
+  ],
+  "dw-91768283": [
+    {
+      "amount": 2726950,
+      "observed_at": "2026-11-05T11:17:55.085Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=91768283"
+    }
+  ],
+  "dw-91767548": [
+    {
+      "amount": 2110380,
+      "observed_at": "2026-11-05T11:17:57.110Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=91767548"
+    }
+  ],
+  "dw-90703292": [
+    {
+      "amount": 118000,
+      "observed_at": "2026-11-05T11:18:03.085Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=90703292"
+    }
+  ],
+  "dw-90270068": [
+    {
+      "amount": 188550,
+      "observed_at": "2026-11-05T11:18:07.484Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=90270068"
+    }
+  ],
+  "dw-90270002": [
+    {
+      "amount": 158330,
+      "observed_at": "2026-11-05T11:18:09.310Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=90270002"
+    }
+  ],
+  "dw-89863370": [
+    {
+      "amount": 2638420,
+      "observed_at": "2026-11-05T11:18:11.153Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=89863370"
+    }
+  ],
+  "dw-89863208": [
+    {
+      "amount": 3351040,
+      "observed_at": "2026-11-05T11:18:13.119Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=89863208"
+    }
+  ],
+  "dw-78989495": [
+    {
+      "amount": 3090000,
+      "observed_at": "2026-11-05T11:18:41.100Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=78989495"
+    }
+  ],
+  "dw-75466064": [
+    {
+      "amount": 2407980,
+      "observed_at": "2026-11-05T11:18:57.320Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=75466064"
+    }
+  ],
+  "dw-75466040": [
+    {
+      "amount": 2114740,
+      "observed_at": "2026-11-05T11:18:59.123Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=75466040"
+    }
+  ],
+  "dw-75466034": [
+    {
+      "amount": 2009810,
+      "observed_at": "2026-11-05T11:19:01.131Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=75466034"
+    }
+  ],
+  "dw-69563306": [
+    {
+      "amount": 40000,
+      "observed_at": "2026-11-05T11:19:33.382Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=69563306"
+    }
+  ],
+  "dw-54316559": [
+    {
+      "amount": 1635460,
+      "observed_at": "2026-11-05T11:19:49.187Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=54316559"
+    }
+  ],
+  "dw-46098851": [
+    {
+      "amount": 89280,
+      "observed_at": "2026-11-05T11:19:59.169Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=46098851"
+    }
+  ],
+  "dw-34811093": [
+    {
+      "amount": 56000,
+      "observed_at": "2026-11-05T11:20:15.256Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=34811093"
+    }
+  ],
+  "dw-31092083": [
+    {
+      "amount": 414400,
+      "observed_at": "2026-11-05T11:20:27.314Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=31092083"
+    }
+  ],
+  "dw-27608465": [
+    {
+      "amount": 269000,
+      "observed_at": "2026-11-05T11:20:39.222Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=27608465"
+    }
+  ],
+  "dw-27482198": [
+    {
+      "amount": 548640,
+      "observed_at": "2026-11-05T11:20:41.250Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=27482198"
+    }
+  ],
+  "dw-17523389": [
+    {
+      "amount": 142430,
+      "observed_at": "2026-11-05T11:21:41.256Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=17523389"
+    }
+  ],
+  "dw-17523305": [
+    {
+      "amount": 59500,
+      "observed_at": "2026-11-05T11:21:43.300Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=17523305"
+    }
+  ],
+  "dw-16154060": [
+    {
+      "amount": 63140,
+      "observed_at": "2026-11-05T11:22:03.353Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=16154060"
+    }
+  ],
+  "dw-16136750": [
+    {
+      "amount": 59780,
+      "observed_at": "2026-11-05T11:22:05.257Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=16136750"
+    }
+  ],
+  "dw-16136465": [
+    {
+      "amount": 627840,
+      "observed_at": "2026-11-05T11:22:07.265Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=16136465"
+    }
+  ],
+  "dw-15242033": [
+    {
+      "amount": 118660,
+      "observed_at": "2026-11-05T11:22:11.282Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=15242033"
+    }
+  ],
+  "dw-15200732": [
+    {
+      "amount": 69900,
+      "observed_at": "2026-11-05T11:22:13.325Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=15200732"
+    }
+  ],
+  "dw-14217302": [
+    {
+      "amount": 93900,
+      "observed_at": "2026-11-05T11:22:31.443Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=14217302"
+    }
+  ],
+  "dw-14216270": [
+    {
+      "amount": 73900,
+      "observed_at": "2026-11-05T11:22:33.271Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=14216270"
+    }
+  ],
+  "dw-12610565": [
+    {
+      "amount": 73360,
+      "observed_at": "2026-11-05T11:22:47.447Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=12610565"
+    }
+  ],
+  "dw-12397211": [
+    {
+      "amount": 67200,
+      "observed_at": "2026-11-05T11:22:51.303Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=12397211"
+    }
+  ],
+  "dw-9842118": [
+    {
+      "amount": 33320,
+      "observed_at": "2026-11-05T11:23:23.660Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=9842118"
+    }
+  ],
+  "dw-9791946": [
+    {
+      "amount": 52080,
+      "observed_at": "2026-11-05T11:23:25.481Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=9791946"
+    }
+  ],
+  "dw-9721512": [
+    {
+      "amount": 335000,
+      "observed_at": "2026-11-05T11:23:35.379Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=9721512"
+    }
+  ],
+  "dw-9458247": [
+    {
+      "amount": 36480,
+      "observed_at": "2026-11-05T11:23:41.330Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=9458247"
+    }
+  ],
+  "dw-6517783": [
+    {
+      "amount": 37490,
+      "observed_at": "2026-11-05T11:24:21.341Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=6517783"
+    }
+  ],
+  "dw-6393777": [
+    {
+      "amount": 23450,
+      "observed_at": "2026-11-05T11:24:27.597Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=6393777"
+    }
+  ],
+  "dw-5968537": [
+    {
+      "amount": 299000,
+      "observed_at": "2026-11-05T11:24:43.369Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=5968537"
+    }
+  ],
+  "dw-5868913": [
+    {
+      "amount": 399000,
+      "observed_at": "2026-11-05T11:24:49.513Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=5868913"
+    }
+  ],
+  "dw-5694746": [
+    {
+      "amount": 29430,
+      "observed_at": "2026-11-05T11:24:51.381Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=5694746"
+    }
+  ],
+  "dw-5245870": [
+    {
+      "amount": 119000,
+      "observed_at": "2026-11-05T11:25:33.523Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=5245870"
+    }
+  ],
+  "dw-4525439": [
+    {
+      "amount": 35720,
+      "observed_at": "2026-11-05T11:26:35.466Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=4525439"
+    }
+  ],
+  "dw-2916808": [
+    {
+      "amount": 54520,
+      "observed_at": "2026-11-05T11:31:19.572Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=2916808"
+    }
+  ],
+  "dw-1516395": [
+    {
+      "amount": 30000,
+      "observed_at": "2026-11-05T11:43:27.841Z",
+      "source_url": "https://prod.danawa.com/info/?pcode=1516395"
+    }
   ]
 }

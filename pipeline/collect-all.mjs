@@ -1,4 +1,4 @@
-import {readFile,stat,writeFile,rename,open,unlink,mkdir} from 'node:fs/promises';
+import {readFile,stat,writeFile,rename,open,unlink,mkdir} from '../backend/document-files.mjs';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {expandCatalog,canAdvance} from './expand.mjs';

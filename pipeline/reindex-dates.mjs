@@ -1,4 +1,4 @@
-import {readFile} from 'node:fs/promises';
+import {readFile} from '../backend/document-files.mjs';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
 import {PipelineStore} from './store.mjs';

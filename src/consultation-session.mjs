@@ -1,16 +1,4 @@
-const key=demo=>`dr-consultation-session:${demo?'demo':'live'}`;
-export function readConsultation(demo){
- try{
-  if(new URLSearchParams(location.search).has('quote'))return null;
-  const draft=JSON.parse(sessionStorage.getItem(key(demo)));
-  if(draft?.schemaVersion!==1||!Array.isArray(draft.messages))return null;
-  if(draft.plans&&(!draft.req||!Array.isArray(draft.plans)||draft.plans.length!==3))return null;
-  return draft;
- }catch{return null;}
-}
-export function writeConsultation(demo,draft){
- try{
-  if(new URLSearchParams(location.search).has('quote'))return;
-  sessionStorage.setItem(key(demo),JSON.stringify({...draft,schemaVersion:1}));
- }catch{/* Keep the consultation usable when browser storage is unavailable. */}
-}
+let draft=null;let timer;
+export async function initializeConsultation(demo){const name=demo?'demo':'live';try{const response=await fetch(`/api/state/consult-${name}`,{signal:AbortSignal.timeout(3000)});if(!response.ok)return;draft=await response.json();if(!draft){const old=JSON.parse(sessionStorage.getItem(`dr-consultation-session:${name}`));if(old){const saved=await fetch(`/api/state/consult-${name}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(old)});if(saved.ok){draft=old;sessionStorage.removeItem(`dr-consultation-session:${name}`)}}}}catch{}}
+export function readConsultation(){return new URLSearchParams(location.search).has('quote')?null:draft;}
+export function writeConsultation(demo,value){if(new URLSearchParams(location.search).has('quote'))return;draft={...value,schemaVersion:1};clearTimeout(timer);timer=setTimeout(()=>{fetch(`/api/state/consult-${demo?'demo':'live'}`,{method:'PUT',headers:{'Content-Type':'application/json'},body:JSON.stringify(draft),keepalive:true}).catch(()=>{});},400);}

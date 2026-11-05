@@ -1,5 +1,5 @@
 import robotsParser from 'robots-parser';
-import {mkdir,readFile,writeFile,rename} from 'node:fs/promises';
+import {mkdir,readFile,writeFile,rename} from '../backend/document-files.mjs';
 import {createHash} from 'node:crypto';
 import {resolve} from 'node:path';
 export const AGENT='DrRobot/0.3 (+PC-component-price-monitor; no AI training)';
