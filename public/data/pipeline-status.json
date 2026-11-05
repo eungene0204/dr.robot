@@ -1,23 +1,23 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-03T23:27:12.999Z",
-  "jobId": "78c2d4ad-ba3a-4729-9155-3ce818cd897b",
-  "status": "succeeded",
+  "generatedAt": "2026-11-05T09:59:38.768Z",
+  "jobId": "0c0b5b46-f6ed-4bd0-9182-7b3dc53d423c",
+  "status": "partial",
   "summary": {
-    "products": 23,
-    "prices": 23,
-    "benchmarks": 8,
+    "products": 6543,
+    "prices": 6543,
+    "benchmarks": 664,
     "errors": [],
     "quarantined": 0,
     "coverage": {
-      "freshPrices": 23,
-      "measuredBenchmarks": 8,
-      "ready": 23,
+      "freshPrices": 6543,
+      "measuredBenchmarks": 673,
+      "ready": 6206,
       "stalePrices": 0,
       "missingPrices": 0,
-      "total": 23,
-      "benchmarkTargets": 8,
-      "reviewedSpecs": 0
+      "total": 6543,
+      "benchmarkTargets": 1010,
+      "reviewedSpecs": 8
     }
   },
   "reviews": []

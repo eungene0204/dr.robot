@@ -1,0 +1,199 @@
+{
+  "queries": [
+    {
+      "category": "cooler",
+      "query": "category:11236855",
+      "source": "category-index",
+      "categoryCode": "11236855"
+    },
+    {
+      "category": "case",
+      "query": "category:112775",
+      "source": "category-index",
+      "categoryCode": "112775"
+    },
+    {
+      "category": "psu",
+      "query": "category:112777",
+      "source": "category-index",
+      "categoryCode": "112777"
+    },
+    {
+      "category": "ssd",
+      "query": "category:112760",
+      "source": "category-index",
+      "categoryCode": "112760"
+    },
+    {
+      "category": "gpu",
+      "query": "category:112753",
+      "source": "category-index",
+      "categoryCode": "112753"
+    },
+    {
+      "category": "ram",
+      "query": "category:112752",
+      "source": "category-index",
+      "categoryCode": "112752"
+    },
+    {
+      "category": "board",
+      "query": "category:112751",
+      "source": "category-index",
+      "categoryCode": "112751"
+    },
+    {
+      "category": "cpu",
+      "query": "category:112747",
+      "source": "category-index",
+      "categoryCode": "112747"
+    },
+    {
+      "category": "cpu",
+      "query": "AMD 라이젠 CPU"
+    },
+    {
+      "category": "cpu",
+      "query": "인텔 코어 CPU"
+    },
+    {
+      "category": "board",
+      "query": "AM5 메인보드"
+    },
+    {
+      "category": "board",
+      "query": "인텔 메인보드"
+    },
+    {
+      "category": "ram",
+      "query": "DDR5 메모리"
+    },
+    {
+      "category": "ram",
+      "query": "DDR4 메모리"
+    },
+    {
+      "category": "gpu",
+      "query": "지포스 그래픽카드"
+    },
+    {
+      "category": "gpu",
+      "query": "라데온 그래픽카드"
+    },
+    {
+      "category": "ssd",
+      "query": "NVMe SSD"
+    },
+    {
+      "category": "ssd",
+      "query": "SATA SSD"
+    },
+    {
+      "category": "psu",
+      "query": "ATX 파워서플라이"
+    },
+    {
+      "category": "case",
+      "query": "ATX PC케이스"
+    },
+    {
+      "category": "cooler",
+      "query": "CPU 공랭 쿨러"
+    },
+    {
+      "category": "cooler",
+      "query": "CPU 수랭 쿨러"
+    },
+    {
+      "category": "cpu",
+      "query": "AMD Ryzen 9800X3D 9950X3D"
+    },
+    {
+      "category": "cpu",
+      "query": "인텔 코어 울트라9 285K"
+    },
+    {
+      "category": "board",
+      "query": "Z890 메인보드"
+    },
+    {
+      "category": "gpu",
+      "query": "RTX 5090"
+    },
+    {
+      "category": "ssd",
+      "query": "PCIe 5.0 NVMe SSD"
+    },
+    {
+      "category": "ram",
+      "query": "DDR5 96GB 128GB"
+    },
+    {
+      "category": "psu",
+      "query": "1200W 1600W ATX3.1 파워"
+    },
+    {
+      "category": "cooler",
+      "query": "360 수랭 쿨러"
+    },
+    {
+      "category": "cpu",
+      "query": "CPU"
+    },
+    {
+      "category": "board",
+      "query": "AM4 메인보드"
+    },
+    {
+      "category": "gpu",
+      "query": "인텔 Arc 그래픽카드"
+    },
+    {
+      "category": "ram",
+      "query": "메모리 DDR"
+    },
+    {
+      "category": "psu",
+      "query": "SFX 파워"
+    },
+    {
+      "category": "case",
+      "query": "ITX 케이스"
+    },
+    {
+      "category": "cpu",
+      "query": "인텔 코어 i5 CPU"
+    },
+    {
+      "category": "cpu",
+      "query": "인텔 코어 i7 CPU"
+    },
+    {
+      "category": "cpu",
+      "query": "인텔 코어 Ultra 5 245K 245KF"
+    },
+    {
+      "category": "cpu",
+      "query": "인텔 코어 Ultra 7 265K 265KF"
+    },
+    {
+      "category": "cpu",
+      "query": "인텔 코어 Ultra 9 285K 285KF"
+    },
+    {
+      "category": "board",
+      "query": "Z890 메인보드 DDR5 LGA1851"
+    },
+    {
+      "category": "board",
+      "query": "B860 메인보드 DDR5 LGA1851"
+    },
+    {
+      "category": "board",
+      "query": "B760 메인보드 DDR4 DDR5 LGA1700"
+    }
+  ],
+  "pagesPerPass": 1,
+  "maxPagesPerQuery": null,
+  "releaseWindowYears": 2
+}

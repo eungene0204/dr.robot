@@ -32,7 +32,7 @@ async function interpret(text){
 }
 export const server=http.createServer(async(req,res)=>{
  const origin=req.headers.origin;
- if(origin&&!/^http:\/\/(localhost|127\.0\.0\.1):(5173|5174|4173|8000)$/.test(origin))return send(res,403,{error:'허용되지 않은 출처입니다.'});
+ if(origin&&!/^http:\/\/(localhost|127\.0\.0\.1):(5173|5174|4173|5588|8000)$/.test(origin))return send(res,403,{error:'허용되지 않은 출처입니다.'});
  try{const url=new URL(req.url,'http://localhost');
  if(req.method==='GET'&&url.pathname==='/api/health')return send(res,200,{ok:true,mode:dataMode,llm:Boolean(key&&model),storage:'sqlite'});
  if(req.method==='GET'&&url.pathname==='/api/catalog')return send(res,200,getSnapshot());
@@ -41,7 +41,7 @@ export const server=http.createServer(async(req,res)=>{
  if(req.method==='POST'&&url.pathname==='/api/pipeline/run'){
   if(pipelineProcess)return send(res,409,{error:'이미 수집 중입니다.'});
   const log=createWriteStream(resolve(dir,'pipeline.log'),{flags:'a'});
-  pipelineProcess=spawn(process.execPath,[resolve(projectRoot,'pipeline/run.mjs'),'--data-dir',resolve(dir),'--output',snapshotPath],{cwd:projectRoot,env:process.env,stdio:['ignore','pipe','pipe']});
+  pipelineProcess=spawn(process.execPath,[resolve(projectRoot,'pipeline/run.mjs'),'--expand','--data-dir',resolve(dir),'--output',snapshotPath],{cwd:projectRoot,env:process.env,stdio:['ignore','pipe','pipe']});
   pipelineProcess.stdout.pipe(log,{end:false});pipelineProcess.stderr.pipe(log,{end:false});pipelineProcess.once('error',()=>{pipelineProcess=null;log.end();});pipelineProcess.once('close',()=>{pipelineProcess=null;log.end();});
   return send(res,202,{status:'running'});
  }

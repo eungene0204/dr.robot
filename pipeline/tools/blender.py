@@ -4,12 +4,15 @@ import argparse,collections,json,math,re,statistics,zipfile
 
 def normalize(name):
     name=re.sub(r'\([^)]*\)', '', name).lower()
+    name=re.sub(r'^\d+(?:st|nd|rd|th)\s+gen\s+', '', name)
     name=re.sub(r'\b\d+-core processor\b|\bprocessor\b','',name)
     return re.sub(r'[^a-z0-9]','',name)
 
 def aggregate(archive, devices):
-    names={normalize(d['benchmarkName']):d['id'] for d in devices if d.get('benchmarkName')}
-    needles=[d['benchmarkName'].split(' ')[-1].encode() for d in devices if d.get('benchmarkName')]
+    names=collections.defaultdict(list)
+    for d in devices:
+        if d.get('benchmarkName'):names[normalize(d['benchmarkName'])].append(d['id'])
+    needles=list({d['benchmarkName'].split(' ')[-1].encode() for d in devices if d.get('benchmarkName')})
     groups=collections.defaultdict(list);dates=collections.defaultdict(list);scanned=0
     with zipfile.ZipFile(archive) as z:
         filename=next(n for n in z.namelist() if n.endswith('.jsonl'))
@@ -24,7 +27,8 @@ def aggregate(archive, devices):
                 if not isinstance(row,dict):bad=True;break
                 ds=row.get('device_info',{}).get('compute_devices',[])
                 if len(ds)!=1:bad=True;break
-                device=ds[0];part=names.get(normalize(device.get('name','')))
+                device=ds[0];parts=names.get(normalize(device.get('name','')))
+                part=tuple(parts) if parts else None
                 if not part:bad=True;break
                 version=row.get('blender_version',{}).get('version')
                 backend=row.get('device_info',{}).get('device_type')
@@ -46,7 +50,8 @@ def aggregate(archive, devices):
     output=[]
     for key,scores in groups.items():
         part,version,backend,*checksums=key
-        output.append({'partId':part,'version':version,'backend':backend,'sceneChecksums':checksums,'score':statistics.median(scores),'samples':len(scores),'min':min(scores),'max':max(scores),'lastSubmissionAt':max(dates[key]),'metric':'blender_samples_per_minute_sum','unit':'samples/min','scope':'chip-model','scenes':['monster','junkshop','classroom']})
+        for part_id in part:
+            output.append({'partId':part_id,'version':version,'backend':backend,'sceneChecksums':checksums,'score':statistics.median(scores),'samples':len(scores),'min':min(scores),'max':max(scores),'lastSubmissionAt':max(dates[key]),'metric':'blender_samples_per_minute_sum','unit':'samples/min','scope':'chip-model','scenes':['monster','junkshop','classroom']})
     return {'scannedSubmissions':scanned,'groups':output,'snapshotFile':filename,'license':'CC0-1.0'}
 
 if __name__=='__main__':

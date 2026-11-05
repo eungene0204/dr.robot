@@ -18,7 +18,7 @@ export function usablePart(part,now=Date.now()){
  return priceState(part,now)==='fresh'&&part.inStock!==false&&(!['cpu','gpu'].includes(part.category)||benchmarkState(part,now)==='measured');
 }
 export function hydrateSnapshot(snapshot,now=Date.now()){
- if(snapshot?.schemaVersion!==2||snapshot?.mode!=='live'||!Array.isArray(snapshot.parts)||snapshot.parts.length>2000)throw new Error('실제 데이터 스냅샷 형식이 올바르지 않습니다.');
+ if(snapshot?.schemaVersion!==2||snapshot?.mode!=='live'||!Array.isArray(snapshot.parts)||snapshot.parts.length>100000)throw new Error('실제 데이터 스냅샷 형식이 올바르지 않습니다.');
  const ids=new Set();const categories=new Set(['cpu','board','ram','gpu','ssd','psu','case','cooler','os']);
  for(const p of snapshot.parts){if(!p||typeof p.id!=='string'||ids.has(p.id)||!categories.has(p.category)||typeof p.name!=='string')throw new Error('카탈로그 식별자 오류');ids.add(p.id);}
  const parts=snapshot.parts.map(p=>({...p,dataMode:'live',priceStatus:priceState(p,now),benchmarkStatus:benchmarkState(p,now)}));

@@ -1,1 +1,147 @@
-{"approvedPriceHashes":[],"specOverrides":{}}
+{
+  "approvedPriceHashes": [],
+  "specOverrides": {
+    "b1": {
+      "reviewed": true,
+      "reviewedAt": "2026-11-04T21:08:42.355710+00:00",
+      "sourceUrl": "https://www.msi.com/Motherboard/PRO-B650M-A-WIFI/Specification",
+      "sources": [
+        "https://www.msi.com/Motherboard/PRO-B650M-A-WIFI/Specification",
+        "https://de.msi.com/Motherboard/PRO-B650M-A-WIFI/support",
+        "https://us-store.msi.com/PRO-B650M-A-WIFI"
+      ],
+      "notes": "제조사 Ryzen 7000/8000/9000 지원 및 256GB DDR5 확인. 지원 BIOS가 존재한다는 의미이며 실물 출고 BIOS 확인 완료를 뜻하지 않음. v1S를 조립 준비 기준으로 사용. MSI 공식 PRO B650M-A WIFI CPU 번들 목록에서 Ryzen 7 9800X3D 및 Ryzen 9 9950X3D 조합 확인. 두 모델은 CPU 지원 정식 BIOS 업데이트 후 조립하는 조건. 9950X3D2 지원으로 확대 해석하지 않음.",
+      "specs": {
+        "bios": [
+          "c1",
+          "c2",
+          "c3",
+          "c4",
+          "dw-70531547",
+          "dw-77790914"
+        ],
+        "biosBaseline": "7D77v1S",
+        "biosPreparation": "조립 시 해당 CPU 지원 목록을 확인하고 MSI 최신 정식 BIOS로 업데이트 (기존 기준 7D77v1S 이후)",
+        "maxRam": 256
+      }
+    },
+    "k1": {
+      "reviewed": true,
+      "reviewedAt": "2026-11-04T19:15:18.415615+00:00",
+      "sourceUrl": "https://www.darkflash.com/product/ds900",
+      "sources": [
+        "https://www.darkflash.com/product/ds900"
+      ],
+      "notes": "DS900 동일 섀시 블랙/화이트. 수평 GPU 1장, 추가 확장카드/라디에이터 없는 현재 조합 기준. 슬롯 수와 mm를 혼용하지 않음.",
+      "specs": {
+        "expansionSlots": 7,
+        "gpuLength": 425,
+        "coolerHeight": 170,
+        "forms": [
+          "ATX",
+          "mATX",
+          "ITX"
+        ]
+      }
+    },
+    "k2": {
+      "reviewed": true,
+      "reviewedAt": "2026-11-04T19:15:18.415615+00:00",
+      "sourceUrl": "https://www.darkflash.com/product/ds900",
+      "sources": [
+        "https://www.darkflash.com/product/ds900"
+      ],
+      "notes": "DS900 동일 섀시 블랙/화이트. 수평 GPU 1장, 추가 확장카드/라디에이터 없는 현재 조합 기준. 슬롯 수와 mm를 혼용하지 않음.",
+      "specs": {
+        "expansionSlots": 7,
+        "gpuLength": 425,
+        "coolerHeight": 170,
+        "forms": [
+          "ATX",
+          "mATX",
+          "ITX"
+        ]
+      }
+    },
+    "g1": {
+      "reviewed": true,
+      "reviewedAt": "2026-11-04T19:15:18.415615+00:00",
+      "sourceUrl": "https://storage-asset.msi.com/datasheet/vga/global/GeForce-RTX-5060-8G-VENTUS-2X-OC-V1.pdf",
+      "sources": [
+        "https://storage-asset.msi.com/datasheet/vga/global/GeForce-RTX-5060-8G-VENTUS-2X-OC-V1.pdf"
+      ],
+      "notes": "정확한 모델의 제조사 치수, 전력, 최소 PSU 및 전원 커넥터 확인.",
+      "specs": {
+        "length": 197,
+        "thicknessMm": 41,
+        "watts": 145,
+        "minPsu": 550,
+        "connector": "8pin",
+        "connectorCount": 1
+      }
+    },
+    "g2": {
+      "reviewed": true,
+      "reviewedAt": "2026-11-04T19:15:18.415615+00:00",
+      "sourceUrl": "https://storage-asset.msi.com/datasheet/vga/global/GeForce-RTX-5060-Ti-16G-VENTUS-2X-OC-PLUS.pdf",
+      "sources": [
+        "https://storage-asset.msi.com/datasheet/vga/global/GeForce-RTX-5060-Ti-16G-VENTUS-2X-OC-PLUS.pdf"
+      ],
+      "notes": "정확한 모델의 제조사 치수, 전력, 최소 PSU 및 전원 커넥터 확인.",
+      "specs": {
+        "length": 227,
+        "thicknessMm": 41,
+        "watts": 180,
+        "minPsu": 600,
+        "connector": "8pin",
+        "connectorCount": 1
+      }
+    },
+    "g3": {
+      "reviewed": true,
+      "reviewedAt": "2026-11-04T19:15:18.415615+00:00",
+      "sourceUrl": "https://www.zotac.com/us/product/graphics_card/zotac-gaming-geforce-rtx-5070-solid-oc?l=en",
+      "sources": [
+        "https://www.zotac.com/us/product/graphics_card/zotac-gaming-geforce-rtx-5070-solid-oc?l=en"
+      ],
+      "notes": "정확한 모델의 제조사 치수, 전력, 최소 PSU 및 전원 커넥터 확인.",
+      "specs": {
+        "length": 304.4,
+        "thicknessMm": 41.6,
+        "watts": 250,
+        "minPsu": 650,
+        "connector": "12v2x6",
+        "connectorCount": 1
+      }
+    },
+    "g4": {
+      "reviewed": true,
+      "reviewedAt": "2026-11-04T19:15:18.415615+00:00",
+      "sourceUrl": "https://www.zotac.com/us/product/graphics_card/zotac-gaming-geforce-rtx-5070-ti-solid-oc",
+      "sources": [
+        "https://www.zotac.com/us/product/graphics_card/zotac-gaming-geforce-rtx-5070-ti-solid-oc"
+      ],
+      "notes": "정확한 모델의 제조사 치수, 전력, 최소 PSU 및 전원 커넥터 확인.",
+      "specs": {
+        "length": 329.7,
+        "thicknessMm": 67.8,
+        "watts": 300,
+        "minPsu": 750,
+        "connector": "12v2x6",
+        "connectorCount": 1
+      }
+    },
+    "f1": {
+      "reviewed": true,
+      "reviewedAt": "2026-11-04T19:15:18.415615+00:00",
+      "sourceUrl": "https://www.deepcool.com/ProductCompatibilityS_New/Default.aspx?intel=30",
+      "sources": [
+        "https://www.deepcool.com/ProductCompatibilityS_New/Default.aspx?intel=30"
+      ],
+      "notes": "제조사 TDP 및 소켓 호환성 목록 AG400 G2 230W 확인. 기존 장착 높이/AM5 정보와 결합.",
+      "specs": {
+        "coolingWatts": 230
+      }
+    }
+  }
+}

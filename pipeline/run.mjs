@@ -8,6 +8,7 @@ import {collectProduct} from './adapters/danawa.mjs';
 import {collectNaver} from './adapters/naver.mjs';
 import {downloadBlender,runBlenderParser,selectBenchmarks,BLENDER_URL} from './adapters/blender.mjs';
 import {PipelineStore} from './store.mjs';
+import {windowCoverage} from './window.mjs';
 import {hydrateSnapshot,benchmarkState,priceState,usablePart} from '../src/data-policy.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const json=async path=>JSON.parse(await readFile(path,'utf8'));
@@ -18,10 +19,11 @@ export function buildSnapshot(registry,records,benchmarkRows,jobId,reviews={}){
   const record=byId.get(product.id);const price=record?.priceEvidence;
   const override=reviews.specOverrides?.[product.id];const validOverride=override?.reviewed===true&&/^https:\/\//.test(override?.sourceUrl||'')&&override?.reviewedAt;
   const b=benchmarks.get(product.id)||record?.benchmark||null;
-  return {...product,...record,...(validOverride?override.specs:{}),id:product.id,category:product.category,name:record?.name||product.name,dataMode:'live',verified:true,virtual:false,price:price?.amount??null,observedAt:price?.observedAt??null,source:price?.source||'미수집',sourceUrl:price?.sourceUrl??null,priceEvidence:price||null,inStock:price?.availability==='out-of-stock'?false:Boolean(price),specStatus:validOverride?'reviewed':record?'parsed':'missing',specReview:validOverride?{sourceUrl:override.sourceUrl,reviewedAt:override.reviewedAt}:null,benchmark:b,score:b?.normalizedScore??null};
+  return {...product,...record,...(validOverride?override.specs:{}),id:product.id,category:product.category,name:record?.name||product.name,dataMode:'live',verified:true,virtual:false,price:price?.amount??null,observedAt:price?.observedAt??null,source:price?.source||'미수집',sourceUrl:price?.sourceUrl??null,priceEvidence:price||null,inStock:price?.availability==='out-of-stock'?false:Boolean(price),specStatus:validOverride?'reviewed':record?'parsed':'missing',specReview:validOverride?{sourceUrl:override.sourceUrl,reviewedAt:override.reviewedAt,sources:override.sources||[override.sourceUrl],notes:override.notes||null}:null,benchmark:b,score:b?.normalizedScore??null};
  });
  const virtual=[{id:'g0',category:'gpu',name:'CPU 내장 그래픽 사용',price:0,virtual:true,watts:0,vram:0,length:0,thickness:0,connector:'none',minPsu:0},{id:'o0',category:'os',name:'OS 미포함',price:0,virtual:true,included:false}].map(p=>({...p,dataMode:'live',verified:true,inStock:true,source:'선택 옵션 (실물 상품 아님)',benchmark:null}));
  const snapshot=hydrateSnapshot({schemaVersion:2,mode:'live',catalogVersion:jobId,generatedAt:new Date().toISOString(),parts:[...parts,...virtual],policy:{priceMaxAgeHours:24,benchmarkMaxAgeDays:45,benchmarkMinSamples:3,scoreLabel:'Blender 렌더링 지수',scoreMethod:'동일 버전의 monster+junkshop+classroom 합산 점수 중앙값. CPU 9600X=100 / GPU RTX 5060 Ti=100. 게임 FPS/AI 처리량 아님.',shipping:'대부분 배송비 미확인: 표시가에 미포함',stock:'가격비교에 등록된 판매 제안. 실재고 미확인'}});
+ snapshot.collectionWindow=windowCoverage(snapshot.parts);
  snapshot.coverage={...snapshot.coverage,total:parts.length,freshPrices:parts.filter(p=>priceState(p)==='fresh').length,measuredBenchmarks:parts.filter(p=>benchmarkState(p)==='measured').length,benchmarkTargets:parts.filter(p=>['cpu','gpu'].includes(p.category)).length,reviewedSpecs:parts.filter(p=>p.specStatus==='reviewed').length};return snapshot;
 }
 export async function runPipeline(options={}){
@@ -31,8 +33,9 @@ export async function runPipeline(options={}){
  try{handle=await open(lock,'wx');await handle.writeFile(JSON.stringify({pid:process.pid,at:new Date().toISOString()}));}catch(e){if(e.code!=='EEXIST')throw e;throw new Error('다른 수집 실행이 진행 중입니다. 오래된 lock은 실행 프로세스를 확인한 후 제거하세요.');}
  let store,jobId;const summary={products:0,prices:0,benchmarks:0,errors:[],quarantined:0};
  try{
+  if(options.expand){const {expandCatalog}=await import('./expand.mjs');await expandCatalog({dataDir,daily:options.daily===true});}
   store=new PipelineStore(resolve(dataDir,'pipeline.db'));jobId=store.start();
-  const registryPath=resolve(options.registry||resolve(root,'pipeline/config/products.json'));const registry=await json(registryPath);const reviews=await json(resolve(root,'pipeline/config/reviews.json'));
+  const registryPath=resolve(options.registry||resolve(root,'pipeline/config/products.json'));const registry=await json(registryPath);const {benchmarkName}=await import('./expand.mjs');let enriched=false;for(const product of registry.products){if(!product.benchmarkName){const name=benchmarkName(product.category,product.name);if(name){product.benchmarkName=name;enriched=true;}}}if(enriched)await writeJson(registryPath,registry);const reviews=await json(resolve(root,'pipeline/config/reviews.json'));
   if(!Array.isArray(registry.products)||!registry.products.length||new Set(registry.products.map(p=>p.id)).size!==registry.products.length)throw new Error('상품 레지스트리가 비어 있거나 중복되었습니다.');
   const client=options.client||new SourceClient({cacheDir:resolve(dataDir,'cache'),cacheTtlMs:options.reparseCache?24*3600000:0});
   if(!options.benchmarksOnly){for(const product of registry.products){if(!product.danawaPcode)continue;summary.products++;
@@ -69,5 +72,5 @@ export async function runPipeline(options={}){
 }
 if(process.argv[1]===fileURLToPath(import.meta.url)){
  const args=process.argv.slice(2);const value=k=>{const i=args.indexOf(k);return i<0?undefined:args[i+1]};
- runPipeline({pricesOnly:args.includes('--prices-only'),benchmarksOnly:args.includes('--benchmarks-only'),refreshBenchmarks:args.includes('--refresh-benchmarks'),reparseCache:args.includes('--reparse-cache'),benchmarkArchive:value('--benchmark-archive'),registry:value('--registry'),output:value('--output'),dataDir:value('--data-dir')}).then(({status})=>{if(status==='partial')process.exitCode=2}).catch(e=>{console.error(e.message);process.exitCode=1});
+ runPipeline({expand:args.includes('--expand'),pricesOnly:args.includes('--prices-only'),benchmarksOnly:args.includes('--benchmarks-only'),refreshBenchmarks:args.includes('--refresh-benchmarks'),reparseCache:args.includes('--reparse-cache'),benchmarkArchive:value('--benchmark-archive'),registry:value('--registry'),output:value('--output'),dataDir:value('--data-dir')}).then(({status})=>{if(status==='partial')process.exitCode=2}).catch(e=>{console.error(e.message);process.exitCode=1});
 }

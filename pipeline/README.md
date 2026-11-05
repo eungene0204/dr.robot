@@ -9,7 +9,7 @@
 - 가격/스펙: 다나와 공개 상품 상세 페이지의 Product JSON-LD. `/info/?pcode=...`만 접근하고 robots.txt에서 제한한 API/AJAX 경로는 사용하지 않습니다.
 - 보조 가격: 네이버 쇼핑 검색 공식 API. `NAVER_CLIENT_ID`, `NAVER_CLIENT_SECRET`와 상품별 고정 `naverProductId`/`naverQuery`를 설정해야 합니다. 중고·렌탈·해외직구를 제외하고 등록된 상품 ID만 비교합니다. 현재 실행 환경에는 키가 없어 이 소스의 실호출은 하지 않았습니다.
 - 벤치마크: Blender 공식 `opendata-latest.zip`, CC0-1.0. 최초 실행에서 약 100MB ZIP을 받고 약 1.9GB의 JSONL을 메모리에 올리거나 디스크에 압축 해제하지 않고 스트리밍 집계합니다. 실제 규모는 이후 변경됩니다. Python 3이 필요합니다.
-- 최초 카탈로그: 실제 상품 23개(전체 9개 구성 카테고리), CPU/GPU 칩 모델 8개의 Blender 측정값. 전 세계 모든 판매 상품을 수집하는 구성은 아닙니다. 신규 SKU는 레지스트리에 추가합니다.
+- 초기 카탈로그는 실제 상품 23개로 시작했습니다. 현재는 CPU·GPU·메모리·SSD·메인보드·파워·케이스·쿨러의 공개 검색 페이지를 순회해 자동 확장합니다. 검색어·유통 지역·공개 판매 상태에 따른 범위이며 전 세계 모든 상품을 보장하지 않습니다.
 
 공식 문서: [다나와 robots.txt](https://prod.danawa.com/robots.txt), [네이버 쇼핑 검색 API](https://developers.naver.com/docs/serviceapi/search/shopping/shopping.md), [Blender 데이터·라이선스](https://opendata.blender.org/download/), [공식 스냅샷](https://opendata.blender.org/snapshots/).
 
@@ -49,12 +49,12 @@ node --env-file=.env pipeline/scheduler.mjs
 
 ## 스케줄과 운영 환경
 
-`scheduler.mjs`는 한국시간 09:00/18:00 슬롯을 사용합니다. 시작 시 놓친 가장 최근 슬롯을 한 번 실행하고, 슬롯별 결과를 디스크에 남겨 재시작 중복을 막습니다. 실패는 15분 간격 최대 3회 재시도합니다. 실행 중복은 잠금 파일로 차단합니다. SIGINT/SIGTERM을 처리합니다.
+`scheduler.mjs`는 한국시간 매일 00:00 슬롯을 사용합니다. 시작 시 놓친 가장 최근 슬롯을 한 번 실행하고, 슬롯별 결과를 디스크에 남겨 재시작 중복을 막습니다. 실패는 15분 간격 최대 3회 재시도합니다. 실행 중복은 잠금 파일로 차단합니다. SIGINT/SIGTERM을 처리합니다.
 
 스케줄러는 실행 중인 Node 프로세스가 필요합니다. 개발자 컴퓨터가 꺼지면 수집하지 않습니다. 서버에서는 systemd/컨테이너 등으로 프로세스를 유지하거나 아래 cron을 사용할 수 있습니다. cron 서버 시간대가 Asia/Seoul인지 확인하세요.
 
 ```cron
-0 9,18 * * * cd /absolute/path/buildmate && /absolute/path/node --env-file=.env pipeline/run.mjs >> backend/data/cron.log 2>&1
+0 0 * * * cd /absolute/path/buildmate && /absolute/path/node --env-file=.env pipeline/run.mjs >> backend/data/cron.log 2>&1
 ```
 
 로컬 API의 `POST /api/pipeline/run`도 동일 파이프라인을 실행합니다. 네트워크에 직접 공개하지 않은 로컬 관리 기능입니다. `GET /api/pipeline/status`, `GET /api/prices/history?partId=c2`로 확인할 수 있습니다.
@@ -63,7 +63,7 @@ node --env-file=.env pipeline/scheduler.mjs
 
 ## 상품 ID와 검수
 
-`config/products.json`에 실제 유통 형태까지 구분되는 고정 상품 코드를 등록합니다. 검색 결과는 신뢰 카탈로그에 자동 삽입되지 않습니다. 모델명 유사도나 LLM이 고른 가장 싼 상품을 그대로 매칭하지 않습니다.
+`config/products.json`에 실제 유통 형태까지 구분되는 고정 상품 코드를 등록합니다. 자동 확장은 검색에서 발견한 상품 코드를 상세 JSON-LD SKU와 대조하고 품목별 필수 사양과 판매가격을 검증한 뒤 등록합니다. 모델명 유사도나 LLM만으로 SKU를 매칭하지 않습니다.
 
 ```json
 {
@@ -96,7 +96,7 @@ node --env-file=.env pipeline/scheduler.mjs
 }
 ```
 
-BIOS 지원 목록이 없으면 `null`, GPU 두께·장착 위치나 쿨링 용량을 확정할 근거가 없으면 `null`입니다. 미확인을 통과로 바꾸지 않습니다. 그런 구성은 비교용 참고안으로 보여주지만 최종 발행은 차단합니다. 현재 제조사 BIOS·실물 간섭 검수는 완료되지 않았습니다.
+BIOS 지원 목록이 없으면 `null`, GPU 두께·장착 위치나 쿨링 용량을 확정할 근거가 없으면 `null`입니다. 미확인을 통과로 바꾸지 않습니다. 그런 구성은 자동 추천에서 제외합니다. 대체 목록에서는 현재 구성의 호환 여부와 미확인 사유를 표시합니다. 가격·벤치마크 사용 조건을 충족한 제품은 수동 검토 구성에 담을 수 있으며, 관련 부품 조정과 모든 검증을 통과하기 전에는 견적서 발행을 차단합니다. 제조사 검수가 완료된 항목은 reviews.json에 출처와 조건을 남기며, 예컨대 지원 BIOS 버전으로 업데이트하는 조립 조건을 화면에 표시합니다. 실물 조립 완료를 의미하지 않습니다.
 
 ## 가격의 의미
 
@@ -129,3 +129,33 @@ DB는 상품 원문에서 파싱한 스펙, 출처 URL, 수집 시각, 원문 SH
 | `public/data/price-history.json` | 실제 수집 이후 누적 가격 이력 |
 
 가격 이력이 1일뿐이면 30일 그래프를 만들어 채우지 않습니다. 실패/구조 변경/데이터 공백을 운영 화면에 그대로 표시합니다.
+
+## 자동 상품 확장
+
+`npm run pipeline:expand`는 `config/discovery.json`의 CPU·메인보드·RAM·GPU·SSD·파워·케이스·쿨러 검색을 순회합니다. 검색/상세 페이지의 상품 코드를 일치시키고 품목별 필수 스펙, KRW 판매가격이 확인된 상품만 레지스트리에 추가합니다. 중고·렌탈·노트북·서버 메모리와 잘못된 품목은 제외하며, 실패/누락은 `backend/data/discovery-state.json`에 이유를 저장합니다. 미확인 BIOS·쿨링 정보와 누락된 실측 벤치마크를 통과로 만들지 않습니다.
+
+각 실행은 기본적으로 검색어별 다음 1페이지를 처리합니다. 동일 상품만 반복되거나 검색 결과가 없으면 해당 검색을 마칩니다. 페이지 커서는 영구 저장되어 이후 실행이 다음 페이지부터 이어집니다. 기본 페이지 상한은 없으며, 빈 페이지 또는 반복 페이지가 나올 때까지 진행합니다. 테스트·별도 운영에서는 maxPagesPerQuery로 명시적 상한을 설정할 수 있습니다. 전 세계 모든 상품 수집이나 전역 최적 견적을 보장하지 않습니다.
+
+스케줄러의 자정 실행은 자동 확장 후 가격·벤치마크를 갱신합니다. CPU/GPU의 칩 모델이 동일한 여러 SKU는 같은 실측 통계를 공유합니다. 추천은 단순 가격순 12개 제한을 사용하지 않고, 동일 평가·호환성 특성을 가진 후보 중 최저가를 남기고 부분 조합의 호환성과 최소 잔여 비용으로 탐색을 줄입니다. 현재 성능 평가는 Blender 중심입니다.
+
+수집 도중 `node pipeline/publish.mjs`로 검증된 저장 관측을 화면에 반영할 수 있습니다. 원래 관측 시각을 유지하며 가격 수집 시각을 임의로 갱신하지 않습니다. 신규 CPU/GPU의 측정값을 연결하려면 확장 후 `npm run pipeline:benchmarks`를 실행합니다.
+
+## 자정 신제품 추가 스킬과 macOS 예약
+
+개인 스킬 `~/.codex/skills/drobot-daily-components`의 실행 헬퍼가 `pipeline/daily.mjs`를 호출합니다. LaunchAgent `~/Library/LaunchAgents/com.drrobot.daily-components.plist`는 매일 한국시간 00:00에 이 헬퍼를 실행합니다(현재 Mac 시스템 시간대 Asia/Seoul). 중복 예약을 피하려면 LaunchAgent가 등록된 환경에서 별도 스케줄러/cron을 동시에 시작하지 않습니다.
+
+`npm run pipeline:daily -- --check`로 읽기 전용 상태를 확인합니다. 실제 실행은 같은 한국 날짜의 완료 보고서가 있으면 건너뛰고, 필요할 때 `--force`로 재실행합니다. 매일 최신순 첫 검색 결과를 재검색하고 저장된 다음 페이지도 진행합니다. 기존 수집 잠금은 최대 3시간 기다리며, 보고서는 `backend/data/daily-YYYY-MM-DD.json`, 예약 로그는 `backend/data/daily.launchd*.log`에 저장합니다. 전원이 꺼져 있으면 실행되지 않으며, 절전 중 놓친 launchd 작업은 깨어난 뒤 실행됩니다.
+
+## 상위 사양 대체 부품
+
+대체 목록과 상세 비교표는 현재 구성과 호환되지 않는 제품도 교체 조건과 함께 보여줍니다. 모델명 검색, 상위 사양순/가격순 정렬, 바로 교체 가능 필터를 제공합니다. CPU/GPU는 등록된 Blender 지수, RAM·SSD는 용량과 전송속도, PSU는 정격 용량 등 품목별 사양을 사용하며 가격을 성능 점수로 사용하지 않습니다.
+
+Intel 소켓1851은 LGA1851로 정규화하고 하이브리드 코어 수와 PBP-MTP의 최대 전력을 파싱합니다. 285K 정품 SKU 69059459를 등록했습니다. 상위 모델 검색어는 config/discovery.json에 포함되어 다음 확장 수집에서도 갱신됩니다. 확장 저장 시 디스크에 별도로 추가된 등록 상품을 병합해 수동 등록의 유실을 방지합니다.
+
+## 최근 2년 최소 수집 범위
+
+`config/discovery.json`의 `releaseWindowYears: 2`가 최소 목표 기간입니다. 한국 날짜 기준으로 2년 전부터 오늘까지이며, 과거 상품을 삭제하는 필터가 아닙니다. CPU·메인보드·RAM·GPU·SSD·파워·케이스·CPU 쿨러 공개 카테고리 인덱스와 검색 페이지를 함께 탐색하고, 패키지/용량별 공개 번들 SKU도 읽습니다. 일부 카테고리는 공개 HTML이 첫 목록만 제공하므로 해당 경로는 `coverageLimited`로 남기고 전체 수집 완료로 표시하지 않습니다. 제한된 AJAX API를 우회하지 않습니다.
+
+제품 상세의 `등록월`은 `listingMonth` 및 `listingDateEvidence`에 저장합니다. 제조사에서 확인한 실제 출시일은 별도의 `releaseEvidence`로만 취급합니다. 월 단위 경계 제품과 날짜 미확인 제품도 버리지 않으며, 스냅샷 `collectionWindow`에서 최근 등록월/경계 월/과거 등록월/날짜 미확인/출시일 확인 수를 구분합니다. 사이트맵의 lastmod도 출시일로 취급하지 않습니다. 제조사 출시일과 시장 전체 커버리지가 확인되지 않은 동안 `complete`는 false입니다.
+
+품목과 실제 SKU가 확인되지만 현재 가격이 없는 상품도 수집 기록에 보존합니다. 가격·벤치마크·호환성 정보가 없으면 추천에는 쓰지 않습니다. `node pipeline/reindex-dates.mjs`는 저장된 원문에서 등록월을 복구하며 가격 관측 시각을 갱신하지 않습니다.
