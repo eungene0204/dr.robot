@@ -9,19 +9,25 @@ export {validate} from './compatibility.mjs';
 import {storageIssue,storageRecommendationIssue,minimumStorageGB} from './storage-policy.mjs';
 import {catalog,categories} from './catalog.mjs';
 import {usablePart} from './data-policy.mjs';
+import {modelTokens,modelKey} from './question-answer.mjs';
 export const money=n=>new Intl.NumberFormat('ko-KR').format(n)+'원';
 export function explicitBudget(text){
  const matches=[...text.matchAll(/(\d[\d,]*(?:\.\d+)?)\s*(만\s*원?|원)/g)];
  const last=matches.at(-1);if(!last)return null;
  return Math.round(Number(last[1].replaceAll(',',''))*(last[2].startsWith('만')?10000:1));
 }
+export const detectProfile=value=>/편집|프리미어|다빈치|렌더|3D|어도비|adobe|premiere|포토샵|photoshop|라이트룸|lightroom|일러스트레이터|illustrator|애프터\s*이펙트|after\s*effects|블렌더|blender/i.test(value)?'editing':/로컬|딥러닝|LLM|개발|AI/i.test(value)?'ai':/사무|엑셀|학습|POS/i.test(value)?'office':/게임|게이밍|배그|롤|gaming/i.test(value)?'gaming':/인터넷|웹\s*서핑|웹\s*브라우|문서|인강|온라인\s*강의|유튜브|동영상\s*시청/i.test(value)?'office':null;
 export function parseRequirement(text,options={}) {
  const statedBudget=explicitBudget(text);
  const requests=text.split(/\n추가 요청:\s*/);
- const detectProfile=value=>/편집|프리미어|다빈치|렌더|3D/i.test(value)?'editing':/로컬|딥러닝|LLM|개발|AI/i.test(value)?'ai':/사무|엑셀|학습|POS/i.test(value)?'office':/게임|게이밍|배그|롤|gaming/i.test(value)?'gaming':/인터넷|웹\s*서핑|웹\s*브라우|문서|인강|온라인\s*강의|유튜브|동영상\s*시청/i.test(value)?'office':null;
  const profile=requests.map(detectProfile).filter(Boolean).at(-1)??'gaming';
  const resolution=requests.map(value=>/4k/i.test(value)?'4K':/FHD|1080/i.test(value)?'FHD':/QHD|1440/i.test(value)?'QHD':detectProfile(value)==='office'?'FHD':null).filter(Boolean).at(-1)??'QHD';
- return {text,profile,budget:statedBudget,resolution,white:/화이트|흰색/.test(text),wifi:/와이파이|무선|wifi/i.test(text),os:/윈도우|windows|OS 포함/i.test(text),allowOver:false,...options,...(unlimitedBudgetRequested(text)?{budget:null,allowOver:false}:{}),budgetSource:unlimitedBudgetRequested(text)?'unlimited':options.budget!=null?(statedBudget!==null?'text':'manual'):statedBudget!==null?'text':'unspecified'};
+ return {text,profile,budget:statedBudget,resolution,models:modelTokens(text),white:/화이트|흰색/.test(text),wifi:/와이파이|무선|wifi/i.test(text),os:/윈도우|windows|OS 포함/i.test(text),allowOver:false,...options,...(unlimitedBudgetRequested(text)?{budget:null,allowOver:false}:{}),budgetSource:unlimitedBudgetRequested(text)?'unlimited':options.budget!=null?(statedBudget!==null?'text':'manual'):statedBudget!==null?'text':'unspecified'};
+}
+// Text the customer stated wins over an LLM reading; the LLM only names a purpose the rules cannot detect and adds follow-up questions (never a budget prompt).
+export function mergeInterpretation(text,llm){
+ const local=parseRequirement(text);const stated=text.split(/\n추가 요청:\s*/).some(value=>detectProfile(value));
+ return {...local,profile:stated?local.profile:llm.profile,questions:(llm.questions||[]).filter(q=>!/예산/.test(q))};
 }
 export function validateBuild(parts,req){
  const checks=validate(parts);if(checks.some(c=>c.label==='필수 부품'))return checks;
@@ -67,6 +73,8 @@ export function recommend(req,settings={},items=catalog){
  pools[6]=pools[6].filter(p=>!req.white||p.color==='white');
  pools[1]=pools[1].filter(p=>!req.wifi||p.wifi);
  pools[8]=pools[8].filter(p=>req.os?!p.virtual&&p.included!==false:p.id==='o0');
+ // A named CPU/GPU model (e.g. 5060ti) restricts that category to the model's products.
+ for(const i of [0,3]){const keys=(req.models||[]).filter(key=>items.some(p=>p.category===categories[i]&&modelKey(p)===key));if(keys.length)pools[i]=pools[i].filter(p=>keys.includes(modelKey(p)));}
  // Collapse equivalent candidates by fields used by this recommendation model, never by price rank.
  const fields={cpu:['compatibilityCpuId','socket','watts','igpu','score','benchmark','cpuSupport','installedBios','revision'],board:['socket','ddr','form','slots','maxRam','m2','wifi','bios','cpuSupport','installedBios','revision'],ram:['ddr','capacity','sticks'],gpu:['virtual','watts','vram','length','thickness','thicknessMm','connector','connectorCount','minPsu','score','benchmark'],ssd:['capacity','m2','readMBs','writeMBs'],psu:['capacity','connectors','connectorCounts','form'],case:['forms','gpuLength','gpuThickness','expansionSlots','coolerHeight','color','psuForms'],cooler:['sockets','height','coolingWatts','color'],os:['id']};
  for(let i=0;i<pools.length;i++){

@@ -55,19 +55,24 @@ export function selectProposals(combos,req,{bounded=false,...search}={}){
  // Preserve near-peak performance while avoiding spending merely to fill the budget.
  let balanced=pick('balanced',0,budgetLimit(req,'balanced'));
  let enhanced=pick('enhanced',0,cap);
+ const savingCapFor=base=>hasBudget(req)?Math.min(req.budget*.9,base?base.total-1:req.budget*.9):(base?base.total*.9:Infinity);
+ // The 90% target is preferred; any build cheaper than the balanced plan is the fallback (shown as targetMet=false with a budget).
+ const pickSaving=base=>pick('saving',0,savingCapFor(base))||(base?pick('saving',0,base.total-1):null);
+ let saving=pickSaving(balanced);
  let jointlySelected=false;
- if(req.profile==='gaming'&&hasBudget(req)&&balanced&&!enhanced){
-  const original=balanced;const signature=p=>categories.map(k=>p.parts[k].id).join('|');
-  const bases=combos.filter(c=>c.total<=req.budget&&Number.isFinite(c.performance)).sort((a,b)=>b.performance-a.performance||compareBuildPopularity(a,b)||a.total-b.total);
+ // When the balanced plan leaves no room for an enhanced or cheaper plan, re-pick it so all three plans exist.
+ if(balanced&&(!enhanced||!saving)){
+  const signature=p=>categories.map(k=>p.parts[k].id).join('|');
+  const original={balanced,enhanced,saving};const reset=()=>{used.clear();for(const p of Object.values(original))if(p)used.add(signature(p));};
+  const bases=combos.filter(c=>c.total<=budgetLimit(req,'balanced')&&Number.isFinite(c.performance)&&signature(c)!==signature(original.balanced)).sort((a,b)=>b.performance-a.performance||compareBuildPopularity(a,b)||a.total-b.total);
   for(const base of bases){
-   if(!combos.some(c=>c.total<=cap&&(c.performance>base.performance||x3dPreference(c,base))&&signature(c)!==signature(base)&&upgrades(c,base).length))continue;
-   used.delete(signature(original));balanced={...base,id:'balanced',targetMet:true};used.add(signature(base));
-   enhanced=pick('enhanced',0,cap);
-   if(enhanced){jointlySelected=true;break;}
-   used.delete(signature(base));balanced=original;used.add(signature(original));
+   if(!original.enhanced&&!combos.some(c=>c.total<=cap&&signature(c)!==signature(base)&&upgrades(c,base).length))continue;
+   if(!original.saving&&!combos.some(c=>c.total<base.total))continue;
+   used.clear();used.add(signature(base));balanced={...base,id:'balanced',targetMet:true};
+   enhanced=pick('enhanced',0,cap);saving=enhanced?pickSaving(balanced):null;
+   if(enhanced&&saving){jointlySelected=true;break;}
+   balanced=original.balanced;enhanced=original.enhanced;saving=original.saving;reset();
   }
  }
- const savingCap=hasBudget(req)?Math.min(req.budget*.9,balanced?balanced.total-1:req.budget*.9):(balanced?balanced.total*.9:Infinity);
- const saving=pick('saving',0,savingCap);
- return [balanced,enhanced,saving].map((x,i)=>x?{...x,selection:{...search,jointlySelected,popularity:popularitySummary(x.parts),gamingCpuPreference:req.profile==='gaming'?'amd-x3d-if-valid':'none',rankingPolicy:'performance-first-popularity-within-tier',performanceRetention:jointlySelected?null:hasBudget(req)?.95:1,budgetMode:hasBudget(req)?'limited':'unlimited',objective:popularitySummary(x.parts).known>0?(i===0?'성능 상위 구간 내 인기·가격 비교':i===1?'CPU·GPU 등 용도 성능 향상 우선, 동급은 인기·가격 비교':'성능 대비 가격 우선, 동급은 인기 비교'):!hasBudget(req)&&i===0?(req.profile==='gaming'&&req.resolution==='4K'&&req.performanceMode!=='measured'?'4K 게임: GPU 지수 우선, CPU 지수 다음, 동일 성능 비용 최소화':'예산 상한 없이 성능 최대화 후 비용 최소화'):proposalObjectives[['balanced','enhanced','saving'][i]],performanceKind:x.performanceBasis?.kind||'unknown',candidateCount:combos.length},id:['balanced','enhanced','saving'][i],targetMet:i===0?true:i===2&&hasBudget(req)?x.total>=req.budget*.8&&x.total<=req.budget*.9:true}:null);
+ return [balanced,enhanced,saving].map((x,i)=>x?{...x,selection:{...search,jointlySelected,popularity:popularitySummary(x.parts),gamingCpuPreference:req.profile==='gaming'?'amd-x3d-if-valid':'none',rankingPolicy:'performance-first-popularity-within-tier',performanceRetention:jointlySelected?null:hasBudget(req)?.95:1,budgetMode:hasBudget(req)?'limited':'unlimited',objective:jointlySelected&&i===0?'강화안·절약안이 함께 성립하도록 고른 성능 상위 구성':popularitySummary(x.parts).known>0?(i===0?'성능 상위 구간 내 인기·가격 비교':i===1?'CPU·GPU 등 용도 성능 향상 우선, 동급은 인기·가격 비교':'성능 대비 가격 우선, 동급은 인기 비교'):!hasBudget(req)&&i===0?(req.profile==='gaming'&&req.resolution==='4K'&&req.performanceMode!=='measured'?'4K 게임: GPU 지수 우선, CPU 지수 다음, 동일 성능 비용 최소화':'예산 상한 없이 성능 최대화 후 비용 최소화'):proposalObjectives[['balanced','enhanced','saving'][i]],performanceKind:x.performanceBasis?.kind||'unknown',candidateCount:combos.length},id:['balanced','enhanced','saving'][i],targetMet:i===0?true:i===2&&hasBudget(req)?x.total>=req.budget*.8&&x.total<=req.budget*.9:true}:null);
 }

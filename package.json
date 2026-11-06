@@ -7,7 +7,7 @@
     "dev": "vite --host 127.0.0.1",
     "build": "vite build",
     "preview": "vite preview --host 127.0.0.1",
-    "server": "node backend/server.mjs",
+    "server": "node --env-file-if-exists=.env backend/server.mjs",
     "test": "node --test tests/*.test.mjs",
     "pipeline": "node pipeline/run.mjs",
     "pipeline:prices": "node pipeline/run.mjs --prices-only",
@@ -17,6 +17,7 @@
     "pipeline:expand": "node pipeline/expand.mjs",
     "pipeline:all": "node pipeline/collect-all.mjs",
     "pipeline:daily": "node --env-file-if-exists=.env pipeline/daily.mjs",
+    "eval:llm": "node --env-file-if-exists=.env scripts/llm-eval.mjs",
     "pipeline:popularity": "node scripts/refresh-popularity.mjs"
   },
   "dependencies": {

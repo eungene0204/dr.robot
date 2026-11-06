@@ -1,16 +1,16 @@
-import {readFile,writeFile,mkdir,open,rename,unlink,stat} from '../backend/document-files.mjs';
+import {readFile,writeFile,mkdir,open,rename,unlink} from '../backend/document-files.mjs';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {runPipeline} from './run.mjs';
+import {lockHeld} from './lock.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 export const seoulDay=(now=new Date())=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(now);
 const read=async(path,fallback)=>{try{return JSON.parse(await readFile(path,'utf8'))}catch(e){if(e.code==='ENOENT')return fallback;throw e}};
 const save=async(path,value)=>{await writeFile(path+'.tmp',JSON.stringify(value,null,2)+'\n');await rename(path+'.tmp',path)};
-const exists=async path=>{try{await stat(path);return true}catch{return false}};
 export async function daily({dataDir=resolve(root,'backend/data'),run=runPipeline,now=new Date(),force=false,check=false,maxWaitMs=3*3600000,pollMs=10000}={}){
  const day=seoulDay(now),reportPath=resolve(dataDir,'daily-'+day+'.json');
  const previous=await read(reportPath,null);
- if(check)return {day,timeZone:'Asia/Seoul',schedule:'00:00',previous,waitingForCollection:await exists(resolve(dataDir,'expansion.lock'))||await exists(resolve(dataDir,'pipeline.lock'))};
+ if(check)return {day,timeZone:'Asia/Seoul',schedule:'00:00',previous,waitingForCollection:await lockHeld(resolve(dataDir,'expansion.lock'))||await lockHeld(resolve(dataDir,'pipeline.lock'))};
  await mkdir(dataDir,{recursive:true});
  if(!force&&['succeeded','partial'].includes(previous?.status))return {day,status:'already-ran',reportPath};
  const lockPath=resolve(dataDir,'daily.lock');let lock;
@@ -25,7 +25,7 @@ export async function daily({dataDir=resolve(root,'backend/data'),run=runPipelin
  try{
   await save(reportPath,report);
   // Only acquire pipeline.lock after an existing expansion/export has finished.
-  while(await exists(resolve(dataDir,'pipeline.lock'))||await exists(resolve(dataDir,'expansion.lock'))){if(Date.now()-started>=maxWaitMs)throw new Error('기존 수집 대기 3시간 초과');await new Promise(r=>setTimeout(r,pollMs));}
+  while(await lockHeld(resolve(dataDir,'pipeline.lock'))||await lockHeld(resolve(dataDir,'expansion.lock'))){if(Date.now()-started>=maxWaitMs)throw new Error('기존 수집 대기 3시간 초과');await new Promise(r=>setTimeout(r,pollMs));}
   const before=await read(resolve(root,'pipeline/config/products.json'),{products:[]});
   report.status='running';report.beforeProducts=before.products.length;await save(reportPath,report);
   let result;

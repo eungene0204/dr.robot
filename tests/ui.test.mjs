@@ -8,7 +8,8 @@ const wait=ms=>new Promise(r=>setTimeout(r,ms));
 const waitFor=async predicate=>{for(let i=0;i<100;i++){if(predicate())return;await wait(50)}assert.ok(predicate(),'화면 갱신 시간 초과');};
 const apiMock=(snapshot,mode='live',state={})=>async(url,options={})=>{
  const method=options.method||'GET';let value=null;
- if(url==='/api/health')value={ok:true,mode,llm:false};
+ if(url==='/api/health')value={ok:true,mode,llm:Boolean(state.answer)};
+ else if(url==='/api/answer')value=state.answer(JSON.parse(options.body));
  else if(String(url).includes('/catalog'))value=snapshot;
  else if(url==='/api/recommend/fresh'){const data=JSON.parse(options.body);value={plans:buildRecommendations(data.requirement,data.settings,snapshot.parts),catalogVersion:snapshot.catalogVersion};}
  else if(url==='/api/settings'){if(method==='PUT')state.settings=JSON.parse(options.body);value=state.settings||null;}
@@ -157,3 +158,47 @@ test('UI: DB 상태 API에서 진행 중인 상담과 부품 선택을 복원한
  }finally{dom.window.close()}
 });
 test('UI: 예산 없는 4K 요청을 상한 없이 생성·발행하고 제한 없음으로 표시한다',async()=>{const state={};const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/?demo=1',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;try{w.fetch=apiMock(null,'demo',state);w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await waitFor(()=>w.document.querySelector('#request'));const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,'4K 게임용 PC');input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await waitFor(()=>w.document.querySelector('.plan-price'));assert.match(w.document.querySelector('.chat-messages').textContent,/예산 제한 없음/);assert.doesNotMatch(w.document.querySelector('.results').textContent,/Infinity|NaN/);assert.match(w.document.querySelector('.plan-price').textContent,/예산 제한 없이 성능 우선/);const issue=[...w.document.querySelectorAll('button')].find(b=>b.textContent.includes('선택안 견적서 발행'));issue.click();await waitFor(()=>w.document.querySelector('.quote-modal'));assert.equal(state.quotes[0].req.budget,null);assert.match(w.document.querySelector('.quote-summary').textContent,/예산 제한 없음/);assert.ok(state.quotes[0].plan.parts.ssd.capacity>=2000);}finally{w.close()}});
+test('UI: 견적 뒤 질문은 기존 견적 아래에 답만 이어 붙이고, 용도가 바뀐 견적 요청은 이전 예산을 쓰지 않는다',async()=>{
+ const {readFileSync}=await import('node:fs');const snapshot=JSON.parse(readFileSync('public/data/catalog.json'));
+ for(const p of snapshot.parts){if(p.priceEvidence)p.priceEvidence.observedAt=new Date().toISOString();if(p.benchmark)p.benchmark.observedAt=new Date().toISOString();}
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
+ try{
+ w.fetch=apiMock(snapshot);w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await wait(120);
+ const send=async value=>{const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,value);input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));};
+ await send('200만원 이하 adobe용 견적');await waitFor(()=>w.document.querySelector('.plan-price'));
+ assert.match(w.document.querySelector('.results-heading').textContent,/영상·3D/);
+ const quoteSection=w.document.querySelector('.results');
+ await send('5060ti로 4k 게임을 플레이 할 수 있나?');await waitFor(()=>w.document.querySelectorAll('.chat-messages.after-results .chat-message.assistant').length===1);
+ const after=w.document.querySelector('.chat-messages.after-results');
+ const answer=after.querySelector('.chat-message.assistant p').textContent;
+ assert.match(answer,/RTX 5060 Ti/);assert.match(answer,/FPS 실측 자료가 없어/);assert.doesNotMatch(answer,/2,000,000원|견적/);
+ assert.equal(w.document.querySelector('.results'),quoteSection,'질문은 기존 견적을 다시 그리지 않음');
+ assert.match(quoteSection.textContent,/영상·3D/);assert.equal(w.document.querySelectorAll('.results').length,1);
+ assert.ok(quoteSection.compareDocumentPosition(after)&w.Node.DOCUMENT_POSITION_FOLLOWING,'답변은 견적 아래에 표시');
+ assert.equal(after.querySelectorAll('button').length,0,'질문 답변에는 견적 버튼이 없음');
+ await send('5060ti 게임 4K 견적');await waitFor(()=>/게임 · 4K/.test(w.document.querySelector('.results-heading').textContent));
+ const reply=[...w.document.querySelectorAll('.chat-message.assistant p')].at(-1).textContent;
+ assert.doesNotMatch(reply,/2,000,000원/);assert.match(reply,/예산 제한 없음/);
+ const gpus=[...w.document.querySelectorAll('[aria-label$="부품 구성"]')].map(card=>card.textContent);
+ assert.ok(gpus.length>0&&gpus.every(text=>/5060 Ti/i.test(text)),'모든 안이 요청한 GPU를 포함');
+ assert.equal(w.document.querySelectorAll('.chat-messages.after-results').length,0,'새 견적은 마지막 답변 아래로 이동');
+}finally{w.close();}
+});
+
+test('UI: LLM이 켜져 있으면 질문을 현재 견적 부품 id·최근 대화와 함께 답변 API로 보내고 근거 종류를 표시한다',async()=>{
+ const {readFileSync}=await import('node:fs');const snapshot=JSON.parse(readFileSync('public/data/catalog.json'));
+ for(const p of snapshot.parts){if(p.priceEvidence)p.priceEvidence.observedAt=new Date().toISOString();if(p.benchmark)p.benchmark.observedAt=new Date().toISOString();}
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
+ const sent=[];const state={answer:body=>{sent.push(body);return {text:'일반적으로 4K에서는 옵션 조정이 필요해요.',sources:['quote','general'],method:'llm'};}};
+ try{
+ w.fetch=apiMock(snapshot,'live',state);w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await wait(120);
+ const send=async value=>{const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,value);input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));};
+ await send('200만원 게임용 견적');await waitFor(()=>w.document.querySelector('.plan-price'));
+ await send('이 견적으로 4k 게임 되나?');await waitFor(()=>w.document.querySelector('.message-sources'));
+ assert.equal(sent.length,1);assert.equal(sent[0].text,'이 견적으로 4k 게임 되나?');
+ assert.equal(sent[0].quote.req.profile,'gaming');assert.equal(typeof sent[0].quote.plans[0].parts.gpu,'string');
+ assert.deepEqual(sent[0].history.map(m=>m.role),['user','assistant']);
+ const after=w.document.querySelector('.chat-messages.after-results');
+ assert.match(after.textContent,/옵션 조정이 필요해요/);assert.match(after.querySelector('.message-sources').textContent,/현재 견적 · 일반 지식/);
+ }finally{w.close();}
+});

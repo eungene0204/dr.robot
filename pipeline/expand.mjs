@@ -1,12 +1,13 @@
 import {parsePopularity} from './popularity.mjs';
 import {productIssues} from '../src/product-ontology.mjs';
-import {readFile,writeFile,mkdir,rename,open,unlink} from '../backend/document-files.mjs';
+import {readFile,writeFile,mkdir,rename,unlink} from '../backend/document-files.mjs';
 import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {SourceClient} from './http.mjs';
 import {parseSearch,collectProduct} from './adapters/danawa.mjs';
 import {PipelineStore} from './store.mjs';
 import {collectionWindow} from './window.mjs';
+import {acquireLock} from './lock.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const read=async(path,fallback)=>{try{return JSON.parse(await readFile(path,'utf8'))}catch(e){if(e.code==='ENOENT'&&fallback!==undefined)return fallback;throw e}};
 const write=async(path,data)=>{await mkdir(dirname(path),{recursive:true});await writeFile(path+'.tmp',JSON.stringify(data,null,2)+'\n');await rename(path+'.tmp',path)};
@@ -30,7 +31,7 @@ export function validDiscovered(part){
 }
 export const canAdvance=(cursor,config)=>!cursor?.done&&(config.maxPagesPerQuery==null||cursor.page<=config.maxPagesPerQuery);
 export async function expandCatalog({daily=false,client=new SourceClient(),configPath=resolve(root,'pipeline/config/discovery.json'),registryPath=resolve(root,'pipeline/config/products.json'),dataDir=resolve(root,'backend/data'),onProgress=console.log}={}){
- await mkdir(dataDir,{recursive:true});const lockPath=resolve(dataDir,'expansion.lock');const lock=await open(lockPath,'wx');
+ await mkdir(dataDir,{recursive:true});const lockPath=resolve(dataDir,'expansion.lock');const lock=await acquireLock(lockPath);
  let store;try{
  const config=await read(configPath);const registry=await read(registryPath);const statePath=resolve(dataDir,'discovery-state.json');const state=await read(statePath,{queries:{},candidates:{}});state.queries??={};state.candidates??={};if(state.parserVersion!==3){for(const p of Object.values(state.candidates)){if(p.status==='rejected')p.status='pending';}state.parserVersion=3;}
  if(state.scopeVersion!==4){if(!state.scopeVersion||state.scopeVersion<3)state.queries={};for(const candidate of Object.values(state.candidates)){if(candidate.status==='rejected')candidate.status='pending';}state.scopeVersion=4;}state.collectionWindow=collectionWindow(new Date(),config.releaseWindowYears||2);state.collectionWindow.complete=false;

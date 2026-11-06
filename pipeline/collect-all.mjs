@@ -1,18 +1,18 @@
-import {readFile,stat,writeFile,rename,open,unlink,mkdir} from '../backend/document-files.mjs';
+import {readFile,writeFile,rename,unlink,mkdir} from '../backend/document-files.mjs';
 import {resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {expandCatalog,canAdvance} from './expand.mjs';
 import {runPipeline} from './run.mjs';
 import {publishCatalog} from './publish.mjs';
+import {acquireLock,lockHeld} from './lock.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));const dir=resolve(root,'backend/data');
 const pause=ms=>new Promise(r=>setTimeout(r,ms));
-async function exists(path){try{await stat(path);return true}catch{return false}}
-await mkdir(dir,{recursive:true});const lockPath=resolve(dir,'collection-worker.lock');let lock;try{lock=await open(lockPath,'wx')}catch(e){if(e.code==='EEXIST'){console.log('전체 수집 작업이 이미 실행 중입니다. backend/data/collection-worker.lock을 확인하세요.');process.exit(0)}throw e;}await lock.writeFile(JSON.stringify({pid:process.pid,startedAt:new Date().toISOString()}));
+await mkdir(dir,{recursive:true});const lockPath=resolve(dir,'collection-worker.lock');let lock;try{lock=await acquireLock(lockPath)}catch(e){if(e.code==='EEXIST'){console.log('전체 수집 작업이 이미 실행 중입니다. backend/data/collection-worker.lock을 확인하세요.');process.exit(0)}throw e;}
 try{
  // An already-running initial pass and its benchmark export finish first.
- while(await exists(resolve(dir,'expansion.lock'))||await exists(resolve(dir,'pipeline.lock')))await pause(5000);
+ while(await lockHeld(resolve(dir,'expansion.lock'))||await lockHeld(resolve(dir,'pipeline.lock')))await pause(5000);
  await pause(10000);
- while(await exists(resolve(dir,'expansion.lock'))||await exists(resolve(dir,'pipeline.lock')))await pause(5000);
+ while(await lockHeld(resolve(dir,'expansion.lock'))||await lockHeld(resolve(dir,'pipeline.lock')))await pause(5000);
  while(true){
   const status={running:true,pid:process.pid,at:new Date().toISOString()};const statusPath=resolve(dir,'collection-worker.json');await writeFile(statusPath+'.tmp',JSON.stringify(status));await rename(statusPath+'.tmp',statusPath);
   let lastPublished=0;

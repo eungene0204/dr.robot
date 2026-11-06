@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {catalog} from '../src/catalog.mjs';
-import {parseRequirement,recommend,assembleBuild,validate,total} from '../src/engine.mjs';
+import {parseRequirement,mergeInterpretation,recommend,assembleBuild,validate,total} from '../src/engine.mjs';
 const settings={assembly:30000};
 test('한글 예산과 용도를 구조화한다',()=>{const r=parseRequirement('프리미어 4K 편집, 250만 원, 화이트');assert.equal(r.budget,2500000);assert.equal(r.profile,'editing');assert.equal(r.resolution,'4K');assert.equal(r.white,true)});
+test('어도비 등 크리에이티브 도구 요청은 편집 용도로 해석한다',()=>{for(const text of ['200만원 이하 adobe용 견적','포토샵 라이트룸용 150만 원','애프터 이펙트 작업용'])assert.equal(parseRequirement(text).profile,'editing',text)});
 test('반환하는 모든 조합은 예산과 호환성 조건을 만족한다',()=>{for(const profile of ['gaming','editing','office','ai'])for(const budget of [600000,1000000,2000000,3000000]){const req=parseRequirement('',{profile,budget,allowOver:false});for(const p of recommend(req,settings).filter(Boolean)){assert.ok(p.total<=budget);assert.equal(p.total,total(p.parts,settings));assert.ok(validate(p.parts).every(c=>c.ok));if(profile==='ai')assert.ok(p.parts.gpu.vram>=16)}}});
 test('강화안 예산 초과는 명시적 허용시에만 가능하다',()=>{const req=parseRequirement('게임 200만 원',{allowOver:true});const plans=recommend(req,settings);assert.ok(plans[0].total<=req.budget);assert.ok(plans[1].total<=req.budget*1.1);assert.ok(plans[2].total<=req.budget*.9)});
 test('저예산은 허위 견적을 만들지 않는다',()=>{assert.deepEqual(recommend(parseRequirement('게임 20만 원'),settings),[null,null,null])});
@@ -97,4 +98,32 @@ test('게임 강화안은 SSD만 바꿔 만들 수 없고 CPU나 GPU를 높여�
  const ids=['c2','b1','r2','g2','s1','p2','k1','f1','o0'];const items=catalog.filter(p=>ids.includes(p.id));const ssd=items.find(p=>p.category==='ssd');
  const [balanced,enhanced]=recommend(parseRequirement('게임 200만원'),settings,[...items,{...ssd,id:'bigger-ssd-only',capacity:2000,price:ssd.price+20000}]);assert.ok(balanced);assert.equal(enhanced,null);
  for(const budget of [1500000,2000000,3000000]){const [a,b]=recommend(parseRequirement(`게임 ${budget}원`),settings);if(a&&b){assert.ok(b.parts.cpu.score>a.parts.cpu.score||b.parts.gpu.score>a.parts.gpu.score);assert.ok(b.parts.cpu.score>=a.parts.cpu.score&&b.parts.gpu.score>=a.parts.gpu.score);}}
+});
+test('균형안이 예산을 거의 다 쓰면 모든 용도에서 균형안을 다시 골라 세 안을 제시한다',async()=>{
+ const {selectProposals}=await import('../src/proposal-objectives.mjs');
+ const build=(id,total,performance,cpu,gpu)=>({total,performance,checks:[],parts:{cpu:{id:'c'+cpu,score:cpu},board:{id:'b'},ram:{id:'r',capacity:32},gpu:{id:'g'+gpu,score:gpu,vram:8},ssd:{id:'s'+id,capacity:2000},psu:{id:'p'},case:{id:'k'},cooler:{id:'f'},os:{id:'o0'}}});
+ // Balanced candidate at 99% of budget has nothing better within budget; a slightly slower base allows an upgrade.
+ const combos=[build('top',1990000,100,70,60),build('base',1710000,90,66,40),build('gpu',1940000,94,66,60),build('cheap',1640000,85,60,40)];
+ for(const profile of ['editing','office','ai']){
+  const plans=selectProposals(combos,{profile,budget:2000000});
+  assert.ok(plans.every(Boolean),profile);assert.ok(plans[1].upgrades.length>0);assert.ok(plans[1].total<=2000000);assert.ok(plans[2].total<plans[0].total);assert.equal(plans[0].selection.jointlySelected,true);
+ }
+});
+test('예산 90% 이하 절약안이 없으면 균형안보다 저렴한 대체안을 목표 미달로 제시한다',async()=>{
+ const {selectProposals}=await import('../src/proposal-objectives.mjs');
+ const build=(id,total,performance)=>({total,performance,checks:[],parts:{cpu:{id:'c',score:50},board:{id:'b'},ram:{id:'r',capacity:16},gpu:{id:'g0',score:0,vram:0},ssd:{id:'s'+id,capacity:1000,readMBs:performance*10},psu:{id:'p'},case:{id:'k'},cooler:{id:'f'},os:{id:'o0'}}});
+ const plans=selectProposals([build('a',999000,100),build('b',985000,90),build('c',960000,80)],{profile:'office',budget:1000000});
+ assert.ok(plans[2]);assert.ok(plans[2].total<plans[0].total);assert.equal(plans[2].targetMet,false);
+});
+test('질문과 견적 요청을 구분하고 언급한 CPU·GPU 모델을 추출한다',async()=>{
+ const {isQuestion,modelTokens}=await import('../src/question-answer.mjs');
+ assert.equal(isQuestion('5060ti로 4k 게임을 돌릴수 있나?'),true);assert.equal(isQuestion('9800X3D랑 9700X 차이가 뭐야'),true);
+ assert.equal(isQuestion('200만원 이하 adobe용 견적'),false);assert.equal(isQuestion('이 견적으로 배그 되나?'),true);assert.equal(isQuestion('강화안 견적 다시 짜줄 수 있어?'),false);assert.equal(isQuestion('PC 추천해 줄 수 있어?'),false);assert.equal(isQuestion('5060ti로 200만원 견적 짜줘?'),false);
+ assert.deepEqual(modelTokens('RTX 5060 Ti 16GB, i5-14400F'),['5060ti','14400f']);assert.deepEqual(modelTokens('1080p 게임 200만원, 1440 모니터'),[]);
+});
+test('LLM 해석은 문장에 명시된 용도를 덮어쓰지 않고, 규칙이 못 찾은 용도만 채우며 예산 질문은 버린다',()=>{
+ const llm={profile:'gaming',budget:2000000,resolution:'FHD',white:false,wifi:false,os:true,questions:['총 예산은 얼마인가요?','주로 쓰는 프로그램은?']};
+ const adobe=mergeInterpretation('200만원 이하 adobe용 견적',llm);
+ assert.equal(adobe.profile,'editing');assert.equal(adobe.budget,2000000);assert.equal(adobe.os,false);assert.deepEqual(adobe.questions,['주로 쓰는 프로그램은?']);
+ assert.equal(mergeInterpretation('스타크래프트용 PC',{...llm,profile:'office'}).profile,'office');
 });

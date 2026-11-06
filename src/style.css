@@ -66,6 +66,8 @@ input[type=checkbox]{width:17px;height:17px;flex-shrink:0}
 .message-author{font-size:14px;font-weight:600;display:block;color:var(--chat-b0b0b0);margin:3px 0 10px}
 .chat-message p{font-size:19px;line-height:1.95;white-space:pre-wrap;overflow-wrap:anywhere;color:var(--chat-ededed)}
 .chat-message.user{margin-left:auto;max-width:85%;flex-direction:row-reverse}
+.chat-messages.after-results{margin-top:34px}
+.message-sources{display:block;margin-top:6px;font-size:13px;color:var(--chat-888)}
 .chat-message.user>div{background:var(--chat-2c2c2c);border-radius:22px 4px 22px 22px;padding:16px 22px}
 .chat-message.user .message-author{display:none}
 .chat-message.user .message-avatar{display:none}

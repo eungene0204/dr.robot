@@ -33,6 +33,7 @@ flowchart LR
 | pipeline/store.mjs | 제품 사실·가격·벤치마크 관측·작업·검수 큐 |
 | pipeline/run.mjs / expand.mjs / publish.mjs | 수집·발견·스냅샷 발행 |
 | pipeline/daily.mjs / scheduler.mjs | 한국시간 자정 작업과 중복 실행 제어 |
+| pipeline/lock.mjs | 수집 lock 파일(pid 기록)과 종료된 소유자의 lock 회수 |
 
 ## 저장 구조
 
@@ -125,3 +126,9 @@ BIOS 버전 문자열의 대소 관계를 제조사 공통 규칙으로 추정�
 - 2026-11-06: build-warnings.mjs가 데이터 문제 사유와 경고 제목을 분리한다. 가격/성능 만료는 dataIssue로, 실제 검사 상태는 warningHeading으로 표현한다. scripts/refresh-current-quote-prices.mjs는 현재 상담 구성(없으면 c1/b1)의 가격을 직접 재수집하고 정상 관측만 DB에 반영한다. 가격 이상치는 기존 검수 큐를 유지한다. 제조사 확인 근거: https://www.msi.com/Motherboard/PRO-B650M-A-WIFI/Specification (AM5·Ryzen7000 지원). 설치 BIOS 버전을 확인한 것으로 확대 해석하지 않는다.
 - 2026-11-06: POST /api/recommend/fresh와 backend/refresh-prices.mjs를 추가했다. 현재 실제 모드 UI의 createRecommendations는 이 경로로 후보 가격을 재조회하고 받은 catalogVersion을 견적에 보존한 뒤 카탈로그를 갱신한다. 데모는 기존 Worker 계산 경로를 유지한다. 기존 /api/recommend는 순수 계산 경로로 유지한다. 선택 후보는 용도·최소 공간·제품 형식·벤치마크 유효성·제조사 지원 목록을 고려한 제한된 후보군이다. PipelineStore의 가격 이상치 검수와 SourceClient의 원문·요청 간격 정책을 사용한다.
 - 2026-11-06: gaming-cpu-policy.mjs의 isAmdX3d를 가격 재조회·제한 탐색·강화안 선택에서 공유한다. 자동 가격 갱신은 등록된 보드 지원 목록과 맞는 X3D CPU도 별도로 조회한다. proposal-objectives는 X3D 선호 전환을 별도 upgrades 사유로 기록하고 강화안에서 우선한다. 측정 모드에는 선호에 의한 점수 하향 예외를 적용하지 않는다.
+- 2026-11-06: expansion.lock·pipeline.lock·collection-worker.lock은 pipeline/lock.mjs의 acquireLock으로 소유 pid를 기록한다. daily·collect-all의 대기 루프는 파일 존재가 아니라 lockHeld(소유 pid 생존, pid 없는 파일은 작성 후 1분 이내)로 판단해, 비정상 종료가 남긴 lock 때문에 자정 갱신이 3시간 대기 후 실패하는 일을 막는다.
+- 2026-11-06: refresh-prices.mjs의 plannedStaleParts는 만료(stale) 가격을 현재로 가정한 임시 카탈로그로 recommend를 실행해 실제로 선택될 만료 부품만 반환한다. refreshPrices는 이를 최대 3회 재계획하며 갱신하고, 갱신에 실패한 부품은 다시 고르지 않는다. 임시 카탈로그에서도 구성이 불가능할 때만 기존 refreshCandidates 휴리스틱을 사용한다. POST /api/recommend/fresh는 settings(조립비·제외 브랜드)를 함께 전달한다.
+- 2026-11-06: selectProposals의 공동 선택은 게임 전용 조건을 없애고 강화안 또는 절약안이 비면 실행한다. 성능순 균형안 후보 중 강화안(upgrades 1개 이상)과 더 저렴한 절약안이 함께 성립하는 첫 후보를 균형안으로 삼는다. pickSaving은 예산 90% 상한을 우선하고 없으면 균형안 합계 미만으로 다시 고른다.
+- 2026-11-06: src/question-answer.mjs가 질문 판별(isQuestion), CPU·GPU 모델 토큰(modelTokens/modelKey), 카탈로그 근거 답변(answerQuestion)을 담당한다. 질문 답변은 클라이언트에서 처리하며 API를 호출하지 않는다. main.jsx는 견적을 만든 assistant 메시지(quote 표시)까지의 대화, 견적 결과, 이후 대화 순으로 렌더링한다. parseRequirement는 models를 반환하고 recommend는 카탈로그에 해당 모델이 있는 CPU·GPU 풀을 그 모델로 제한한다. engine.mjs는 detectProfile을 공개하고 main.jsx는 용도가 바뀌면 이전 요청 문장과 예산 없이 새 요청으로 처리한다. selectProposals의 공동 선택은 예산 없는 요청에도 적용한다.
+- 2026-11-06: npm run server는 .env를 읽는다(--env-file-if-exists). OpenRouter 호출은 reasoning을 끄고, 결과를 스키마 검증한 뒤 src/engine.mjs의 mergeInterpretation으로 병합한다. 문장 규칙이 찾은 용도·예산·해상도·옵션이 우선하며 LLM은 규칙이 못 찾은 용도와 확인 질문(예산 질문 제외)만 보탠다.
+- 2026-11-06: LLM 하네스. backend/llm.mjs가 OpenRouter 호출(모델 대체, reasoning 비활성, JSON 파싱, 사용량 기록)을 담당하고 요구 해석과 질문 답변이 공유한다. POST /api/answer {text, history(최근 6개), quote(req·안별 부품 id)}는 backend/answer-harness.mjs가 처리한다: 서버 카탈로그로 근거(언급 제품의 VRAM·VRAM별 최저가·Blender 지수, 견적 부품의 이름·가격·사양, 데이터 한계)를 만들고, 규칙은 시스템 메시지·고객 문장과 대화는 데이터로 전달하며, 답변의 근거 밖 금액(±2%, 비교 가능한 금액 차액 허용)·FPS 수치·길이·한국어 여부를 검사해 위반 시 1회 교정 요청 후 실패하면 규칙 답변(answerQuestion)으로 대체한다. 응답은 {text,sources,method}이며 화면은 근거 종류를 표시한다. scripts/llm-eval.mjs(npm run eval:llm)는 실제 모델·저장 카탈로그로 대표 질문을 평가한다.

@@ -1,4 +1,4 @@
-import {readFile,writeFile,mkdir,rename,open,unlink,stat} from '../backend/document-files.mjs';
+import {readFile,writeFile,mkdir,rename,unlink,stat} from '../backend/document-files.mjs';
 import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {createReadStream} from 'node:fs';
@@ -9,6 +9,7 @@ import {collectNaver} from './adapters/naver.mjs';
 import {downloadBlender,runBlenderParser,selectBenchmarks,BLENDER_URL} from './adapters/blender.mjs';
 import {PipelineStore} from './store.mjs';
 import {windowCoverage} from './window.mjs';
+import {acquireLock} from './lock.mjs';
 import {hydrateSnapshot,benchmarkState,priceState,usablePart} from '../src/data-policy.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));
 const json=async path=>JSON.parse(await readFile(path,'utf8'));
@@ -30,7 +31,7 @@ export async function runPipeline(options={}){
  if(options.pricesOnly&&options.benchmarksOnly)throw new Error('가격 전용과 벤치마크 전용 옵션은 함께 지정할 수 없습니다.');
  const dataDir=resolve(options.dataDir||process.env.BUILDMATE_DATA_DIR||resolve(root,'backend/data'));await mkdir(dataDir,{recursive:true});
  const lock=resolve(dataDir,'pipeline.lock');let handle;
- try{handle=await open(lock,'wx');await handle.writeFile(JSON.stringify({pid:process.pid,at:new Date().toISOString()}));}catch(e){if(e.code!=='EEXIST')throw e;throw new Error('다른 수집 실행이 진행 중입니다. 오래된 lock은 실행 프로세스를 확인한 후 제거하세요.');}
+ try{handle=await acquireLock(lock);}catch(e){if(e.code!=='EEXIST')throw e;throw new Error('다른 수집 실행이 진행 중입니다.');}
  let store,jobId;const summary={products:0,prices:0,benchmarks:0,errors:[],quarantined:0};
  try{
   if(options.expand){const {expandCatalog}=await import('./expand.mjs');await expandCatalog({dataDir,daily:options.daily===true});}
