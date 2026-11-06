@@ -1,0 +1,24 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {DatabaseSync} from 'node:sqlite';
+import {catalog} from '../src/catalog.mjs';
+import {normalizeProduct} from '../src/product-ontology.mjs';
+import {createKnowledgeStore} from '../backend/knowledge-store.mjs';
+import {validate} from '../src/compatibility.mjs';
+import {evaluatePerformance,matchMeasurement,measurementIssue} from '../src/workload-evidence.mjs';
+const ids=['c2','b1','r2','g2','s1','p2','k1','f1','o0'];
+const parts=()=>Object.fromEntries(ids.map(id=>{const p=catalog.find(x=>x.id===id);return [p.category,structuredClone(p)]}));
+test('스토리지 액세서리는 카테고리와 분리하고 속성 누락·출처 미확인을 보존한다',()=>{const p=normalizeProduct({id:'bad',category:'ssd',name:'SATA to M.2 컨버터',capacity:1000});assert.equal(p.type,'StorageAccessory');assert.equal(p.status,'quarantined');assert.equal(p.facts[0].evidence.status,'unknown');assert.equal(normalizeProduct({id:'u',category:'cpu',name:'CPU'}).status,'incomplete')});
+test('지식 그래프 동기화는 멱등이고 관계·조건·관측 근거를 보관한다',()=>{const db=new DatabaseSync(':memory:');try{const store=createKnowledgeStore(db);const p={...catalog[0],specSource:{url:'https://example.org/spec',observedAt:'2026-11-01T00:00:00Z'}};store.sync({catalogVersion:'1',parts:[p]});const before=store.summary();store.sync({catalogVersion:'1',parts:[p]});assert.deepEqual(store.summary(),before);const product=store.product(p.id);assert.equal(product.relations[0].predicate,'usesSocket');assert.equal(product.relations[0].evidence.sourceUrl,p.specSource.url);assert.ok(before.relations>0)}finally{db.close()}});
+test('소켓 일치만으로 BIOS 호환을 추론하지 않고 리비전·버전 조건을 검증한다',()=>{const p=parts();p.board.cpuSupport=[{cpuId:p.cpu.id,boardRevision:'1.0',biosVersions:['F20'],evidence:{sourceUrl:'https://example.org/cpu-support',observedAt:new Date().toISOString()}}];const check=()=>validate(p).find(c=>c.label==='BIOS 지원');assert.equal(check().ok,null);p.board.revision='1.0';p.board.installedBios='F19';assert.equal(check().ok,false);p.board.installedBios='F20';assert.equal(check().ok,true);p.board.revision='2.0';assert.equal(check().ok,false)});
+test('다른 작업 실측과 Blender 지수를 혼동하지 않는다',()=>{const p=parts();assert.equal(evaluatePerformance(p,{profile:'gaming',performanceMode:'measured',workload:'PUBG'}).score,null);const configuration=Object.fromEntries(Object.entries(p).map(([c,v])=>[c,v.id]));const m={reviewed:true,profile:'gaming',workload:'PUBG',configuration,resolution:'QHD',softwareVersion:'1',settings:{quality:'high'},unit:'fps',direction:'higher',value:144,sourceUrl:'https://example.org/bench',observedAt:new Date().toISOString()};assert.equal(measurementIssue(m),null);p.cpu.workloadMeasurements=[m];const req={profile:'gaming',workload:'PUBG',resolution:'QHD',performanceMode:'measured',measurementContext:{softwareVersion:'1',settings:{quality:'high'},unit:'fps',direction:'higher'}};assert.equal(evaluatePerformance(p,req).score,144);assert.equal(matchMeasurement(p,{...req,resolution:'4K'}),null);p.ram={...p.ram,id:'different'};assert.equal(matchMeasurement(p,req),null)});
+test('실측 모드는 검증된 동일 구성만 선택하고 점수 종류·탐색 범위를 기록한다',async()=>{
+ const {recommend}=await import('../src/engine.mjs');const req={profile:'gaming',budget:2000000,resolution:'QHD',allowOver:false};const base=recommend(req,{assembly:30000},catalog)[0];assert.ok(base);
+ const configuration=Object.fromEntries(Object.entries(base.parts).map(([c,p])=>[c,p.id]));
+ const measurement={reviewed:true,profile:'gaming',workload:'test-game',configuration,resolution:'QHD',softwareVersion:'1',settings:{quality:'high'},unit:'fps',direction:'higher',value:144,sourceUrl:'https://example.org/test-only',observedAt:new Date().toISOString()};
+ const items=catalog.map(p=>p.id===configuration.cpu?{...p,workloadMeasurements:[measurement]}:p);
+ const measuredReq={...req,performanceMode:'measured',workload:'test-game',measurementContext:{softwareVersion:'1',settings:{quality:'high'},unit:'fps',direction:'higher'}};
+ const result=recommend(measuredReq,{assembly:30000},items)[0];assert.ok(result);assert.equal(result.performance,144);assert.equal(result.performanceBasis.kind,'measured');assert.equal(result.selection.guarantee,'matching-measurements-only');assert.equal(result.selection.candidateCount,1);
+ assert.deepEqual(recommend({...measuredReq,resolution:'4K'},{assembly:30000},items),[null,null,null]);
+ assert.equal(base.performanceBasis.kind,'demo');assert.equal(base.selection.guarantee,'validated-candidates-only');
+});

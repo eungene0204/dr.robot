@@ -1,3 +1,5 @@
+import {parsePopularity} from './popularity.mjs';
+import {productIssues} from '../src/product-ontology.mjs';
 import {readFile,writeFile,mkdir,rename,open,unlink} from '../backend/document-files.mjs';
 import {resolve,dirname} from 'node:path';
 import {fileURLToPath} from 'node:url';
@@ -20,6 +22,7 @@ export function benchmarkName(category,name){
  return undefined;
 }
 export function validDiscovered(part){
+ if(productIssues(part).length)return false;
  if(/중고|리퍼|렌탈|대여|완본체|조립PC|미니PC|노트북|서버용|ECC|SO-DIMM|SODIMM|등록 대행|해외구매|해외직구/i.test(part.name))return false;
  if(part.sourceCategory===part.category&&(part.category!=='cooler'||/CPU.*쿨러/i.test(part.productType||'')))return true;
  const required={cpu:['socket','cores'],board:['socket','ddr','form','slots'],ram:['ddr','capacity'],gpu:['vram','length'],ssd:['capacity','m2'],psu:['capacity','connectors'],case:['forms','gpuLength','coolerHeight'],cooler:['sockets','height']};
@@ -38,7 +41,7 @@ export async function expandCatalog({daily=false,client=new SourceClient(),confi
  for(const seed of config.queries){
   const key=seed.category+':'+seed.query;const cursor=state.queries[key]||{page:1,seen:[]};
   if(seed.source==='category-index'){
-   if(!cursor.done||daily){try{const url=`https://prod.danawa.com/list/?cate=${seed.categoryCode}`;const page=await client.text(url);const found=parseSearch(page.text);if(!found.length)throw new Error('카테고리 공개 HTML에서 상품을 확인할 수 없습니다.');summary.pages++;for(const candidate of found){if(!known.has(candidate.pcode)&&!state.candidates[candidate.pcode]){state.candidates[candidate.pcode]={...candidate,category:seed.category,status:'pending',searchUrl:url};summary.discovered++;}}cursor.done=true;cursor.indexOnly=true;cursor.coverageLimited=true;cursor.stopReason='public-category-index';}catch(e){summary.errors++;cursor.error=e.message;}}
+   if(!cursor.done||daily){try{const url=`https://prod.danawa.com/list/?cate=${seed.categoryCode}`;const page=await client.text(url);const found=parseSearch(page.text);for(const record of parsePopularity(page.text,{category:seed.category,sourceUrl:url,observedAt:page.fetchedAt})){const existing=known.get(record.pcode);if(existing){existing.popularity=record.popularity;store.updatePopularity(existing.id,record.popularity);}else if(state.candidates[record.pcode])state.candidates[record.pcode].popularity=record.popularity;const candidate=found.find(c=>c.pcode===record.pcode);if(candidate)candidate.popularity=record.popularity;}if(!found.length)throw new Error('카테고리 공개 HTML에서 상품을 확인할 수 없습니다.');summary.pages++;for(const candidate of found){if(!known.has(candidate.pcode)&&!state.candidates[candidate.pcode]){state.candidates[candidate.pcode]={...candidate,category:seed.category,status:'pending',searchUrl:url};summary.discovered++;}}cursor.done=true;cursor.indexOnly=true;cursor.coverageLimited=true;cursor.stopReason='public-category-index';}catch(e){summary.errors++;cursor.error=e.message;}}
    state.queries[key]=cursor;await progress();continue;
   }
   if(daily){try{const url=new URL('https://search.danawa.com/');url.searchParams.set('query',seed.query);url.searchParams.set('page','1');url.searchParams.set('sort','dateDESC');const page=await client.text(url.href);summary.pages++;for(const candidate of parseSearch(page.text)){if(!known.has(candidate.pcode)&&!state.candidates[candidate.pcode]){state.candidates[candidate.pcode]={...candidate,category:seed.category,status:'pending',searchUrl:url.href};summary.discovered++;}}}catch(e){summary.errors++;cursor.error=e.message;}}
@@ -65,6 +68,7 @@ export async function expandCatalog({daily=false,client=new SourceClient(),confi
     product.name=observation.part.name;product.benchmarkName=benchmarkName(product.category,product.name);
     const sameChip=registry.products.find(p=>product.benchmarkName&&p.benchmarkName===product.benchmarkName);
     if(sameChip)product.compatibilityCpuId=sameChip.compatibilityCpuId||sameChip.id;
+    if(candidate.popularity)product.popularity=candidate.popularity;
     Object.assign(observation.part,product);
     if(!observation.price)store.recordProduct(observation.part);
     if(!observation.price||store.acceptProduct(observation)){registry.products.push(product);known.set(candidate.pcode,product);candidate.status='collected';candidate.priceStatus=observation.price?'priced':'unavailable';summary.added++;const latest=await read(registryPath);for(const added of latest.products)if(!registry.products.some(p=>p.id===added.id)){registry.products.push(added);known.set(String(added.danawaPcode),added);}await write(registryPath,registry);}else{candidate.status='failed';candidate.reason='가격 검수 필요';}
@@ -72,6 +76,7 @@ export async function expandCatalog({daily=false,client=new SourceClient(),confi
   }catch(e){candidate.status='failed';candidate.reason=e.message;summary.errors++;}
   candidate.at=new Date().toISOString();await progress();
  }
+ await write(registryPath,registry);
  return summary;
  }finally{store?.close();await lock.close();await unlink(lockPath);}
 }

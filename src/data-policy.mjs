@@ -1,3 +1,5 @@
+import {storageRecommendationIssue} from './storage-policy.mjs';
+import {productIssues} from './product-ontology.mjs';
 export const PRICE_MAX_AGE_HOURS=24;
 export const BENCHMARK_MAX_AGE_DAYS=45;
 export function isFresh(when,maxHours,now=Date.now()){const at=Date.parse(when);return Number.isFinite(at)&&at<=now+300000&&now-at<=maxHours*3600000;}
@@ -13,6 +15,7 @@ export function benchmarkState(part,now=Date.now()){
  return isFresh(b.observedAt,BENCHMARK_MAX_AGE_DAYS*24,now)?'measured':'stale';
 }
 export function usablePart(part,now=Date.now()){
+ if(productIssues(part).length||storageRecommendationIssue(part))return false;
  if(part.dataMode!=='live')return part.verified&&part.inStock&&Number.isFinite(part.price)&&part.price>=0;
  if(part.virtual)return true;
  return priceState(part,now)==='fresh'&&part.inStock!==false&&(!['cpu','gpu'].includes(part.category)||benchmarkState(part,now)==='measured');

@@ -1,3 +1,4 @@
+import {detectCoolingType} from '../../src/cooling-type.mjs';
 import {load} from 'cheerio';
 import {SourceError} from '../http.mjs';
 const number=(text,re)=>{const m=text.match(re);return m?Number(m[1].replaceAll(',','')):null;};
@@ -13,7 +14,7 @@ export function parseSpecs(category,description,name=''){
  if(category==='ssd'){const tb=number(name,/(\d+(?:\.\d+)?)\s*TB/i);Object.assign(spec,{capacity:tb?tb*1000:capacity,m2:/M\.2/.test(text)?1:null,readMBs:number(text,/순차읽기\s*:\s*([\d,]+)/),writeMBs:number(text,/순차쓰기\s*:\s*([\d,]+)/)});}
  if(category==='psu'){const connectors=[];if(/PCIe\s*8핀|PCIe\s*6\+2핀|PCI-E\s*6\+2핀/i.test(text))connectors.push('8pin');if(/12V[\s-]?2[x×]6/i.test(text))connectors.push('12v2x6');Object.assign(spec,{form:/SFX[ -]?L/i.test(text+' '+name)?'SFX-L':/SFX/i.test(text+' '+name)?'SFX':/TFX/i.test(text+' '+name)?'TFX':/ATX/i.test(text+' '+name)?'ATX':null,capacity:number(text,/(?:정격출력|출력)\s*:\s*(\d+)\s*W/i)??number(text,/(?:^|\/)\s*(\d{3,4})\s*W(?:\s*\/|$)/i)??number(name,/(\d{3,4})\s*W/i),connectors:connectors.length?connectors:null,efficiency:text.match(/80\s*PLUS\s*([^/]+)/i)?.[1]?.trim()||null});}
  if(category==='case'){const forms=[];if(/(?:^|[^A-Z-])ATX/i.test(text))forms.push('ATX');if(/M[\s-]?ATX/i.test(text))forms.push('mATX');if(/Mini[\s-]?ITX/i.test(text))forms.push('ITX');Object.assign(spec,{forms:forms.length?forms:null,gpuLength:number(text,/(?:VGA|GPU)(?: 장착)? (?:길이|최대길이)\s*:\s*(\d+)\s*mm/i),gpuThickness:null,expansionSlots:number(text,/(?:확장 슬롯|PCI 슬롯|PCIe 슬롯)\s*:\s*(\d+)/i),coolerHeight:number(text,/CPU\s*쿨러\s*(?:장착)?\s*높이\s*:\s*(\d+)\s*mm/i),color:/화이트|white/i.test(name)?'white':/블랙|black/i.test(name)?'black':null});}
- if(category==='cooler')Object.assign(spec,{sockets:(text.match(/AM[45]|LGA\s*\d{4}/gi)||[]).map(x=>x.replaceAll(' ','')).filter((x,i,a)=>a.indexOf(x)===i).length?(text.match(/AM[45]|LGA\s*\d{4}/gi)||[]).map(x=>x.replaceAll(' ','')):null,height:number(text,/높이\s*:\s*(\d+(?:\.\d+)?)\s*mm/i),coolingWatts:number(text,/TDP\s*:\s*(\d+)\s*W/i),color:/화이트|white/i.test(name)?'white':null});
+ if(category==='cooler')Object.assign(spec,{coolingType:detectCoolingType(text),sockets:(text.match(/AM[45]|LGA\s*\d{4}/gi)||[]).map(x=>x.replaceAll(' ','')).filter((x,i,a)=>a.indexOf(x)===i).length?(text.match(/AM[45]|LGA\s*\d{4}/gi)||[]).map(x=>x.replaceAll(' ','')):null,height:number(text,/높이\s*:\s*(\d+(?:\.\d+)?)\s*mm/i),coolingWatts:number(text,/TDP\s*:\s*(\d+)\s*W/i),color:/화이트|white/i.test(name)?'white':null});
  if(category==='os')Object.assign(spec,{included:true,licenseType:/FPP/i.test(text+' '+name)?'FPP':/DSP/i.test(text+' '+name)?'DSP':null});
  return spec;
 }

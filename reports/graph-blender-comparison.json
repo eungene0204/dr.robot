@@ -1,0 +1,232 @@
+{
+  "at": "2026-11-05T21:01:14.188Z",
+  "catalogVersion": "0cec588651d47a39505e",
+  "total": 6827,
+  "priceFresh": 5824,
+  "groups": {
+    "Processor": {
+      "total": 340,
+      "priceAndBlenderEligible": 103,
+      "graphEligible": 83
+    },
+    "Motherboard": {
+      "total": 870,
+      "priceAndBlenderEligible": 792,
+      "graphEligible": 469
+    },
+    "MemoryModule": {
+      "total": 1067,
+      "priceAndBlenderEligible": 868,
+      "graphEligible": 868
+    },
+    "GraphicsCard": {
+      "total": 670,
+      "priceAndBlenderEligible": 414,
+      "graphEligible": 180
+    },
+    "InternalDrive": {
+      "total": 508,
+      "priceAndBlenderEligible": 388,
+      "graphEligible": 388
+    },
+    "PowerSupply": {
+      "total": 1014,
+      "priceAndBlenderEligible": 898,
+      "graphEligible": 860
+    },
+    "Chassis": {
+      "total": 960,
+      "priceAndBlenderEligible": 857,
+      "graphEligible": 738
+    },
+    "CpuCooler": {
+      "total": 1158,
+      "priceAndBlenderEligible": 1040,
+      "graphEligible": 448
+    },
+    "OperatingSystem": {
+      "total": 1,
+      "priceAndBlenderEligible": 1,
+      "graphEligible": 1
+    },
+    "StorageAccessory": {
+      "total": 239,
+      "priceAndBlenderEligible": 229,
+      "graphEligible": 0
+    }
+  },
+  "priceAndBlenderEligible": 5590,
+  "graphEligible": 4035,
+  "rejectedByProductRules": 1555,
+  "converter": [
+    {
+      "id": "dw-5177601",
+      "name": "라이트컴 COMS SATA to M.2 컨버터 (KS507)",
+      "priceAndBlenderEligible": true,
+      "graphEligible": false,
+      "issues": [
+        "저장장치 액세서리 또는 외장 제품",
+        "필수 속성 미확인: capacity"
+      ]
+    }
+  ],
+  "results": [
+    {
+      "condition": "게임 350만원 QHD",
+      "elapsedMs": 330,
+      "plans": [
+        {
+          "id": "balanced",
+          "total": 3166012,
+          "performance": 157.1,
+          "basis": "proxy",
+          "cpu": "AMD 라이젠5-6세대 9600X (그래니트 릿지) (벌크 병행)",
+          "gpu": "갤럭시 GALAZ 지포스 RTX 5070 Ti HOF GAMING BLACK D7 16GB",
+          "storage": "삼성전자 PM851 M.2 SATA 병행수입 (128GB)",
+          "checks": 21,
+          "allChecksPass": true,
+          "method": "bounded-search"
+        },
+        {
+          "id": "enhanced",
+          "total": 3495242,
+          "performance": 163.9,
+          "basis": "proxy",
+          "cpu": "AMD 라이젠7-6세대 9800X3D (그래니트 릿지) (벌크 병행)",
+          "gpu": "갤럭시 GALAZ 지포스 RTX 5070 Ti HOF GAMING BLACK D7 16GB",
+          "storage": "삼성전자 PM851 M.2 SATA 병행수입 (128GB)",
+          "checks": 21,
+          "allChecksPass": true,
+          "method": "bounded-search"
+        },
+        {
+          "id": "saving",
+          "total": 2485662,
+          "performance": 132.5,
+          "basis": "proxy",
+          "cpu": "AMD 라이젠5-6세대 9600X (그래니트 릿지) (벌크 병행)",
+          "gpu": "GAINWARD 지포스 RTX 5070 파이썬 III OC D7 12GB",
+          "storage": "삼성전자 PM851 M.2 SATA 병행수입 (128GB)",
+          "checks": 21,
+          "allChecksPass": true,
+          "method": "bounded-search"
+        }
+      ]
+    },
+    {
+      "condition": "영상 편집 350만원 4K",
+      "elapsedMs": 296,
+      "plans": [
+        {
+          "id": "balanced",
+          "total": 3268052,
+          "performance": 178.1,
+          "basis": "proxy",
+          "cpu": "AMD 라이젠9-6세대 9950X3D (그래니트 릿지) (정품)",
+          "gpu": "MANLI 지포스 RTX 5050 Nebula D6 8GB 대원씨티에스",
+          "storage": "마이크론 Crucial E100 M.2 NVMe 대원씨티에스 (2TB)",
+          "checks": 21,
+          "allChecksPass": true,
+          "method": "bounded-search"
+        },
+        {
+          "id": "enhanced",
+          "total": 3381082,
+          "performance": 188.1,
+          "basis": "proxy",
+          "cpu": "AMD 라이젠9-6세대 9950X3D (그래니트 릿지) (정품)",
+          "gpu": "갤럭시 GALAX 지포스 RTX 4060 Ti WHITE OC V2 D6 8GB",
+          "storage": "마이크론 Crucial E100 M.2 NVMe 대원씨티에스 (2TB)",
+          "checks": 21,
+          "allChecksPass": true,
+          "method": "bounded-search"
+        },
+        {
+          "id": "saving",
+          "total": 2981352,
+          "performance": 158.5,
+          "basis": "proxy",
+          "cpu": "AMD 라이젠9-6세대 9950X3D (그래니트 릿지) (정품)",
+          "gpu": "ASL 지포스 GTX 1660 SUPER RAGE-X D6 6GB",
+          "storage": "마이크론 Crucial E100 M.2 NVMe 대원씨티에스 (2TB)",
+          "checks": 21,
+          "allChecksPass": true,
+          "method": "bounded-search"
+        }
+      ]
+    },
+    {
+      "condition": "로컬 AI 350만원 QHD",
+      "elapsedMs": 208,
+      "plans": [
+        {
+          "id": "balanced",
+          "total": 3166012,
+          "performance": 157.1,
+          "basis": "proxy",
+          "cpu": "AMD 라이젠5-6세대 9600X (그래니트 릿지) (벌크 병행)",
+          "gpu": "갤럭시 GALAZ 지포스 RTX 5070 Ti HOF GAMING BLACK D7 16GB",
+          "storage": "삼성전자 PM851 M.2 SATA 병행수입 (128GB)",
+          "checks": 21,
+          "allChecksPass": true,
+          "method": "bounded-search"
+        },
+        {
+          "id": "enhanced",
+          "total": 3495242,
+          "performance": 163.9,
+          "basis": "proxy",
+          "cpu": "AMD 라이젠7-6세대 9800X3D (그래니트 릿지) (벌크 병행)",
+          "gpu": "갤럭시 GALAZ 지포스 RTX 5070 Ti HOF GAMING BLACK D7 16GB",
+          "storage": "삼성전자 PM851 M.2 SATA 병행수입 (128GB)",
+          "checks": 21,
+          "allChecksPass": true,
+          "method": "bounded-search"
+        },
+        {
+          "id": "saving",
+          "total": 3084195,
+          "performance": 150.6,
+          "basis": "proxy",
+          "cpu": "AMD 라이젠5-5세대 7500F (라파엘) (벌크 정품)",
+          "gpu": "갤럭시 GALAZ 지포스 RTX 5070 Ti HOF GAMING BLACK D7 16GB",
+          "storage": "삼성전자 PM851 M.2 SATA 병행수입 (128GB)",
+          "checks": 21,
+          "allChecksPass": true,
+          "method": "bounded-search"
+        }
+      ]
+    },
+    {
+      "condition": "사무 100만원 FHD",
+      "elapsedMs": 128,
+      "plans": [
+        {
+          "id": "balanced",
+          "total": 816332,
+          "performance": 100,
+          "basis": "proxy",
+          "cpu": "AMD 라이젠5-6세대 9600X (그래니트 릿지) (벌크 병행)",
+          "gpu": "CPU 내장 그래픽 사용",
+          "storage": "삼성전자 PM851 M.2 SATA 병행수입 (128GB)",
+          "checks": 21,
+          "allChecksPass": true,
+          "method": "bounded-search"
+        },
+        {
+          "id": "enhanced",
+          "total": 967522,
+          "performance": 117.8,
+          "basis": "proxy",
+          "cpu": "AMD 라이젠7-6세대 9700X (그래니트 릿지) (벌크 병행)",
+          "gpu": "CPU 내장 그래픽 사용",
+          "storage": "쏘 Drive M.2 NVMe (512GB)",
+          "checks": 21,
+          "allChecksPass": true,
+          "method": "bounded-search"
+        },
+        null
+      ]
+    }
+  ]
+}

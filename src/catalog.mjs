@@ -12,7 +12,7 @@ item('b2','board','ASRock B650M Pro RS WiFi',220000,{socket:'AM5',ddr:5,form:'mA
 item('r1','ram','DDR5-5600 16GB · 8GB × 2',180000,{ddr:5,capacity:16,sticks:2}),
 item('r2','ram','DDR5-5600 32GB · 16GB × 2',360000,{ddr:5,capacity:32,sticks:2}),
 item('r3','ram','DDR5-5600 64GB · 32GB × 2',680000,{ddr:5,capacity:64,sticks:2}),
-item('g0','gpu','CPU 내장 그래픽 사용',0,{watts:0,score:12,vram:0,length:0,thickness:0,connector:'none',minPsu:0}),
+item('g0','gpu','CPU 내장 그래픽 사용',0,{virtual:true,watts:0,score:12,vram:0,length:0,thickness:0,connector:'none',minPsu:0}),
 item('g1','gpu','GeForce RTX 5060 8GB',420000,{watts:145,score:61,vram:8,length:240,thickness:2,connector:'8pin',minPsu:550}),
 item('g2','gpu','GeForce RTX 5060 Ti 16GB',550000,{watts:180,score:76,vram:16,length:280,thickness:2.5,connector:'8pin',minPsu:600}),
 item('g3','gpu','GeForce RTX 5070 12GB',750000,{watts:250,score:95,vram:12,length:304,thickness:3,connector:'12v2x6',minPsu:650}),
@@ -26,4 +26,4 @@ item('k1','case','에어플로우 미니타워 · 블랙',50000,{forms:['mATX'],
 item('k2','case','에어플로우 미들타워 · 화이트',60000,{forms:['ATX','mATX'],gpuLength:360,gpuThickness:4,coolerHeight:170,color:'white'}),
 item('f1','cooler','싱글타워 공랭 쿨러',25000,{sockets:['AM5'],height:150,coolingWatts:120}),
 item('f2','cooler','듀얼타워 공랭 · 화이트',50000,{sockets:['AM5'],height:158,coolingWatts:200,color:'white'}),
-item('o0','os','OS 미포함',0,{}),item('o1','os','Windows 11 Home · 정품',170000,{})];
+item('o0','os','OS 미포함',0,{virtual:true}),item('o1','os','Windows 11 Home · 정품',170000,{})];

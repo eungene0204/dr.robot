@@ -1,0 +1,127 @@
+# Dr.Robot 아키텍처
+
+최종 갱신: 2026-11-06
+
+## 구성과 데이터 흐름
+
+```mermaid
+flowchart LR
+    UI[React / Vite :5588] -->|/api 프록시| API[Node HTTP :8001]
+    UI --> W[견적 계산 Web Worker]
+    API --> A[(buildmate.db)]
+    API --> D[(documents.db)]
+    P[수집 파이프라인] --> D
+    P --> C[(pipeline.db)]
+    S[다나와 / Blender 등 출처] --> P
+```
+
+웹 개발 서버는 vite.config.js의 설정으로 /api 요청을 백엔드에 전달한다. 백엔드는 기본적으로 127.0.0.1:8001에 바인딩한다. 8000번의 다른 로컬 서비스와 충돌하지 않도록 분리했다. 포트는 실행 환경의 설정도 확인해야 한다.
+
+## 주요 모듈
+
+| 모듈 | 책임 |
+| --- | --- |
+| src/main.jsx | 상담·견적·이력·설정 화면과 API 연결 |
+| src/use-catalog.jsx | 카탈로그·가격 이력·수집 현황 조회와 주기 갱신 |
+| src/engine.mjs | 요구 해석, 후보 탐색, 호환성·예산 검사, 견적 선택 |
+| src/recommend-worker.mjs | UI 스레드 밖에서 견적 계산 실행 |
+| src/alternatives.mjs | 교체 후보와 교체 가능 조건 계산 |
+| src/data-policy.mjs | 가격·벤치마크 신선도 및 사용 가능 여부 |
+| src/consultation-session.mjs | 임시 상담의 서버 저장·복원과 이전 |
+| backend/server.mjs | 로컬 API, SQLite 견적·설정·상태, 수집 작업 실행 |
+| backend/document-files.mjs | 수집 JSON 문서의 SQLite 저장 어댑터 |
+| pipeline/store.mjs | 제품 사실·가격·벤치마크 관측·작업·검수 큐 |
+| pipeline/run.mjs / expand.mjs / publish.mjs | 수집·발견·스냅샷 발행 |
+| pipeline/daily.mjs / scheduler.mjs | 한국시간 자정 작업과 중복 실행 제어 |
+
+## 저장 구조
+
+| 저장소 | 주요 내용 |
+| --- | --- |
+| backend/data/buildmate.db | quotes, app_settings, data_snapshots, llm_usage |
+| backend/data/pipeline.db | product_facts, price_observations, benchmark_observations, pipeline_jobs, review_queue |
+| backend/data/documents.db | documents: 경로별 JSON 문서, source_assets: 벤치마크 원본 |
+
+documents 어댑터는 프로젝트 경로의 JSON을 DB에서 먼저 조회한다. DB에 없으면 기존 파일을 읽어 JSON을 검증한 뒤 최초 가져오기를 수행한다. 이후 갱신은 DB에 기록한다. 파일 경로를 문서 키로 사용하므로 저장소 이동 시 경로 재매핑이 필요하다. 프로젝트 외부 경로는 별도 DB 위치를 사용하며 테스트 환경도 이에 해당한다.
+
+서버는 documents.db를 우선 조회하고 기존 스냅샷 테이블·파일을 호환 경로로 사용한다. DB를 도입했다고 모든 파일이 제거된 것은 아니다. 원본 파일은 복구용으로 유지하고, 로그·프로세스 잠금은 파일 시스템을 사용한다. Python 벤치마크 파서는 DB의 등록부를 임시 파일로 전달받고 결과를 DB에 저장한다.
+
+## 주요 API
+
+| 경로 | 역할 |
+| --- | --- |
+| GET /api/health | 모드·DB 저장 방식·LLM 설정 상태 |
+| GET /api/catalog | 카탈로그 |
+| GET /api/pipeline/status | 수집·검수 현황 |
+| GET /api/discovery/status | 발견 진행 상태 |
+| GET /api/prices/snapshot | 가격 이력 스냅샷 |
+| POST /api/requirements | 요구사항 구조화 |
+| POST /api/recommend | 서버 견적 계산 |
+| GET / POST /api/quotes | 이력 조회·확정 견적 저장 |
+| DELETE /api/quotes/:id | 이력 삭제 |
+| POST /api/quotes/import | 기존 브라우저 이력 가져오기 |
+| GET / PUT /api/settings | 매장 설정 |
+| GET / PUT /api/state/:name | 테마 및 live/demo 상담 임시 상태 |
+
+## 견적 계산
+
+현재 실제 모드의 신규·재생성은 서버 가격 갱신 API를 사용하고, 데모 모드 계산은 Web Worker를 사용한다. 소규모 카탈로그는 기존 탐색을 사용하고, 1,000개 초과 카탈로그는 중간 후보를 제한한다. 저가 후보와 CPU·GPU 성능별 후보를 유지하면서 호환성·예산 검사를 적용한다. 균형안과 강화안 구분을 위한 선택 규칙이 있으며 전수 탐색의 최적성 보장은 없다.
+
+UI에서 계산을 분리하는 것과 계산 자체가 종료되는 것은 별개다. 대규모 데이터 결과, 시간, 실패·취소 경로는 별도로 검증한다. 서버 API의 계산은 Node 이벤트 루프에서 실행되므로 별도 성능·동시 요청 검토가 필요하다.
+
+## 운영과 확인할 제약
+
+- DB 파일은 Git에 포함하지 않는다. 다른 환경에서는 데이터 이전 또는 수집을 실행해야 한다.
+- WAL 모드 SQLite 백업은 실행 중인 DB 파일 하나의 단순 복사로 대체하지 않는다. 일관된 백업·복원 시험이 필요하다.
+- 브라우저의 기존 값은 해당 브라우저가 접속해야 가져올 수 있다.
+- 임시 상담과 테마의 서버 상태는 현재 사용자별로 분리되지 않는다.
+- DB 저장 실패 알림·임시 상태의 종료 직전 저장·경로 이동 복구는 후속 검증 대상이다.
+
+## 변경 기록
+
+- 2026-11-06: 현재 세 DB 구조, JSON 호환 어댑터, Worker 계산, API 연결과 알려진 제약을 문서화.
+- 2026-11-06: 비교표의 기본 select를 ProductRow의 공용 대체 부품 팝업으로 통합했다. 제조사 탭은 후보의 brand/manufacturer 값을 우선 사용하며 없으면 제품명 첫 단어로 대체한다. DB·API 구조 변경은 없다.
+- 2026-11-06: 경고 배너 표시 상태는 App의 dismissedWarning으로 관리한다. 선택안·검사 결과·관측 시각으로 경고 키를 구성하며 DB·API 저장과는 독립적이다.
+- 2026-11-06: src/storage-policy.mjs의 storageIssue를 수집 등록, usablePart, 교체 후보, validateBuild에서 공유한다. 기존 DB 카탈로그는 잘못된/미확인 SSD에 검수 표시를 남기고 버전을 갱신했다. 제품 카테고리 breadcrumb만으로 검증을 우회할 수 없다.
+- 2026-11-06: product-ontology.mjs는 제품 사실·관계를 생성한다. knowledge-store.mjs가 buildmate.db의 knowledge_products/facts/relations/meta로 카탈로그 버전별 원자적 동기화를 수행한다. GET /api/knowledge 및 /api/knowledge/products/:id로 조회한다. compatibility.mjs는 엔진·교체·발행이 공유하는 검증 구현이다. 기존 board.bios는 이전 지원 목록으로 유지하며 명시적 cpuSupport 조건이 있으면 우선 적용한다.
+- 2026-11-06: workload-evidence.mjs가 용도별 대체 지수와 정확한 구성 실측을 분리한다. knowledge_measurements 테이블과 GET/POST /api/knowledge/measurements가 담당자 검수 자료를 보관한다. 카탈로그의 해당 CPU에 실측 구성을 연결해 Worker에도 전달한다. 실측 모드는 performanceMode=measured, workload, measurementContext(softwareVersion/settings/unit/direction)를 지정하며 일치하는 전체 구성만 탐색한다. 실제 운영 DB에는 테스트용 수치를 넣지 않는다.
+- 2026-11-06: proposal-objectives.mjs는 검증된 후보에서 세 안을 선택하고 selection 메타데이터를 생성한다. 현재 구현은 전역 최적화 솔버가 아니라 기존 소규모 탐색/대규모 제한 탐색을 분리한 구조다. compatibilityDependencies를 공통화해 부분 탐색과 완성 검증의 규칙 출처를 맞춘다. UI는 performanceBasis의 대체 지수 표시와 한계를 사용한다.
+
+### 조건부 CPU 지원 입력 예
+
+```json
+{
+  "cpuSupport": [{
+    "cpuId": "대상 CPU 식별자",
+    "boardRevision": "제조사 보드 리비전",
+    "biosVersions": ["지원이 확인된 정확한 BIOS 버전"],
+    "evidence": {"sourceUrl": "https://제조사/지원목록", "observedAt": "ISO 관측 시각"}
+  }],
+  "revision": "실제 보드 리비전",
+  "installedBios": "실제 설치 BIOS 버전"
+}
+```
+
+BIOS 버전 문자열의 대소 관계를 제조사 공통 규칙으로 추정하지 않는다. 입력한 정확한 버전 목록을 사용한다. 조건부 관계를 모든 CPU·보드 조합의 무조건 호환 간선으로 확장하지 않는다. JSON의 조건은 knowledge_relations.conditions에 보존한다.
+
+### 실측 입력 및 추천
+
+검수된 실측은 POST /api/knowledge/measurements로 등록한다. profile, workload, configuration(모든 슬롯의 실제 제품 ID), softwareVersion, settings, gaming의 resolution, value, unit, direction, sourceUrl, observedAt, reviewed=true, reviewedBy, reviewedAt가 필요하다. API는 형식·구성·검수 기록을 검사하지만 웹 원문 진위를 자동 확인하는 기능은 없다. 등록 담당자가 원문과 측정 조건을 검수해야 한다. 단위가 다른 값끼리 비교하지 않도록 measurementContext가 일치하는 자료만 사용한다. seconds는 낮을수록 좋은 값으로 처리한다.
+
+실측 모드는 API 요청에서 명시적으로 선택한다. 현재 상담 화면은 기본 대체 지수 모드를 사용하며, 실측 조건 선택 전용 UI는 아직 없다. 실제 운영 DB의 실측 자료가 0건이므로 미측정 용도를 측정한 것으로 표현하지 않는다.
+- 2026-11-06: scripts/compare-recommendation-basis.mjs는 운영 DB 스냅샷을 읽어 유형 검증 전후의 후보 조건과 네 용도 결합 추천 결과를 reports/에 기록한다. 그래프 테이블 순회 기반의 별도 추천 엔진이나 과거 엔진 전체의 A/B 비교는 아니며 현재 속성/규칙 검증과 Blender 순위 평가의 역할을 비교한다.
+- 2026-11-06: storageRecommendationIssue를 제품 분류(storageIssue)와 분리했다. usablePart·대체 후보·validateBuild가 공통 추천 정책을 적용한다. SATA 판단이 NVMe 표기보다 우선하며 M.2라는 폼팩터만으로 NVMe라고 추정하지 않는다.
+- 2026-11-06: budget-policy.mjs가 null/undefined 예산을 무상한으로 처리하고 검증·표시·상한 계산을 공유한다. Infinity는 계산 내부에서만 사용하고 저장 요청·요구사항에는 null을 사용한다. LLM 결과의 예산은 사용자 텍스트에서 추출한 금액으로 보정하고 프런트 입력란의 명시 값이 우선한다. proposal-objectives는 무상한 모드에서 고성능 후보를 우선 선택하며 선택 메타데이터에 budgetMode를 남긴다.
+- 2026-11-06: storage-policy의 최소 용량과 캐시/서버 인터페이스 배제 규칙을 자동 후보·최종 검증에 연결했다. 온톨로지 v2에서 StorageCache 유형을 도입했다. 예산 없는 4K 입력→생성→DB 발행→제한 없음 표시의 UI/API 회귀 테스트를 추가했다.
+- 2026-11-06: budgetSource(text/manual/unlimited/unspecified)를 기록해 예산의 출처를 구분한다. 재생성 시 출처가 없는 과거 요구에서 사용자 텍스트·입력란에도 예산이 없으면 임의 기본예산을 제거한다.
+- 2026-11-06: cooling-type.mjs를 UI와 다나와 사양 파서가 공유한다. parseSpecs가 coolingType을 추출하며 scripts/enrich-cooling-types.mjs는 기존 캐시를 재파싱해 카탈로그와 pipeline.db의 제품 사실에 유형·근거를 추가한다. 가격·관측 시각은 갱신하지 않는다. 카탈로그 버전은 분류 변경 시 갱신한다. ProductRow의 coolingFilter는 쿨러에만 적용한다.
+- 2026-11-06: pipeline/popularity.mjs는 인기상품순 활성 탭과 일반 상품 목록의 aria-label 인기순위 값을 함께 확인한다. 광고 영역과 개별 번들 popularRank(상품군 내부 순위)는 카테고리 순위로 사용하지 않는다. src/popularity.mjs는 순위 유효성·48시간 신선도와 구성 비교를 공유한다. 구성은 확인된 부품 수를 우선하고 그 수가 같으면 log(1+rank)의 합이 작은 쪽을 우선한다. 이는 판매량이 아닌 명시된 상품군 순위의 집계 정책이다.
+- 2026-11-06: pipeline:popularity 명령이 공개 목록을 재확인해 카탈로그·제품 등록부·pipeline.db 제품 사실에 근거를 기록한다. 일일 확장 수집도 같은 파서를 사용한다. 날짜는 순위를 실제 확인한 시각이며 가격 관측 시각을 변경하지 않는다. 순위는 popularity 속성 및 지식 facts에 저장된다. 기존 후보 축약·지배 후보 제거 시에도 더 인기 있는 제품을 값이 비싸다는 이유만으로 삭제하지 않도록 했다.
+
+- 2026-11-06: 실제 DB 검증에서 성능 상위 95% 필터가 순위 있는 쿨러를 예산 밖으로 밀어내는 경우를 확인해, 순위 근거가 있는 후보에서는 해당 필터를 적용하지 않도록 했다. 예산·용도 최소 사양·호환성 검사는 유지한다.
+- 2026-11-06: proposal-objectives의 upgrades에서 gaming일 때 CPU/GPU 성능 향상을 선행 검사한다. 실측 모드에서는 CPU/GPU 변경과 동일 조건 실측 향상을 함께 요구한다. 인기순은 이 자격 조건을 통과한 후보에만 적용한다.
+- 2026-11-06: proposal-objectives는 모든 예산 지정 균형안에95% 성능 구간을 적용하고 그 안에서 인기·비용을 비교한다. 강화안은 성능, 절약안은 성능/가격을 인기보다 먼저 비교한다. 무예산4K의 GPU/CPU 지수 우선 규칙도 인기보다 앞선다. rankingPolicy=performance-first-popularity-within-tier 및 performanceRetention을 기록한다. 같은 날짜 이전의 popularity-first 정책과 최고 등급 예약 규칙은 폐기했다.
+- 2026-11-06: selectProposals는 예산 지정 gaming에서 enhanced가 null일 때 후보 균형안을 성능순으로 검사해 upgrades 관계가 성립하는 쌍을 공동 선택한다. used 집합을 재설정해 중복을 방지하고 선택 결과에 jointlySelected를 기록한다. 공동 선택에서는 performanceRetention=null로 두어95% 보장을 주장하지 않는다. 절약안은 조정된 균형안을 기준으로 계산한다.
+- 2026-11-06: build-warnings.mjs가 데이터 문제 사유와 경고 제목을 분리한다. 가격/성능 만료는 dataIssue로, 실제 검사 상태는 warningHeading으로 표현한다. scripts/refresh-current-quote-prices.mjs는 현재 상담 구성(없으면 c1/b1)의 가격을 직접 재수집하고 정상 관측만 DB에 반영한다. 가격 이상치는 기존 검수 큐를 유지한다. 제조사 확인 근거: https://www.msi.com/Motherboard/PRO-B650M-A-WIFI/Specification (AM5·Ryzen7000 지원). 설치 BIOS 버전을 확인한 것으로 확대 해석하지 않는다.
+- 2026-11-06: POST /api/recommend/fresh와 backend/refresh-prices.mjs를 추가했다. 현재 실제 모드 UI의 createRecommendations는 이 경로로 후보 가격을 재조회하고 받은 catalogVersion을 견적에 보존한 뒤 카탈로그를 갱신한다. 데모는 기존 Worker 계산 경로를 유지한다. 기존 /api/recommend는 순수 계산 경로로 유지한다. 선택 후보는 용도·최소 공간·제품 형식·벤치마크 유효성·제조사 지원 목록을 고려한 제한된 후보군이다. PipelineStore의 가격 이상치 검수와 SourceClient의 원문·요청 간격 정책을 사용한다.
+- 2026-11-06: gaming-cpu-policy.mjs의 isAmdX3d를 가격 재조회·제한 탐색·강화안 선택에서 공유한다. 자동 가격 갱신은 등록된 보드 지원 목록과 맞는 X3D CPU도 별도로 조회한다. proposal-objectives는 X3D 선호 전환을 별도 upgrades 사유로 기록하고 강화안에서 우선한다. 측정 모드에는 선호에 의한 점수 하향 예외를 적용하지 않는다.

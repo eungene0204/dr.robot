@@ -16,7 +16,8 @@
     "pipeline:schedule": "node pipeline/scheduler.mjs",
     "pipeline:expand": "node pipeline/expand.mjs",
     "pipeline:all": "node pipeline/collect-all.mjs",
-    "pipeline:daily": "node --env-file-if-exists=.env pipeline/daily.mjs"
+    "pipeline:daily": "node --env-file-if-exists=.env pipeline/daily.mjs",
+    "pipeline:popularity": "node scripts/refresh-popularity.mjs"
   },
   "dependencies": {
     "cheerio": "^1.2.0",

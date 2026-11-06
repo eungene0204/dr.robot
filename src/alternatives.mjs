@@ -1,3 +1,4 @@
+import {storageRecommendationIssue} from './storage-policy.mjs';
 import {validateBuild,total} from './engine.mjs';
 import {usablePart,priceState,benchmarkState} from './data-policy.mjs';
 
@@ -6,7 +7,7 @@ export function partSelectableForDraft(part){
  return usablePart(part);
 }
 export function alternativeOptions(catalog,category,plan,req,settings={}){
- return catalog.filter(p=>p.category===category&&(category!=='ssd'||!/외장|external|USB|케이스|인클로저/i.test(p.name))).map(part=>{
+ return catalog.filter(p=>!storageRecommendationIssue(p)&&p.category===category&&(category!=='ssd'||!/외장|external|USB|케이스|인클로저/i.test(p.name))).map(part=>{
   const checks=validateBuild({...plan.parts,[category]:part},req);
   const reasons=checks.filter(c=>c.ok!==true).map(c=>`${c.label}${c.ok===null?' 확인 필요':' 조건 불충족'}`);
   if(!usablePart(part)){

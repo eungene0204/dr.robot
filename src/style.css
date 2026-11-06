@@ -251,3 +251,8 @@ button.plan-part-row:hover,button.plan-part-row[aria-expanded=true]{background:v
 
 .regenerate-notice{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px;padding:14px 18px;border:1px solid var(--line);border-radius:8px;background:var(--surface-raised);color:var(--text);font-size:14px;line-height:1.6}
 .toast .outline{flex-shrink:0}
+
+.vendor-tabs{overflow-x:auto;flex-shrink:0}.vendor-tabs button{white-space:nowrap;flex-shrink:0}.comparison-product::after{display:none}.comparison-replace{margin-left:auto;flex-shrink:0}
+
+.persistent-warning>span{flex:1;min-width:0}.warning-dismiss{flex-shrink:0;align-self:flex-start;margin-left:auto;padding:6px;border-radius:6px;background:transparent;color:inherit}.warning-dismiss:hover{background:#ffffff26}.warning-dismiss:focus-visible{outline-color:currentColor}
+.alternative-popularity{font-size:12px;color:var(--muted);line-height:1.6}
