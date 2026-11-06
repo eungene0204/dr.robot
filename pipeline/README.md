@@ -1,3 +1,5 @@
+> **2026-11-07부터 사용하지 않음.** 수집은 pcquote Python 수집기(`../pcquote/backend/src/pcquote/collector`, `npm run pipeline*`)가 한다. 이 Node 코드는 되돌리기용으로 남겨 두었다([intent](../intent/2026-11-07-python-collector.md)).
+
 # Dr.Robot 실제 데이터 파이프라인
 
 등록된 실제 SKU → 수집 → 정규화 → 검증/격리 → SQLite 이력 → 원자적 스냅샷 → API/화면/추천 엔진.

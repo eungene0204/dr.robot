@@ -6,16 +6,15 @@
 
 ```mermaid
 flowchart LR
-    UI[React / Vite :5588] -->|/api 프록시| API[Node HTTP :8001]
-    UI --> W[견적 계산 Web Worker]
-    API --> A[(buildmate.db)]
-    API --> D[(documents.db)]
-    P[수집 파이프라인] --> D
-    P --> C[(pipeline.db)]
+    UI[React / Vite :5588] -->|/api 프록시| API[pcquote FastAPI :8001]
+    UI --> W[데모 견적 Web Worker]
+    API --> G[(PostgreSQL pcquote)]
+    P[수집기 · pcquote Python 배치] --> G
     S[다나와 / Blender 등 출처] --> P
+    API -->|견적 시 가격 갱신| S
 ```
 
-웹 개발 서버는 vite.config.js의 설정으로 /api 요청을 백엔드에 전달한다. 백엔드는 기본적으로 127.0.0.1:8001에 바인딩한다. 8000번의 다른 로컬 서비스와 충돌하지 않도록 분리했다. 포트는 실행 환경의 설정도 확인해야 한다.
+2026-11-06부터 서버는 하나다. 별도 프로젝트 `../pcquote/backend`의 FastAPI 서버가 화면 API, 추천 엔진, 견적 저장을 모두 맡는다. buildmate에는 화면(React)과 수집 파이프라인(Node 배치)이 남는다. 웹 개발 서버는 vite.config.js 설정으로 /api 요청을 127.0.0.1:8001에 넘긴다. `npm run build`로 만든 `dist/`가 있으면 8001 서버가 화면도 직접 내보낸다(`http://127.0.0.1:8001/`).
 
 ## 주요 모듈
 
@@ -23,12 +22,11 @@ flowchart LR
 | --- | --- |
 | src/main.jsx | 상담·견적·이력·설정 화면과 API 연결 |
 | src/use-catalog.jsx | 카탈로그·가격 이력·수집 현황 조회와 주기 갱신 |
-| src/engine.mjs | 요구 해석, 후보 탐색, 호환성·예산 검사, 견적 선택 |
+| src/engine.mjs | 요구 해석, 후보 탐색, 호환성·예산 검사, 견적 선택. 서버 추천은 pcquote 엔진이 맡고, 이 엔진은 데모 모드(`?demo=1`) Web Worker와 화면 쪽 요구 해석에 쓴다 |
 | src/recommend-worker.mjs | UI 스레드 밖에서 견적 계산 실행 |
 | src/alternatives.mjs | 교체 후보와 교체 가능 조건 계산 |
 | src/data-policy.mjs | 가격·벤치마크 신선도 및 사용 가능 여부 |
 | src/consultation-session.mjs | 임시 상담의 서버 저장·복원과 이전 |
-| backend/server.mjs | 로컬 API, SQLite 견적·설정·상태, 수집 작업 실행 |
 | backend/document-files.mjs | 수집 JSON 문서의 SQLite 저장 어댑터 |
 | pipeline/store.mjs | 제품 사실·가격·벤치마크 관측·작업·검수 큐 |
 | pipeline/run.mjs / expand.mjs / publish.mjs | 수집·발견·스냅샷 발행 |
@@ -39,36 +37,54 @@ flowchart LR
 
 | 저장소 | 주요 내용 |
 | --- | --- |
-| backend/data/buildmate.db | quotes, app_settings, data_snapshots, llm_usage |
+| PostgreSQL `pcquote` | 서버 운영 데이터: parts(엔진 사양 + 화면용 원본 raw), price_history, saved_quotes, app_settings, documents(catalog-meta 등), llm_usage, price_reviews. 구조는 pcquote `docs/architecture.md` |
+| backend/data/buildmate.db | 2026-11-06 이전 운영 데이터(견적·설정·상담 상태·LLM 사용량). `pcquote/backend/scripts/migrate_buildmate_db.py`로 PostgreSQL에 옮겼고 서버는 더 쓰지 않는다 |
 | backend/data/pipeline.db | product_facts, price_observations, benchmark_observations, pipeline_jobs, review_queue |
 | backend/data/documents.db | documents: 경로별 JSON 문서, source_assets: 벤치마크 원본 |
 
 documents 어댑터는 프로젝트 경로의 JSON을 DB에서 먼저 조회한다. DB에 없으면 기존 파일을 읽어 JSON을 검증한 뒤 최초 가져오기를 수행한다. 이후 갱신은 DB에 기록한다. 파일 경로를 문서 키로 사용하므로 저장소 이동 시 경로 재매핑이 필요하다. 프로젝트 외부 경로는 별도 DB 위치를 사용하며 테스트 환경도 이에 해당한다.
 
-서버는 documents.db를 우선 조회하고 기존 스냅샷 테이블·파일을 호환 경로로 사용한다. DB를 도입했다고 모든 파일이 제거된 것은 아니다. 원본 파일은 복구용으로 유지하고, 로그·프로세스 잠금은 파일 시스템을 사용한다. Python 벤치마크 파서는 DB의 등록부를 임시 파일로 전달받고 결과를 DB에 저장한다.
+서버는 documents.db를 읽기 전용으로 연다. 발행된 카탈로그 문서(`public/data/catalog.json`)의 updated_at이 바뀌면 PostgreSQL로 다시 가져오고, 수집 현황·발견 상태·가격 이력 문서는 요청 때 읽는다. 이전 Node 서버는 documents.db를 우선 조회하고 기존 스냅샷 테이블·파일을 호환 경로로 사용했다. DB를 도입했다고 모든 파일이 제거된 것은 아니다. 원본 파일은 복구용으로 유지하고, 로그·프로세스 잠금은 파일 시스템을 사용한다. Python 벤치마크 파서는 DB의 등록부를 임시 파일로 전달받고 결과를 DB에 저장한다.
 
 ## 주요 API
 
 | 경로 | 역할 |
 | --- | --- |
-| GET /api/health | 모드·DB 저장 방식·LLM 설정 상태 |
-| GET /api/catalog | 카탈로그 |
-| GET /api/pipeline/status | 수집·검수 현황 |
+| GET /api/health | 모드(live)·저장소(postgresql)·LLM 설정·엔진(pcquote) |
+| GET /api/catalog | 카탈로그(화면 형식 원본) |
+| GET /api/pipeline/status | 수집·검수 현황(documents.db) + 수동 수집 실행 여부 |
 | GET /api/discovery/status | 발견 진행 상태 |
 | GET /api/prices/snapshot | 가격 이력 스냅샷 |
-| POST /api/requirements | 요구사항 구조화 |
-| POST /api/recommend | 서버 견적 계산 |
-| GET / POST /api/quotes | 이력 조회·확정 견적 저장 |
+| POST /api/pipeline/run | `node pipeline/run.mjs --expand` 수동 실행 |
+| POST /api/requirements | 요구사항 구조화(OpenRouter, 없으면 규칙) |
+| POST /api/answer | 근거 기반 질문 답변(금액·FPS 검사, 실패 시 카탈로그 답변) |
+| POST /api/recommend/fresh | pcquote 추천 → 선택 부품 다나와 가격 갱신 → 재추천 |
+| POST /api/quotes/evaluate | 부품 교체 후 검사·성능 재계산 |
+| POST /api/quotes/alternatives | 호환 대체 후보 id 목록 |
+| GET / POST /api/quotes | 이력 조회·확정 견적 저장(pcquote 규칙으로 재검증, 예산 +5% 상한) |
 | DELETE /api/quotes/:id | 이력 삭제 |
 | POST /api/quotes/import | 기존 브라우저 이력 가져오기 |
 | GET / PUT /api/settings | 매장 설정 |
 | GET / PUT /api/state/:name | 테마 및 live/demo 상담 임시 상태 |
+
+이전 Node 서버의 `POST /api/recommend`(내장 엔진), `/api/prices/history`, `/api/knowledge*`는 화면이 쓰지 않아 옮기지 않았다.
 
 ## 견적 계산
 
 현재 실제 모드의 신규·재생성은 서버 가격 갱신 API를 사용하고, 데모 모드 계산은 Web Worker를 사용한다. 소규모 카탈로그는 기존 탐색을 사용하고, 1,000개 초과 카탈로그는 중간 후보를 제한한다. 저가 후보와 CPU·GPU 성능별 후보를 유지하면서 호환성·예산 검사를 적용한다. 균형안과 강화안 구분을 위한 선택 규칙이 있으며 전수 탐색의 최적성 보장은 없다.
 
 UI에서 계산을 분리하는 것과 계산 자체가 종료되는 것은 별개다. 대규모 데이터 결과, 시간, 실패·취소 경로는 별도로 검증한다. 서버 API의 계산은 Node 이벤트 루프에서 실행되므로 별도 성능·동시 요청 검토가 필요하다.
+
+### 서버 견적 (2026-11-06~)
+
+모든 견적은 pcquote 엔진이 고른다. 데모 모드(`?demo=1`)는 서버 없이 브라우저의 내장 엔진을 쓴다.
+
+1. buildmate 데이터 정책(필수 사양, NVMe 전용, 벤치마크 3표본·45일, 품절)을 통과하지 못하는 부품은 처음부터 후보에서 뺀다. 가격 24시간 만료는 빼는 이유가 아니라 갱신 대상이다. 정책은 pcquote `policy.py`로 옮겼고, 실제 부품 6,829개에서 JS 판정과 같은 결과를 확인했다.
+2. 3안에서 가격이 24시간보다 오래된 부품만 다나와에서 갱신하고 다시 추천한다(최대 6회). 기존 수집 규칙(robots.txt, 출처당 2초, 허용 호스트, 재시도, 8MB)을 지킨다. 직전 가격 대비 30% 넘게 바뀐 가격은 `price_reviews`에 남기고 그 부품을 뺀다. 갱신에 실패한 부품도 뺀다.
+3. 균형형 → 최적 균형안, 성능 우선형 → 성능 강화안, 가성비형 → 절약안. 외장 GPU 없음은 `g0`, OS는 `o0`/`o1`. 상한(`budgetCap`)은 예산 +5%다. BIOS 업데이트가 필요한 칩셋 조합은 통과로 보되 검사 이름에 "(출고 전 확인)"을 붙이고 보드 `biosPreparation`에 표시한다.
+4. 견적 저장(`POST /api/quotes`)은 부품 존재·데이터 정책·가격 일치·카탈로그 버전·pcquote 호환 규칙·예산 +5%를 다시 검사한다.
+
+실행: `npm run server`(= `cd ../pcquote/backend && uv run uvicorn pcquote.main:app --host 127.0.0.1 --port 8001`). PostgreSQL `pcquote` DB가 필요하다. OpenRouter 키는 `pcquote/backend/.env`, 없으면 buildmate `.env`에서 읽는다. 예산 미지정 요청은 422로 예산을 묻는다.
 
 ## 운영과 확인할 제약
 
@@ -132,3 +148,7 @@ BIOS 버전 문자열의 대소 관계를 제조사 공통 규칙으로 추정�
 - 2026-11-06: src/question-answer.mjs가 질문 판별(isQuestion), CPU·GPU 모델 토큰(modelTokens/modelKey), 카탈로그 근거 답변(answerQuestion)을 담당한다. 질문 답변은 클라이언트에서 처리하며 API를 호출하지 않는다. main.jsx는 견적을 만든 assistant 메시지(quote 표시)까지의 대화, 견적 결과, 이후 대화 순으로 렌더링한다. parseRequirement는 models를 반환하고 recommend는 카탈로그에 해당 모델이 있는 CPU·GPU 풀을 그 모델로 제한한다. engine.mjs는 detectProfile을 공개하고 main.jsx는 용도가 바뀌면 이전 요청 문장과 예산 없이 새 요청으로 처리한다. selectProposals의 공동 선택은 예산 없는 요청에도 적용한다.
 - 2026-11-06: npm run server는 .env를 읽는다(--env-file-if-exists). OpenRouter 호출은 reasoning을 끄고, 결과를 스키마 검증한 뒤 src/engine.mjs의 mergeInterpretation으로 병합한다. 문장 규칙이 찾은 용도·예산·해상도·옵션이 우선하며 LLM은 규칙이 못 찾은 용도와 확인 질문(예산 질문 제외)만 보탠다.
 - 2026-11-06: LLM 하네스. backend/llm.mjs가 OpenRouter 호출(모델 대체, reasoning 비활성, JSON 파싱, 사용량 기록)을 담당하고 요구 해석과 질문 답변이 공유한다. POST /api/answer {text, history(최근 6개), quote(req·안별 부품 id)}는 backend/answer-harness.mjs가 처리한다: 서버 카탈로그로 근거(언급 제품의 VRAM·VRAM별 최저가·Blender 지수, 견적 부품의 이름·가격·사양, 데이터 한계)를 만들고, 규칙은 시스템 메시지·고객 문장과 대화는 데이터로 전달하며, 답변의 근거 밖 금액(±2%, 비교 가능한 금액 차액 허용)·FPS 수치·길이·한국어 여부를 검사해 위반 시 1회 교정 요청 후 실패하면 규칙 답변(answerQuestion)으로 대체한다. 응답은 {text,sources,method}이며 화면은 근거 종류를 표시한다. scripts/llm-eval.mjs(npm run eval:llm)는 실제 모델·저장 카탈로그로 대표 질문을 평가한다.
+- 2026-11-06: live 모드 추천을 pcquote 엔진으로 전환. `backend/pcquote-engine.mjs`, `POST /api/quotes/evaluate`·`/api/quotes/alternatives` 프록시, `/api/health`의 engine·pcquote 필드 추가. 화면은 pcquote 견적(`engine:'pcquote'`)이면 교체 검사와 대체 후보 호환 표시를 서버 API로 받고, 상한은 `budgetCap`을 쓴다. [intent](intent/2026-11-06-pcquote-engine.md)
+- 2026-11-06: 서버를 하나로 합쳤다. Node 서버(`backend/server.mjs`, pcquote-engine·refresh-prices·answer-harness·llm·knowledge-store)를 지우고 pcquote FastAPI가 같은 API를 PostgreSQL로 제공한다. 운영 데이터는 buildmate.db에서 이전했다. `npm run server`·`npm run eval:llm`은 pcquote를 실행한다. 수집 파이프라인은 Node 배치로 남고 documents.db에 쓴다. [intent](intent/2026-11-06-single-server.md)
+- 2026-11-07: Python 수집기(pcquote `collector`)를 추가했다. 아직 전환 전이라 야간 수집은 Node `pipeline/`이 계속 한다. 전환하면 LaunchAgent가 `pcquote/backend/scripts/run_collector_daily.sh`를 실행하고, 수집 결과는 PostgreSQL에 바로 들어가며, 서버는 documents.db를 읽지 않는다. [intent](intent/2026-11-07-python-collector.md)
+- 2026-11-07: 전환 완료. 매일 0시 LaunchAgent가 pcquote 수집기(`scripts/run_collector_daily.sh`)를 실행하고 결과를 PostgreSQL에 바로 발행한다. 서버는 documents.db·pipeline.db를 읽지 않는다. `npm run pipeline*`도 Python 수집기를 실행한다. Node `pipeline/`은 되돌리기용으로 남겼다(LaunchAgent 백업 plist 복원 + `catalog-owner` 삭제).

@@ -6,9 +6,11 @@ export function partSelectableForDraft(part){
  if(part?.category==='cpu'&&part.dataMode==='live')return priceState(part)==='fresh'&&part.inStock!==false&&typeof part.socket==='string'&&Number.isFinite(part.watts);
  return usablePart(part);
 }
-export function alternativeOptions(catalog,category,plan,req,settings={}){
+// compatibleIds: ids an external engine (pcquote) found compatible and usable; its rules replace validateBuild here.
+export function alternativeOptions(catalog,category,plan,req,settings={},{compatibleIds=null}={}){
  return catalog.filter(p=>!storageRecommendationIssue(p)&&p.category===category&&(category!=='ssd'||!/외장|external|USB|케이스|인클로저/i.test(p.name))).map(part=>{
-  const checks=validateBuild({...plan.parts,[category]:part},req);
+  const external=compatibleIds?{label:'호환성(pcquote)',ok:compatibleIds.has(part.id),detail:compatibleIds.has(part.id)?'pcquote 호환 규칙 통과':'pcquote 호환·사양 조건 미충족'}:null;
+  const checks=external?[external]:validateBuild({...plan.parts,[category]:part},req);
   const reasons=checks.filter(c=>c.ok!==true).map(c=>`${c.label}${c.ok===null?' 확인 필요':' 조건 불충족'}`);
   if(!usablePart(part)){
    if(part.dataMode==='live'){

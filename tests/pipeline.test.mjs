@@ -30,6 +30,24 @@ test('인텔 Ultra CPU의 소켓1851·하이브리드 코어·최대 전력을 �
  assert.equal(parseSpecs('board','인텔(소켓1851) / ATX / DDR5 / 메모리 슬롯: 4').socket,'LGA1851');
 });
 
+test('다나와 실제 표기: 인텔(1700소켓)·PBP-MTP 물결 범위·TDP 범위·UHD 내장그래픽을 파싱한다',()=>{
+ const k=parseSpecs('cpu','인텔(1700소켓) / 8+12코어 / 16+12쓰레드 / 메모리 규격: DDR5, DDR4 / 탑재 / 10nm / 최대 클럭: 5.6GHzGHz / L2 캐시: 28M / L3 캐시: 33MB / PBP-MTP: 125~253W / PCIe5.0, 4.0 / 5600, 3200MHz / UHD 770 / 쿨러: 인텔 기본쿨러 포함','인텔 코어i7-14세대 14700K (랩터레이크 리프레시) (벌크+쿨러)');
+ assert.equal(k.socket,'LGA1700');assert.equal(k.watts,253);assert.equal(k.cores,20);assert.equal(k.igpu,true);
+ const f=parseSpecs('cpu','인텔(소켓1700) / 6코어 / 12스레드 / 메모리 규격: DDR5, DDR4 / 미탑재 / 10nm(인텔7) / 기본 클럭: 2.5GHz / 최대 클럭: 4.4GHz / TDP: 65~117W / PCIe5.0, 4.0','인텔 코어i5-12세대 12400F (엘더레이크) (벌크)');
+ assert.equal(f.socket,'LGA1700');assert.equal(f.watts,117);assert.equal(f.tdp,65);assert.equal(f.igpu,false);
+ // A thread count such as "16+12쓰레드" must not be read as a core count.
+ assert.equal(parseSpecs('cpu','인텔(1700소켓) / 16+12쓰레드').cores,null);
+});
+
+test('다나와 실제 표기: [메모리] 묶음의 속도 뒤 슬롯 수를 파싱하고 다른 개수와 혼동하지 않는다',()=>{
+ const text='인텔(소켓1851) / 인텔 B860 / DDR5 / VGA 연결: PCIe5.0 x16 / M-ATX (24.4x24.4cm) / 전원부: 5+1+2페이즈 / [메모리] / 9066MHz (PC5-72500) / 4개 / 메모리 용량: 최대 256GB / XMP / [확장슬롯] / PCIex16: 1개 / [저장장치] / SATA3: 4개 / M.2: 2개';
+ const b=parseSpecs('board',text,'GIGABYTE B860M DS3H 제이씨현');
+ assert.equal(b.socket,'LGA1851');assert.equal(b.slots,4);assert.equal(b.maxRam,256);assert.equal(b.m2,2);assert.equal(b.form,'mATX');
+ assert.equal(parseSpecs('board','인텔(소켓1851) / DDR5 / [메모리] / 2개 / 메모리 용량: 최대 128GB').slots,2);
+ // Without a memory-capacity anchor the slot count stays unknown instead of borrowing another count.
+ assert.equal(parseSpecs('board','인텔(소켓1851) / DDR5 / [확장슬롯] / PCIex16: 1개 / SATA3: 4개').slots,null);
+});
+
 test('등록월은 출시일로 둔갑시키지 않으며 가격 없는 SKU도 별도로 보존할 수 있다',()=>{
  const source='<body>등록월: 2024.11.'+html()+'</body>';
  const result=parseProduct(source,product,meta);assert.equal(result.part.listingMonth,'2024-11');assert.equal(result.part.listingDateEvidence.kind,'danawa-registration-month');assert.equal(result.part.releaseDate,undefined);

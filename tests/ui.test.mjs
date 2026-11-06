@@ -202,3 +202,44 @@ test('UI: LLM이 켜져 있으면 질문을 현재 견적 부품 id·최근 대�
  assert.match(after.textContent,/옵션 조정이 필요해요/);assert.match(after.querySelector('.message-sources').textContent,/현재 견적 · 일반 지식/);
  }finally{w.close();}
 });
+test('UI: pcquote 견적은 예산 +5% 안이면 발행할 수 있고, 부품 교체·대체 후보는 pcquote 규칙으로 다시 검사한다',async()=>{
+ const {readFileSync}=await import('node:fs');
+ const snapshot=JSON.parse(readFileSync('public/data/catalog.json'));
+ for(const p of snapshot.parts){p.dataMode='live';if(p.priceEvidence)p.priceEvidence.observedAt=new Date().toISOString();if(p.benchmark)p.benchmark.observedAt=new Date().toISOString();}
+ // A pcquote-style answer built from a valid build whose total sits above the stated budget but inside +5%.
+ const base=buildRecommendations({profile:'office',budget:1000000,resolution:'FHD'},{assembly:30000},snapshot.parts).find(Boolean);
+ const budgetMan=Math.floor(base.total/1.02/10000);
+ assert.ok(base.total>budgetMan*10000&&base.total<=budgetMan*10000*1.05,`fixture total ${base.total}`);
+ // The server's response shape for a pcquote plan (pcquote/backend/src/pcquote/screen.py map_plan).
+ const serverPlan=req=>({...base,id:'balanced',engine:'pcquote',catalogVersion:snapshot.catalogVersion,budgetCap:Math.floor(req.budget*1.05),
+  checks:[{label:'칩셋 세대 지원 (출고 전 확인)',ok:true,detail:'BIOS 업데이트 후 지원',warning:true}],
+  parts:{...base.parts,board:{...base.parts.board,biosPreparation:'출고 전 확인: BIOS 업데이트 후 지원'}}});
+ const otherBoard=snapshot.parts.find(p=>p.category==='board'&&p.id!==base.parts.board.id&&p.socket===base.parts.board.socket);
+ const calls=[];const state={};const mock=apiMock(snapshot,'live',state);
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
+ try{
+  w.fetch=async(url,options={})=>{
+   if(url==='/api/recommend/fresh'){const data=JSON.parse(options.body);return {ok:true,json:async()=>({plans:[serverPlan(data.requirement),null,null],catalogVersion:snapshot.catalogVersion,engine:'pcquote'})};}
+   if(url==='/api/quotes/alternatives'){calls.push(['alternatives',JSON.parse(options.body)]);return {ok:true,json:async()=>({items:[{id:otherBoard.id}]})};}
+   if(url==='/api/quotes/evaluate'){const body=JSON.parse(options.body);calls.push(['evaluate',body]);return {ok:true,json:async()=>({checks:[{label:'CPU 소켓',ok:true,detail:'pcquote'}],performance:41,popularity:0.4,warnings:[]})};}
+   return mock(url,options);
+  };
+  w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await wait(120);
+  const input=w.document.querySelector('#request');
+  Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,`사무용 PC ${budgetMan}만원`);input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);
+  w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await waitFor(()=>w.document.querySelector('.plan-price'));
+  assert.match(w.document.body.textContent,/출고 전 확인: BIOS 업데이트 후 지원/);
+  const issue=()=>[...w.document.querySelectorAll('button')].find(b=>b.textContent.includes('선택안 견적서 발행'));
+  assert.equal(issue().disabled,false,'예산 +5% 안 pcquote 견적은 발행 가능');
+  w.document.querySelector('[aria-label="최적 균형안 메인보드 교체"]').click();
+  await waitFor(()=>calls.some(c=>c[0]==='alternatives')&&w.document.querySelector('.alternative-option'));
+  assert.equal(calls.find(c=>c[0]==='alternatives')[1].category,'board');
+  const input2=w.document.querySelector('[aria-label="대체 부품 검색"]');Object.getOwnPropertyDescriptor(w.HTMLInputElement.prototype,'value').set.call(input2,otherBoard.name);input2.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);
+  const option=[...w.document.querySelectorAll('.alternative-option')].find(b=>b.querySelector('.alternative-title').textContent===otherBoard.name);
+  assert.ok(option,'pcquote가 호환으로 본 보드가 목록에 있다');assert.doesNotMatch(option.textContent,/조건 불충족/);
+  option.click();await waitFor(()=>calls.some(c=>c[0]==='evaluate'));
+  assert.equal(calls.find(c=>c[0]==='evaluate')[1].parts.board,otherBoard.id);
+  await waitFor(()=>w.document.querySelector('.plan-card').textContent.includes(otherBoard.name));
+  assert.doesNotMatch(w.document.body.textContent,/출고 전 확인: BIOS 업데이트 후 지원/);
+ }finally{w.close();}
+});

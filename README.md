@@ -18,14 +18,14 @@ npm run dev
 
 기본적으로 `public/data/catalog.json`의 **실제 데이터**를 읽습니다. API가 있으면 `/api/catalog`를 먼저 사용하며 정적 스냅샷으로도 같은 추천 엔진을 실행합니다. 연결 실패 시 가상값으로 돌아가지 않습니다. 가상 시연은 명시적으로 `?demo=1`을 붙일 때만 열립니다.
 
-로컬 API를 별도 터미널에서 실행하려면:
+API 서버는 `../pcquote/backend`의 FastAPI 하나입니다(PostgreSQL `pcquote` DB 필요). 별도 터미널에서 실행합니다.
 
 ```sh
 cp .env.example .env
-node --env-file=.env backend/server.mjs
+npm run server   # = cd ../pcquote/backend && uv run uvicorn pcquote.main:app --host 127.0.0.1 --port 8001
 ```
 
-Vite는 `/api`를 8001 포트로 프록시합니다. 서버는 127.0.0.1에만 바인딩합니다. 키가 없으면 로컬 요구 분석을 사용하고, `OPENROUTER_API_KEY`와 `OPENROUTER_MODEL`을 설정하면 요구 구조화·최대 3개 확인 질문·스키마 검증·재시도·사용량 로그를 사용합니다.
+Vite는 `/api`를 8001 포트로 프록시합니다. `npm run build` 후에는 8001 서버가 화면도 직접 내보냅니다(`http://127.0.0.1:8001/`). 서버는 127.0.0.1에만 바인딩합니다. 키가 없으면 로컬 요구 분석을 사용하고, `OPENROUTER_API_KEY`와 `OPENROUTER_MODEL`을 설정하면 요구 구조화·최대 3개 확인 질문·스키마 검증·재시도·사용량 로그를 사용합니다.
 
 ## 실제 데이터
 
@@ -78,4 +78,4 @@ npm run build
 
 엔진/HTTP API/컴포넌트 흐름에 더해 가격 이상치 격리, 데이터 만료, 잘못된 SKU·통화 거부, RAM 키트와 GPU 커넥터 파싱, 공식 Blender 형식의 스트리밍 집계, 실데이터 화면 로드, 미확인 호환성 발행 차단을 검증합니다. 외부 네트워크 없이 반복 실행할 수 있습니다. 연결된 브라우저가 없어 실제 렌더링/인쇄 화면의 시각적 검증은 수행하지 못했습니다.
 
-운영 데이터는 `backend/data/buildmate.db`(견적·설정·상담 상태), `pipeline.db`(가격·제품 관측·검수), `documents.db`(수집 등록부·진행 상태·카탈로그·캐시)에 저장됩니다. JSON은 최초 읽기 때 DB로 가져오며 이후 읽기와 갱신은 DB를 사용합니다. 기존 JSON은 복구용으로 보존하며 운영 중 직접 편집해도 DB를 덮어쓰지 않습니다. 벤치마크 원본은 DB에도 보관하고 파서 작업용 파일은 유지합니다. 프로세스 잠금과 로그는 파일을 사용합니다. 백업 시 SQLite의 WAL을 포함한 일관된 백업을 사용하세요.
+서버 운영 데이터(견적·설정·상담 상태·카탈로그)는 PostgreSQL `pcquote`에 저장됩니다(2026-11-06 `backend/data/buildmate.db`에서 이전). 수집 파이프라인 데이터는 `pipeline.db`(가격·제품 관측·검수), `documents.db`(수집 등록부·진행 상태·카탈로그·캐시)에 저장됩니다. JSON은 최초 읽기 때 DB로 가져오며 이후 읽기와 갱신은 DB를 사용합니다. 기존 JSON은 복구용으로 보존하며 운영 중 직접 편집해도 DB를 덮어쓰지 않습니다. 벤치마크 원본은 DB에도 보관하고 파서 작업용 파일은 유지합니다. 프로세스 잠금과 로그는 파일을 사용합니다. 백업 시 SQLite의 WAL을 포함한 일관된 백업을 사용하세요.
