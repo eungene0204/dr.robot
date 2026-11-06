@@ -1,0 +1,11 @@
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+node_modules/
+.next/
+.env
+
+# Collector runtime files (archive, logs, LaunchAgent backup); data/buildmate-reparsed-specs.json stays tracked
+backend/data/*
+!backend/data/buildmate-reparsed-specs.json
