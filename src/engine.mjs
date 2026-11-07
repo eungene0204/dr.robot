@@ -11,12 +11,21 @@ import {catalog,categories} from './catalog.mjs';
 import {usablePart} from './data-policy.mjs';
 import {modelTokens,modelKey} from './question-answer.mjs';
 export const money=n=>new Intl.NumberFormat('ko-KR').format(n)+'원';
-export function explicitBudget(text){
- const matches=[...text.matchAll(/(\d[\d,]*(?:\.\d+)?)\s*(만\s*원?|원)/g)];
- const last=matches.at(-1);if(!last)return null;
- return Math.round(Number(last[1].replaceAll(',',''))*(last[2].startsWith('만')?10000:1));
+const koreanDigits=Object.fromEntries([...'일이삼사오육칠팔구'].map((c,i)=>[c,i+1])),koreanUnits={십:10,백:100,천:1000};
+// '1,500' → 1500, '백오십' → 150, '2백' → 200, '1.5백' → 150, '1천5백' → 1500.
+function amount(number){
+ let total=0,current=null;
+ for(const token of number.replaceAll(',','').match(/\d+(?:\.\d+)?|\D/g)){if(koreanUnits[token]){total+=(current??1)*koreanUnits[token];current=null}else current=Number(koreanDigits[token]??token)}
+ return total+(current??0);
 }
-export const detectProfile=value=>/편집|프리미어|다빈치|렌더|3D|어도비|adobe|premiere|포토샵|photoshop|라이트룸|lightroom|일러스트레이터|illustrator|애프터\s*이펙트|after\s*effects|블렌더|blender/i.test(value)?'editing':/로컬|딥러닝|LLM|개발|AI/i.test(value)?'ai':/사무|엑셀|학습|POS/i.test(value)?'office':/게임|게이밍|배그|롤|gaming/i.test(value)?'gaming':/인터넷|웹\s*서핑|웹\s*브라우|문서|인강|온라인\s*강의|유튜브|동영상\s*시청/i.test(value)?'office':null;
+// Digits ("150만원") or Korean numerals mixed with digits ("백오십만원", "2백만원"); Korean numerals only count before 만.
+export function explicitBudget(text){
+ const matches=[...text.matchAll(/((?:\d[\d,]*(?:\.\d+)?|[일이삼사오육칠팔구십백천])+)\s*(만\s*원?|원)/g)].filter(m=>m[2].startsWith('만')||/^\d/.test(m[1]));
+ const last=matches.at(-1);if(!last)return null;
+ return Math.round(amount(last[1])*(last[2].startsWith('만')?10000:1));
+}
+// "3D" only as a word: the X3D in a CPU model name (9800X3D) is not 3D work.
+export const detectProfile=value=>/편집|프리미어|다빈치|렌더|(?<![a-z0-9])3D|어도비|adobe|premiere|포토샵|photoshop|라이트룸|lightroom|일러스트레이터|illustrator|애프터\s*이펙트|after\s*effects|블렌더|blender|캐드|(?<![a-z])(?:auto)?cad(?![a-z])|스케치업|sketchup|솔리드웍스|solidworks/i.test(value)?'editing':/로컬|딥러닝|머신\s*러닝|LLM|개발|AI|스테이블\s*디퓨전|stable\s*diffusion|파이토치|pytorch/i.test(value)?'ai':/사무|엑셀|학습|POS/i.test(value)?'office':/게임|게이밍|배그|롤|gaming/i.test(value)?'gaming':/인터넷|웹\s*서핑|웹\s*브라우|문서|인강|온라인\s*강의|유튜브|동영상\s*시청/i.test(value)?'office':null;
 export function parseRequirement(text,options={}) {
  const statedBudget=explicitBudget(text);
  const requests=text.split(/\n추가 요청:\s*/);

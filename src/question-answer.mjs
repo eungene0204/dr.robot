@@ -1,6 +1,6 @@
 import {usablePart} from './data-policy.mjs';
 // Model tokens such as 5060ti, rx9070xt, 9800x3d or i5-14400f. Bare numbers count only when they look like a 4-digit model, not a resolution or price.
-const MODEL=/(rtx|gtx|rx|i[3579]-?)?\s?(\d{3,5})\s?(x3d2?|xtx|xt|gre|ti\s?super|ti|super|kf|ks|k|f|x|g)?(?![\d만원,.]|\s?(?:만|원|p\b|hz|gb|tb|w\b))/gi;
+const MODEL=/(rtx|gtx|rx|i[3579]-?)?\s?(\d{3,5})\s?(x3d2?|xtx|xt|gre|ti\s?super|ti|super|kf|ks|k|f|x|g)?(?![\d만원]|[,.]\d|\s?(?:만|원|p\b|hz|gb|tb|w\b))/gi;
 export function modelTokens(text){
  const tokens=new Set();
  for(const m of String(text||'').toLowerCase().matchAll(MODEL)){

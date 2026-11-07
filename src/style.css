@@ -258,3 +258,6 @@ button.plan-part-row:hover,button.plan-part-row[aria-expanded=true]{background:v
 
 .persistent-warning>span{flex:1;min-width:0}.warning-dismiss{flex-shrink:0;align-self:flex-start;margin-left:auto;padding:6px;border-radius:6px;background:transparent;color:inherit}.warning-dismiss:hover{background:#ffffff26}.warning-dismiss:focus-visible{outline-color:currentColor}
 .alternative-popularity{font-size:12px;color:var(--muted);line-height:1.6}
+.issue-check{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.issue-check input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
+.issue-check input:disabled{cursor:not-allowed}

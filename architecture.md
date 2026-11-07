@@ -61,7 +61,7 @@ documents 어댑터는 프로젝트 경로의 JSON을 DB에서 먼저 조회한�
 | POST /api/recommend/fresh | pcquote 추천 → 선택 부품 다나와 가격 갱신 → 재추천 |
 | POST /api/quotes/evaluate | 부품 교체 후 검사·성능 재계산 |
 | POST /api/quotes/alternatives | 호환 대체 후보 id 목록 |
-| GET / POST /api/quotes | 이력 조회·확정 견적 저장(pcquote 규칙으로 재검증, 예산 +5% 상한) |
+| GET / POST /api/quotes | 이력 조회·확정 견적 저장(pcquote 규칙으로 재검증, 예산 상한) |
 | DELETE /api/quotes/:id | 이력 삭제 |
 | POST /api/quotes/import | 기존 브라우저 이력 가져오기 |
 | GET / PUT /api/settings | 매장 설정 |
@@ -81,8 +81,8 @@ UI에서 계산을 분리하는 것과 계산 자체가 종료되는 것은 별�
 
 1. buildmate 데이터 정책(필수 사양, NVMe 전용, 벤치마크 3표본·45일, 품절)을 통과하지 못하는 부품은 처음부터 후보에서 뺀다. 가격 24시간 만료는 빼는 이유가 아니라 갱신 대상이다. 정책은 pcquote `policy.py`로 옮겼고, 실제 부품 6,829개에서 JS 판정과 같은 결과를 확인했다.
 2. 3안에서 가격이 24시간보다 오래된 부품만 다나와에서 갱신하고 다시 추천한다(최대 6회). 기존 수집 규칙(robots.txt, 출처당 2초, 허용 호스트, 재시도, 8MB)을 지킨다. 직전 가격 대비 30% 넘게 바뀐 가격은 `price_reviews`에 남기고 그 부품을 뺀다. 갱신에 실패한 부품도 뺀다.
-3. 균형형 → 최적 균형안, 성능 우선형 → 성능 강화안, 가성비형 → 절약안. 외장 GPU 없음은 `g0`, OS는 `o0`/`o1`. 상한(`budgetCap`)은 예산 +5%다. BIOS 업데이트가 필요한 칩셋 조합은 통과로 보되 검사 이름에 "(출고 전 확인)"을 붙이고 보드 `biosPreparation`에 표시한다.
-4. 견적 저장(`POST /api/quotes`)은 부품 존재·데이터 정책·가격 일치·카탈로그 버전·pcquote 호환 규칙·예산 +5%를 다시 검사한다.
+3. 균형형 → 최적 균형안, 성능 우선형 → 성능 강화안, 가성비형 → 절약안. 외장 GPU 없음은 `g0`, OS는 `o0`/`o1`. 상한(`budgetCap`)은 예산 그대로다. 기본 최소 사양으로 예산 안 조합이 없으면 엔진이 사양을 단계적으로 낮추고(`Result.relaxed`), 응답 `notice`로 화면 견적 메시지에 안내한다. BIOS 업데이트가 필요한 칩셋 조합은 통과로 보되 검사 이름에 "(출고 전 확인)"을 붙이고 보드 `biosPreparation`에 표시한다.
+4. 견적 저장(`POST /api/quotes`)은 부품 존재·데이터 정책·가격 일치·카탈로그 버전·pcquote 호환 규칙·예산 상한을 다시 검사한다.
 
 실행: `npm run server`(= `cd ../pcquote/backend && uv run uvicorn pcquote.main:app --host 127.0.0.1 --port 8001`). PostgreSQL `pcquote` DB가 필요하다. OpenRouter 키는 `pcquote/backend/.env`, 없으면 buildmate `.env`에서 읽는다. 예산 미지정 요청은 422로 예산을 묻는다.
 

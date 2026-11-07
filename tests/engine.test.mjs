@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {catalog} from '../src/catalog.mjs';
-import {parseRequirement,mergeInterpretation,recommend,assembleBuild,validate,total} from '../src/engine.mjs';
+import {parseRequirement,mergeInterpretation,recommend,assembleBuild,validate,total,explicitBudget,detectProfile} from '../src/engine.mjs';
 const settings={assembly:30000};
 test('한글 예산과 용도를 구조화한다',()=>{const r=parseRequirement('프리미어 4K 편집, 250만 원, 화이트');assert.equal(r.budget,2500000);assert.equal(r.profile,'editing');assert.equal(r.resolution,'4K');assert.equal(r.white,true)});
 test('어도비 등 크리에이티브 도구 요청은 편집 용도로 해석한다',()=>{for(const text of ['200만원 이하 adobe용 견적','포토샵 라이트룸용 150만 원','애프터 이펙트 작업용'])assert.equal(parseRequirement(text).profile,'editing',text)});
@@ -126,4 +126,13 @@ test('LLM 해석은 문장에 명시된 용도를 덮어쓰지 않고, 규칙이
  const adobe=mergeInterpretation('200만원 이하 adobe용 견적',llm);
  assert.equal(adobe.profile,'editing');assert.equal(adobe.budget,2000000);assert.equal(adobe.os,false);assert.deepEqual(adobe.questions,['주로 쓰는 프로그램은?']);
  assert.equal(mergeInterpretation('스타크래프트용 PC',{...llm,profile:'office'}).profile,'office');
+});
+
+test('budget in Korean numerals and X3D model names match the server rules (quote-eval scenarios)', () => {
+  for (const [text, budget] of [['백오십만원으로 게임용', 1500000], ['2백만원 QHD 게임', 2000000], ['1.5백만원 FHD', 1500000],
+    ['이백오십만 원', 2500000], ['1천5백만원', 15000000], ['1,800,000원', 1800000], ['150만원, 모니터 이원화', 1500000]])
+    assert.equal(explicitBudget(text), budget, text);
+  for (const [text, profile] of [['9800X3D로 350만원 4K 게이밍', 'gaming'], ['블렌더 3D 렌더링', 'editing'], ['캐드(CAD) 도면 작업', 'editing'],
+    ['AutoCAD 작업용', 'editing'], ['스테이블 디퓨전 이미지 생성', 'ai']])
+    assert.equal(detectProfile(text), profile, text);
 });
