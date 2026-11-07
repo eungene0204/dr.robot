@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 
 from ..catalog import Catalog
 
@@ -26,7 +26,11 @@ PERF_WEIGHTS = {"gaming": (0.25, 0.75), "editing": (0.5, 0.5), "office": (1.0, 0
 # Minimum GPU by gaming resolution, as a reference chip present in the catalog.
 GPU_REFERENCE = {"FHD": "RTX 4060", "QHD": "RTX 5060 Ti", "4K": "RTX 5070 Ti"}
 
-BUDGET_BAND = 0.05  # plan: 예산 ±5%
+BUDGET_CEILING = 1.0  # 예산은 상한: 어떤 견적도 예산(조립비 포함)을 넘지 않는다
+POOL_FLOOR = 0.55  # 예산의 55% 미만 조합은 후보에서 제외
+# 세 안의 가격 간격: 성능 우선형은 균형형보다 12% 이상 비싸고, 가성비형은 15% 이상 싸다
+STRONG_GAP = 1.12
+CHEAP_GAP = 0.85
 
 
 @dataclass(frozen=True)
@@ -40,6 +44,14 @@ class Request:
     exclude_parts: tuple[str, ...] = ()  # part ids, e.g. parts whose price could not be refreshed
     assembly_fee: int = 0
     memo: str = ""
+    # Customer-stated preferences: hard while a build fits, dropped with a note otherwise (recommend()).
+    min_ram_gb: int = 0
+    min_ssd_gb: int = 0
+    min_vram_gb: int = 0
+    cpu_brand: str | None = None  # "intel" | "amd"
+    gpu_brand: str | None = None  # "nvidia" | "amd"
+    cpu_models: tuple[str, ...] = ()  # model tokens, e.g. "9800x3d"
+    gpu_models: tuple[str, ...] = ()  # e.g. "5070", "5060ti"
 
     def __post_init__(self):
         if not self.uses or any(u not in USES for u in self.uses):
@@ -56,6 +68,36 @@ class Request:
     @property
     def needs_gpu(self) -> bool:
         return any(u != "office" for u in self.uses)
+
+    def preference_labels(self) -> list[str]:
+        out = []
+        if self.cpu_models:
+            out.append(f"CPU {'/'.join(m.upper() for m in self.cpu_models)}")
+        elif self.cpu_brand:
+            out.append(f"{BRAND_LABELS[self.cpu_brand]} CPU")
+        if self.gpu_models:
+            out.append(f"그래픽카드 {'/'.join(m.upper() for m in self.gpu_models)}")
+        elif self.gpu_brand:
+            out.append(f"{GPU_BRAND_LABELS[self.gpu_brand]} 그래픽카드")
+        if self.min_ram_gb:
+            out.append(f"메모리 {size(self.min_ram_gb)} 이상")
+        if self.min_ssd_gb:
+            out.append(f"SSD {size(self.min_ssd_gb)} 이상")
+        if self.min_vram_gb:
+            out.append(f"VRAM {size(self.min_vram_gb)} 이상")
+        return out
+
+    def without_preferences(self) -> Request:
+        return replace(self, min_ram_gb=0, min_ssd_gb=0, min_vram_gb=0, cpu_brand=None, gpu_brand=None,
+                       cpu_models=(), gpu_models=())
+
+
+BRAND_LABELS = {"intel": "인텔", "amd": "AMD"}
+GPU_BRAND_LABELS = {"nvidia": "지포스", "amd": "라데온"}
+
+
+def size(gb: int) -> str:
+    return f"{gb // 1000}TB" if gb >= 1000 and gb % 1000 == 0 else f"{gb}GB"
 
 
 @dataclass(frozen=True)
@@ -110,5 +152,78 @@ def min_specs(req: Request, catalog: Catalog) -> MinSpecs:
         notes.append("AI·개발: 그래픽카드 VRAM 12GB 이상, 메모리 32GB 이상")
     if not req.needs_gpu:
         notes.append("사무·학습: CPU 내장그래픽 사용")
+    if req.min_ram_gb > ram:
+        ram = req.min_ram_gb
+        notes.append(f"고객 요청: 메모리 {size(ram)} 이상")
+    if req.min_ssd_gb > ssd:
+        ssd = req.min_ssd_gb
+        notes.append(f"고객 요청: SSD {size(ssd)} 이상")
+    if req.needs_gpu and req.min_vram_gb > vram:
+        vram = req.min_vram_gb
+        notes.append(f"고객 요청: 그래픽카드 VRAM {size(vram)} 이상")
     gpu_bench = (catalog.benchmark_of("gpu", gpu_ref) or 0.0) if gpu_ref else 0.0
     return MinSpecs(ram, ssd, gpu_bench, gpu_ref, vram, tuple(notes))
+
+
+LOWER_RESOLUTION = {"4K": "QHD", "QHD": "FHD"}
+# Entry gaming GPUs below the FHD reference, tried in order when even FHD does not fit (e.g. 100만 원 게임용).
+ENTRY_GPUS = ("RTX 5050", "RTX 3050")
+# Office floors below the normal 16GB / 500GB (e.g. POS, 인강용 30~40만 원).
+OFFICE_FLOOR = (8, 256)
+
+
+def relaxed_specs(req: Request, specs: MinSpecs, catalog: Catalog) -> list[tuple[MinSpecs, tuple[str, ...]]]:
+    """Cumulative lower minimums for a budget below the normal minimum build.
+
+    Order: memory, SSD, the gaming GPU reference one resolution down, then entry GPUs;
+    for office, memory and SSD below the normal floor. Each entry is (specs, changes so far).
+    AI VRAM and customer-stated minimums are never lowered.
+    """
+    out: list[tuple[MinSpecs, tuple[str, ...]]] = []
+    changes: list[str] = []
+    current = specs
+
+    def lower_ram(floor: int):
+        nonlocal current
+        floor = max(floor, req.min_ram_gb)
+        if current.ram_gb > floor:
+            changes.append(f"메모리 {size(current.ram_gb)} → {size(floor)}")
+            current = replace(current, ram_gb=floor)
+            out.append((current, tuple(changes)))
+
+    def lower_ssd(floor: int):
+        nonlocal current
+        floor = max(floor, req.min_ssd_gb)
+        if current.ssd_gb > floor:
+            changes.append(f"SSD {size(current.ssd_gb)} → {size(floor)}")
+            current = replace(current, ssd_gb=floor)
+            out.append((current, tuple(changes)))
+
+    gpu_from = specs.gpu_reference
+
+    def lower_gpu(ref: str, resolution: str):
+        nonlocal current
+        bench = catalog.benchmark_of("gpu", ref)
+        if not bench or bench >= current.gpu_benchmark:
+            return
+        if changes and changes[-1].startswith("그래픽카드 기준"):
+            changes.pop()  # one line for the whole GPU chain: "RTX 4060급 → RTX 3050급"
+        changes.append(f"그래픽카드 기준 {gpu_from}급 → {ref}급")
+        notes = tuple(n for n in current.notes if not n.endswith("급 이상 그래픽카드"))
+        current = replace(current, gpu_reference=ref, gpu_benchmark=bench,
+                          notes=notes + (f"{resolution} 게임(예산 맞춤): {ref}급 이상 그래픽카드",))
+        out.append((current, tuple(changes)))
+
+    lower_ram(16)
+    lower_ssd(500)
+    if "gaming" in req.uses:
+        lower = LOWER_RESOLUTION.get(req.resolution)
+        if lower and current.gpu_reference == GPU_REFERENCE[req.resolution]:
+            lower_gpu(GPU_REFERENCE[lower], req.resolution)
+        if current.gpu_reference == GPU_REFERENCE["FHD"]:
+            for ref in ENTRY_GPUS:
+                lower_gpu(ref, req.resolution)
+    if not req.needs_gpu:
+        lower_ram(OFFICE_FLOOR[0])
+        lower_ssd(OFFICE_FLOOR[1])
+    return out

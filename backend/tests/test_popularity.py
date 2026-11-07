@@ -30,9 +30,9 @@ def _with(parts, **ranks):
 
 
 def test_popular_psu_beats_cheaper_unranked_one():
-    parts = sample_parts() + [part("p-pop", "psu", "인기 850W 골드", 140_000, rank=1,
+    parts = sample_parts() + [part("p-pop", "psu", "인기 850W 골드", 140_000, rank=1, efficiency="골드",
                                    capacity=850, connectors=["8pin", "12v2x6"])]
-    result = recommend(Catalog(parts, now=NOW), Request(budget=1_800_000))
+    result = recommend(Catalog(parts, now=NOW), Request(budget=1_900_000))
     assert result.plans
     assert all(p.build.parts["psu"].id == "p-pop" for p in result.plans)
 
@@ -62,16 +62,16 @@ def test_reason_mentions_rank():
 
 
 def test_popular_part_upgrades_fit_inside_budget():
-    # For 7500F + 5070 Ti the all-popular rest (PSU + case) overshoots +5%, but
-    # the popular PSU alone fits: that partial upgrade must be a candidate.
+    # For 7500F + 5070 Ti the all-popular rest (PSU + case, 1,895,000) overshoots the
+    # budget, but the popular PSU alone fits: that partial upgrade must be a candidate.
     parts = sample_parts() + [
-        part("p-pop", "psu", "인기 850W 골드", 150_000, rank=1, capacity=850, connectors=["8pin", "12v2x6"]),
+        part("p-pop", "psu", "인기 850W 골드", 150_000, rank=1, efficiency="골드", capacity=850, connectors=["8pin", "12v2x6"]),
         part("k-pop", "case", "인기 케이스", 140_000, rank=1, forms=["ATX", "mATX"], gpuLength=380,
              coolerHeight=165, color="black"),
     ]
-    result = recommend(Catalog(parts, now=NOW), Request(budget=1_800_000))
+    result = recommend(Catalog(parts, now=NOW), Request(budget=1_850_000))
     pair = [b for b in result.builds if b.key == ("c-7500f", "g-5070ti")]
-    assert all(b.total <= 1_890_000 for b in pair)
+    assert pair and all(b.total <= 1_850_000 for b in pair)
     assert any(b.parts["psu"].id == "p-pop" for b in pair)
 
 

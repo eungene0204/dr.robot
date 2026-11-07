@@ -103,14 +103,14 @@ def test_catalog_serves_screen_records(client):
 def test_recommend_returns_screen_plans(client):
     body = fresh(client)
     assert body["refresh"] == {"updated": 0, "errors": []}
-    # The fixture has no build both faster and pricier than the balanced one, so the
-    # performance slot stays empty rather than show a cheaper "강화" plan.
-    assert [p and p["id"] for p in body["plans"]] == ["balanced", None, "saving"]
-    assert any("성능 우선형" in n for n in body["notes"])
+    # Three plans in price order, none above the budget.
+    assert [p and p["id"] for p in body["plans"]] == ["balanced", "enhanced", "saving"]
+    totals = [p["total"] for p in body["plans"]]
+    assert totals[1] > totals[0] > totals[2]
     plan = body["plans"][0]
     assert set(plan["parts"]) == {"cpu", "board", "ram", "gpu", "ssd", "psu", "case", "cooler", "os"}
     assert plan["parts"]["os"]["id"] == "o0" and plan["engine"] == "pcquote"
-    assert plan["budgetCap"] == 1_890_000 and plan["total"] <= plan["budgetCap"]
+    assert plan["budgetCap"] == 1_800_000 and plan["total"] <= plan["budgetCap"]
     assert plan["catalogVersion"] == body["catalogVersion"] == "v1"
     assert all(c["ok"] for c in plan["checks"])
 
@@ -251,3 +251,10 @@ def test_engine_recommend_endpoint(client):
     r = client.post("/api/recommend", json={"budget": 1_800_000, "uses": ["gaming"]})
     assert r.status_code == 200 and [p["label"] for p in r.json()["plans"]] == ["균형형", "성능 우선형", "가성비형"]
     assert client.post("/api/recommend", json={"budget": 1}).status_code == 422
+
+
+def test_recommend_tells_staff_when_specs_were_lowered(client):
+    body = fresh(client, {**REQ, "budget": 1_200_000})
+    assert any(body["plans"])
+    assert body["notice"] == "예산에 맞추기 위해 최소 사양을 낮췄어요: 메모리 32GB → 16GB."
+    assert fresh(client)["notice"] is None

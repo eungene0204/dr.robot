@@ -12,29 +12,47 @@ import re
 from .policy import usable_part
 
 _ADD = re.compile(r"\n추가 요청:\s*")
-_BUDGET = re.compile(r"(\d[\d,]*(?:\.\d+)?)\s*(만\s*원?|원)")
-_EDITING = re.compile(r"편집|프리미어|다빈치|렌더|3D|어도비|adobe|premiere|포토샵|photoshop|라이트룸|lightroom|일러스트레이터|"
-                      r"illustrator|애프터\s*이펙트|after\s*effects|블렌더|blender", re.I)
-_AI = re.compile(r"로컬|딥러닝|LLM|개발|AI", re.I)
+# Digits ("150만원", "1,500,000원") or Korean numerals mixed with digits ("백오십만원", "2백만원", "1.5백만원").
+_BUDGET = re.compile(r"((?:\d[\d,]*(?:\.\d+)?|[일이삼사오육칠팔구십백천])+)\s*(만\s*원?|원)")
+_KOREAN_DIGITS = {c: i for i, c in enumerate("일이삼사오육칠팔구", 1)}
+_KOREAN_UNITS = {"십": 10, "백": 100, "천": 1000}
+# "3D" only as a word: the X3D in a CPU model name (9800X3D) is not 3D work.
+_EDITING = re.compile(r"편집|프리미어|다빈치|렌더|(?<![a-z0-9])3D|어도비|adobe|premiere|포토샵|photoshop|라이트룸|lightroom|"
+                      r"일러스트레이터|illustrator|애프터\s*이펙트|after\s*effects|블렌더|blender|캐드|(?<![a-z])(?:auto)?cad(?![a-z])|"
+                      r"스케치업|sketchup|솔리드웍스|solidworks", re.I)
+_AI = re.compile(r"로컬|딥러닝|머신\s*러닝|LLM|개발|AI|스테이블\s*디퓨전|stable\s*diffusion|파이토치|pytorch", re.I)
 _OFFICE = re.compile(r"사무|엑셀|학습|POS", re.I)
 _GAMING = re.compile(r"게임|게이밍|배그|롤|gaming", re.I)
 _LIGHT = re.compile(r"인터넷|웹\s*서핑|웹\s*브라우|문서|인강|온라인\s*강의|유튜브|동영상\s*시청", re.I)
 _UNLIMITED = re.compile(r"예산\s*(?:제한\s*없|상관\s*없|무관|무제한)|(?:돈|가격|비용)\s*(?:은|는|이)?\s*상관\s*없|금액\s*제한\s*없", re.I)
 # JavaScript \b is ASCII-only; re.ASCII keeps "p\b" etc. behaving the same before Korean text.
 _MODEL = re.compile(r"(rtx|gtx|rx|i[3579]-?)?\s?(\d{3,5})\s?(x3d2?|xtx|xt|gre|ti\s?super|ti|super|kf|ks|k|f|x|g)?"
-                    r"(?![\d만원,.]|\s?(?:만|원|p\b|hz|gb|tb|w\b))", re.I | re.ASCII)
+                    r"(?![\d만원]|[,.]\d|\s?(?:만|원|p\b|hz|gb|tb|w\b))", re.I | re.ASCII)
 
 
 def money(n: int | float) -> str:
     return f"{round(n):,}원"
 
 
+def _amount(number: str) -> float:
+    """'1,500' → 1500, '백오십' → 150, '2백' → 200, '1.5백' → 150, '1천5백' → 1500."""
+    total, current = 0.0, None
+    for token in re.findall(r"\d+(?:\.\d+)?|\D", number.replace(",", "")):
+        if token in _KOREAN_UNITS:
+            total += (1 if current is None else current) * _KOREAN_UNITS[token]
+            current = None
+        else:
+            current = float(_KOREAN_DIGITS.get(token, token))
+    return total + (current or 0)
+
+
 def explicit_budget(text: str) -> int | None:
-    matches = list(_BUDGET.finditer(text))
+    # Korean numerals only count before 만: a bare "이원" is a word, not 2원.
+    matches = [m for m in _BUDGET.finditer(text) if m.group(2).startswith("만") or m.group(1)[0].isdigit()]
     if not matches:
         return None
     number, unit = matches[-1].groups()
-    value = float(number.replace(",", "")) * (10000 if unit.startswith("만") else 1)
+    value = _amount(number) * (10000 if unit.startswith("만") else 1)
     return int(math.floor(value + 0.5))  # JavaScript Math.round
 
 
@@ -73,6 +91,54 @@ def model_key(part: dict) -> str | None:
         return None
     tokens = model_tokens(part.get("benchmarkName") or part.get("name"))
     return tokens[-1] if tokens else None
+
+
+_SIZE = r"(\d+(?:\.\d+)?)\s*(tb|테라|gb|기가|g)(?![a-z])"
+_PARTICLE = r"\s*(?:은|는|을|를|도|이|가|용량)?\s*"
+_RAM_SIZE = [re.compile(r"(?:램|메모리|ram)" + _PARTICLE + _SIZE, re.I), re.compile(_SIZE + r"\s*(?:램|메모리|ram)", re.I)]
+_SSD_SIZE = [re.compile(r"(?:ssd|nvme|저장\s*(?:공간|장치))" + _PARTICLE + _SIZE, re.I),
+             re.compile(_SIZE + r"\s*(?:ssd|nvme)", re.I)]
+_VRAM_SIZE = [re.compile(r"(?:vram|비램|브이램|그래픽\s*(?:카드\s*)?메모리)" + _PARTICLE + _SIZE, re.I),
+              re.compile(_SIZE + r"\s*(?:vram|비램|브이램)", re.I)]
+_CPU_BRANDS = {"intel": re.compile(r"인텔|intel|코어\s*i[3579]", re.I), "amd": re.compile(r"라이젠|ryzen|amd\s*(?:cpu|씨피유)", re.I)}
+_GPU_BRANDS = {"nvidia": re.compile(r"지포스|geforce|엔비디아|nvidia|rtx|gtx", re.I),
+               "amd": re.compile(r"라데온|radeon|(?<![a-z])rx\s*\d", re.I)}
+
+
+def _last_size(patterns: list[re.Pattern], text: str) -> int:
+    found = [(m.start(), m) for pattern in patterns for m in pattern.finditer(text)]
+    if not found:
+        return 0
+    m = max(found, key=lambda f: f[0])[1]
+    number, unit = float(m.group(1)), m.group(2).lower()
+    return int(number * 1000) if unit in ("tb", "테라") else int(number)
+
+
+def _last_brand(brands: dict[str, re.Pattern], text: str) -> str | None:
+    found = [(m.start(), name) for name, pattern in brands.items() for m in pattern.finditer(text)]
+    return max(found)[1] if found else None
+
+
+def customer_preferences(text: str, parts) -> dict:
+    """Engine Request preferences stated in the request text: models, brands, minimum sizes.
+
+    Model tokens are assigned to CPU or GPU by the catalog; a token both could be is skipped.
+    The last mention wins, so a later "추가 요청" replaces an earlier one.
+    """
+    keys = {"cpu": set(), "gpu": set()}
+    for part in parts:
+        key = model_key(part)
+        if key:
+            keys[part["category"]].add(key)
+    tokens = model_tokens(text)
+    cpu_models = tuple(t for t in tokens if t in keys["cpu"] and t not in keys["gpu"])
+    gpu_models = tuple(t for t in tokens if t in keys["gpu"] and t not in keys["cpu"])
+    without_vram = text
+    for pattern in _VRAM_SIZE:  # "VRAM 16GB", "그래픽 메모리 16GB" are not system memory
+        without_vram = pattern.sub(" ", without_vram)
+    return {"min_ram_gb": _last_size(_RAM_SIZE, without_vram), "min_ssd_gb": _last_size(_SSD_SIZE, text),
+            "min_vram_gb": _last_size(_VRAM_SIZE, text), "cpu_models": cpu_models, "gpu_models": gpu_models,
+            "cpu_brand": _last_brand(_CPU_BRANDS, text), "gpu_brand": _last_brand(_GPU_BRANDS, text)}
 
 
 def _resolution_of(value: str) -> str | None:

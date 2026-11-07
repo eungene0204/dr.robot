@@ -35,6 +35,8 @@ cd backend && uv run pytest
 
 API 테스트는 `pcquote_test` DB의 테이블을 지우고 다시 만든다(`TEST_DATABASE_URL`로 변경 가능).
 
+고객 요청 시나리오 평가(요구 해석 → 견적, 실제 카탈로그): `uv run python ../.claude/skills/quote-eval/run_eval.py` (`--local`이면 LLM 없이). 케이스와 판정 기준은 [.claude/skills/quote-eval](.claude/skills/quote-eval/SKILL.md).
+
 ## 수집
 
 ```bash

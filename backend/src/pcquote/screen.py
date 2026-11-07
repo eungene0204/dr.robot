@@ -12,7 +12,8 @@ import math
 from collections.abc import Callable
 from datetime import datetime
 
-from .engine.recommend import BUDGET_BAND, alternatives, evaluate, recommend
+from .consult import customer_preferences
+from .engine.recommend import alternatives, evaluate, recommend
 from .engine.requirements import Request
 from .policy import price_state
 from .service import CatalogService, PriceReviewPending, State
@@ -38,7 +39,7 @@ def valid_budget(req: dict) -> bool:
 
 
 def budget_cap(req: dict) -> int:
-    return math.floor(req["budget"] * (1 + BUDGET_BAND))
+    return math.floor(req["budget"])
 
 
 def os_part(req: dict, parts: dict[str, dict]) -> dict | None:
@@ -57,7 +58,8 @@ def to_request(req: dict, settings: dict, parts: dict[str, dict], exclude_parts:
         return Request(budget=budget, uses=(req.get("profile") or "gaming",), resolution=req.get("resolution") or "QHD",
                        white=bool(req.get("white")), wifi=bool(req.get("wifi")),
                        exclude_brands=tuple(settings.get("excludedBrands") or ()), exclude_parts=tuple(exclude_parts),
-                       assembly_fee=int(settings.get("assembly") or 0), memo=str(req.get("text") or "")[:2000])
+                       assembly_fee=int(settings.get("assembly") or 0), memo=str(req.get("text") or "")[:2000],
+                       **customer_preferences(str(req.get("text") or ""), parts.values()))
     except ValueError as e:
         raise ScreenError(str(e)) from e
 
@@ -123,7 +125,11 @@ def map_result(result: dict, state: State, req: dict, settings: dict) -> dict:
             plans[slot] = mapped
     notes = result.get("notes") or []
     message = None if any(plans) else (" ".join(notes) or "조건을 만족하는 견적을 만들지 못했습니다.")
-    return {"plans": plans, "message": message, "notes": notes}
+    relaxed = result.get("relaxed") or []
+    notices = [f"예산에 맞추기 위해 최소 사양을 낮췄어요: {', '.join(relaxed)}." if relaxed else None,
+               f"{result['dropped']}." if result.get("dropped") else None]
+    notice = " ".join(n for n in notices if n) if any(plans) and any(notices) else None
+    return {"plans": plans, "message": message, "notes": notes, "notice": notice}
 
 
 def recommend_fresh(service: CatalogService, req: dict, settings: dict, collect: Callable[[dict], dict] | None,

@@ -9,3 +9,6 @@ node_modules/
 # Collector runtime files (archive, logs, LaunchAgent backup); data/buildmate-reparsed-specs.json stays tracked
 backend/data/*
 !backend/data/buildmate-reparsed-specs.json
+
+# quote-eval skill reports
+reports/

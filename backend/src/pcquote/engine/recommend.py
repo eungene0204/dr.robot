@@ -7,7 +7,7 @@
    most popular compatible ones.
 4. Three plans from one score function with different weights. Popularity
    (Danawa rank: proven by buyers) carries the largest weight in every plan;
-   compatibility, minimum specs and the ±5% budget band stay hard rules.
+   compatibility, minimum specs and the budget ceiling stay hard rules.
 """
 
 from __future__ import annotations
@@ -17,9 +17,14 @@ from dataclasses import dataclass, field
 
 from ..catalog import CATEGORIES, CATEGORY_LABELS, Catalog, Part
 from . import compatibility as compat
+from ..consult import model_tokens
 from .chipset import board_chipset, cpu_generation
 from .requirements import (
-    BUDGET_BAND,
+    BUDGET_CEILING,
+    CHEAP_GAP,
+    POOL_FLOOR,
+    relaxed_specs,
+    STRONG_GAP,
     MinSpecs,
     Request,
     allocation,
@@ -53,7 +58,7 @@ class PlanType:
 PLAN_TYPES = (
     PlanType("balanced", "균형형", 0.60, 0.20, 0.20, 2.0,
              "많이 팔린 검증된 부품 위주, 성능과 가격의 균형, CPU·GPU 병목을 가장 강하게 피함"),
-    PlanType("performance", "성능 우선형", 0.60, 0.29, 0.11, 1.0, "검증된 부품 중 예산 +5% 안에서 성능 위주"),
+    PlanType("performance", "성능 우선형", 0.60, 0.29, 0.11, 1.0, "검증된 부품 중 예산 안에서 성능 위주"),
     PlanType("value", "가성비형", 0.60, 0.11, 0.29, 1.0, "검증된 부품 중 가격 대비 성능 위주"),
 )
 
@@ -146,6 +151,8 @@ class Result:
     notes: list[str] = field(default_factory=list)
     candidates: int = 0
     builds: list[Build] = field(default_factory=list, repr=False)
+    relaxed: tuple[str, ...] = ()  # minimum specs lowered to fit the budget, e.g. "메모리 32GB → 16GB"
+    dropped: str | None = None  # customer preferences given up, with the reason (shown to the customer)
 
     def as_dict(self, catalog: Catalog) -> dict:
         return {
@@ -159,6 +166,8 @@ class Result:
             },
             "plans": [p.as_dict(catalog, self.allocation) for p in self.plans],
             "notes": self.notes,
+            "relaxed": list(self.relaxed),
+            "dropped": self.dropped,
             "candidates": self.candidates,
         }
 
@@ -222,6 +231,17 @@ def base_pools(catalog: Catalog, req: Request, specs: MinSpecs) -> dict[str, lis
             p for p in pools["gpu"]
             if p.benchmark >= specs.gpu_benchmark and p.spec("vram", 0) >= specs.gpu_vram_gb
         ]
+    if req.needs_gpu:
+        # A discrete GPU needs a certified PSU: unrated bulk units (16,000원 "600W") are not sold with one.
+        pools["psu"] = [p for p in pools["psu"] if p.spec("efficiency")]
+    if req.cpu_models:
+        pools["cpu"] = [p for p in pools["cpu"] if part_model(p) in req.cpu_models]
+    elif req.cpu_brand:
+        pools["cpu"] = [p for p in pools["cpu"] if cpu_brand(p) == req.cpu_brand]
+    if req.gpu_models:
+        pools["gpu"] = [p for p in pools["gpu"] if part_model(p) in req.gpu_models]
+    elif req.gpu_brand:
+        pools["gpu"] = [p for p in pools["gpu"] if gpu_brand(p) == req.gpu_brand]
     pools["ram"] = [p for p in pools["ram"] if p.spec("capacity") >= specs.ram_gb]
     pools["ssd"] = [p for p in pools["ssd"] if p.spec("capacity") >= specs.ssd_gb]
     if req.white:
@@ -232,6 +252,23 @@ def base_pools(catalog: Catalog, req: Request, specs: MinSpecs) -> dict[str, lis
     return pools
 
 
+def part_model(p: Part) -> str | None:
+    tokens = model_tokens(p.benchmark_name or p.name)
+    return tokens[-1] if tokens else None
+
+
+def cpu_brand(p: Part) -> str | None:
+    text = f"{p.brand or ''} {p.name}".lower()
+    return "intel" if ("인텔" in text or "intel" in text) else "amd" if ("amd" in text or "라이젠" in text) else None
+
+
+def gpu_brand(p: Part) -> str | None:
+    text = f"{p.benchmark_name or ''} {p.name}".lower()
+    if any(k in text for k in ("nvidia", "지포스", "geforce", "rtx", "gtx")):
+        return "nvidia"
+    return "amd" if any(k in text for k in ("radeon", "라데온", "rx ")) else None
+
+
 def ranged(pool: list[Part], target: int, tolerance: float) -> list[Part]:
     lo, hi = target * (1 - tolerance), target * (1 + tolerance)
     return [p for p in pool if lo <= p.price <= hi]
@@ -239,7 +276,7 @@ def ranged(pool: list[Part], target: int, tolerance: float) -> list[Part]:
 
 REDUCE_KEYS = {
     # CPU/GPU: one entry per chip. A pricier chip that is not faster is kept:
-    # it can be what brings the total into the ±5% band.
+    # it can be what brings the total under the budget.
     "cpu": lambda p: (p.benchmark, p.spec("socket"), p.spec("watts"), p.spec("igpu")),
     "gpu": lambda p: (p.benchmark, p.spec("vram")),
     "board": lambda p: (p.spec("socket"), board_chipset(p), p.spec("form"), p.spec("ddr"),
@@ -431,7 +468,7 @@ class _Search:
 # a fixed budget share can leave one memory type entirely outside its price range
 # (2026: 32GB DDR5 costs far more than 7% of a gaming budget), which would drop
 # every DDR5-only platform before scoring. Each platform keeps its cheapest and
-# most popular part regardless of the range; the ±5% total band still applies.
+# most popular part regardless of the range; the budget ceiling still applies.
 PLATFORM_KEYS = {
     "ram": lambda p: p.spec("ddr"),
     "board": lambda p: (p.spec("socket"), p.spec("ddr")),
@@ -468,7 +505,7 @@ def _search(catalog: Catalog, req: Request, specs: MinSpecs, alloc: dict[str, in
             ids = {p.id for p in candidates}
             candidates = candidates + [p for p in platform_anchors(catalog, c, base[c], req.parts_budget) if p.id not in ids]
         pools[c] = reduce(catalog, c, candidates)
-    return _Search(catalog, req, pools).builds(cap=req.budget * (1 + BUDGET_BAND))
+    return _Search(catalog, req, pools).builds(cap=req.budget * BUDGET_CEILING)
 
 
 def _rank_text(catalog: Catalog, part: Part) -> str:
@@ -504,11 +541,12 @@ def _explain(catalog: Catalog, req: Request, specs: MinSpecs, alloc: dict[str, i
     return reasons
 
 
-def _pick_plans(builds: list[Build], notes: list[str]) -> dict[str, Build]:
+def _pick_plans(builds: list[Build], notes: list[str], strong_gap: float = STRONG_GAP,
+                cheap_gap: float = CHEAP_GAP) -> dict[str, Build]:
     """Pick the three plans so their order is fixed for the customer.
 
-    - 성능 우선형: the strongest and most expensive (faster than balanced, not cheaper).
-    - 가성비형: the cheapest (cheaper than balanced, not faster than 성능 우선형).
+    - 성능 우선형: faster than balanced and at least ``strong_gap`` × its price.
+    - 가성비형: at most ``cheap_gap`` × balanced's price, not faster than 성능 우선형.
     - 균형형: the best balanced score that still leaves room for both. Balanced
       candidates are tried in score order; the first that admits a performance and a
       value plan wins. If none does, the top balanced build is kept with whatever fits.
@@ -522,11 +560,11 @@ def _pick_plans(builds: list[Build], notes: list[str]) -> dict[str, Build]:
 
     def strong_for(base: Build) -> Build | None:
         return next((b for b in by[performance.key]
-                     if b.key != base.key and b.performance > base.performance and b.total >= base.total), None)
+                     if b.key != base.key and b.performance > base.performance and b.total >= base.total * strong_gap), None)
 
     def cheap_for(base: Build, strong: Build | None) -> Build | None:
         return next((b for b in by[value.key]
-                     if b.key not in {base.key, strong.key if strong else None} and b.total < base.total
+                     if b.key not in {base.key, strong.key if strong else None} and b.total <= base.total * cheap_gap
                      and (strong is None or b.performance <= strong.performance)), None)
 
     chosen = None
@@ -555,10 +593,45 @@ def _pick_plans(builds: list[Build], notes: list[str]) -> dict[str, Build]:
     return picks
 
 
-def recommend(catalog: Catalog, req: Request) -> Result:
-    specs = min_specs(req, catalog)
-    alloc = allocation(req)
-    lo, hi = req.budget * (1 - BUDGET_BAND), req.budget * (1 + BUDGET_BAND)
+def _cheapest_total(catalog: Catalog, req: Request, specs: MinSpecs, stop_at: float = -math.inf) -> int | None:
+    """Price of the cheapest compatible build at these minimums (None = no build).
+
+    CPU×GPU pairs go in price order, each with its cheapest compatible rest, so the scan
+    ends once a pair alone costs more than the best total, or at the first total ≤ stop_at.
+    Far cheaper than _collect: it decides whether a minimum-spec level can fit the budget at all.
+    """
+    base = base_pools(catalog, req, specs)
+    pools = {c: reduce(catalog, c, base[c]) for c in CATEGORIES}
+    search = _Search(catalog, req, pools)
+    gpus: list[Part | None] = pools["gpu"] if req.needs_gpu else [None]
+    pairs = sorted(((cpu, gpu) for cpu in pools["cpu"] for gpu in gpus),
+                   key=lambda pair: pair[0].price + (pair[1].price if pair[1] else 0))
+    best = math.inf
+    for cpu, gpu in pairs:
+        if cpu.price + (gpu.price if gpu else 0) + req.assembly_fee >= best:
+            break
+        if not compat.passes({"cpu": cpu, "gpu": gpu}):
+            continue
+        rest = search.rest("cheap", cpu, gpu)
+        if rest:
+            best = min(best, _assemble(catalog, req, {"cpu": cpu, "gpu": gpu, **rest}).total)
+            if best <= stop_at:
+                break
+    return None if best == math.inf else int(best)
+
+
+def _fits(catalog: Catalog, req: Request, specs: MinSpecs) -> bool:
+    cheapest = _cheapest_total(catalog, req, specs, stop_at=req.budget * BUDGET_CEILING)
+    return cheapest is not None and cheapest <= req.budget * BUDGET_CEILING
+
+
+def _collect(catalog: Catalog, req: Request, specs: MinSpecs, alloc: dict[str, int]
+             ) -> tuple[list[Build], list[str], list[Build]]:
+    """Builds between POOL_FLOOR and the budget, widening allocation ranges as needed.
+
+    Returns (builds, notes, builds of the widest search).
+    """
+    lo, hi = req.budget * POOL_FLOOR, req.budget * BUDGET_CEILING
     # Every allocation range up to BASE_TOLERANCE is searched, so a popular part
     # priced above the narrow range still competes. Wider ranges are tried only
     # while the band cannot yet give three plans in order (see _pick_plans).
@@ -583,29 +656,80 @@ def recommend(catalog: Catalog, req: Request) -> Result:
             notes.append("배분 비율 범위 안 조합이 부족해 비율을 벗어난 조합까지 포함함")
         elif widest > BASE_TOLERANCE:
             notes.append(f"배분 비율 ±{BASE_TOLERANCE * 100:.0f}% 안 조합이 부족해 ±{widest * 100:.0f}%까지 넓혀 찾음")
-    else:
-        # Nothing inside ±5%: step the lower bound down so the offer stays near the budget.
-        builds, notes = [], ["조건과 예산에 맞는 호환 조합을 찾지 못함"]
-        unrestricted = _search(catalog, req, specs, alloc, None, [])
-        if unrestricted:
-            cheapest = min(unrestricted, key=lambda b: b.total)
-            if cheapest.total > hi:
-                notes.append(f"이 조건(최소 사양 포함)으로 가능한 최저 견적은 {cheapest.total:,}원")
-        for floor in (0.85, 0.70, 0.0):
-            near = [b for b in last_builds if req.budget * floor <= b.total <= hi]
-            if near:
-                builds = near
-                notes = [f"예산 ±5% 안 조합이 없어 예산의 {floor * 100:.0f}% 이상 조합을 제시함" if floor
-                         else "예산 ±5% 안 조합이 없어 더 저렴한 조합을 제시함"]
-                break
+    return builds, notes, last_builds
 
-    picks = _pick_plans(builds, notes)
+
+def recommend(catalog: Catalog, req: Request) -> Result:
+    """Plans for the request; customer preferences (model, brand, size) are dropped with a note when nothing fits."""
+    labels = req.preference_labels()
+    result = _recommend(catalog, req)
+    if result.plans or not labels:
+        return result
+    pools = base_pools(catalog, req, min_specs(req, catalog))
+    empty = [c for c in ("cpu", "gpu", "ram", "ssd") if not pools[c] and (c != "gpu" or req.needs_gpu)]
+    reason = "사용 가능한 제품이 없어" if empty else "예산 안에서 맞는 조합이 없어"
+    fallback = _recommend(catalog, req.without_preferences())
+    fallback.dropped = f"요청하신 조건({', '.join(labels)})은 {reason} 반영하지 못했어요"
+    fallback.notes.insert(0, fallback.dropped)
+    return fallback
+
+
+def _recommend(catalog: Catalog, req: Request) -> Result:
+    specs = min_specs(req, catalog)
+    alloc = allocation(req)
+    hi = req.budget * BUDGET_CEILING
+    # A level whose cheapest build is over the budget is skipped without the full search.
+    builds, notes, last_builds = _collect(catalog, req, specs, alloc) if _fits(catalog, req, specs) else ([], [], [])
+    lowered: tuple[str, ...] = ()
+    if not builds:
+        # The budget is below the cheapest build at the normal minimums: lower them step by step.
+        lowest: tuple[MinSpecs, tuple[str, ...], list[Build]] | None = None
+        for lower, changes in relaxed_specs(req, specs, catalog):
+            if not _fits(catalog, req, lower):
+                lowest = (lower, changes, [])
+                continue
+            found, found_notes, found_last = _collect(catalog, req, lower, alloc)
+            if found:
+                builds, specs, lowered = found, lower, changes
+                notes = [f"예산에 맞추기 위해 최소 사양을 낮춤: {', '.join(changes)}", *found_notes]
+                break
+            lowest = (lower, changes, found_last)
+        if not builds and lowest:
+            # Nothing fits even at the lowest minimums: report and fall back from there.
+            specs, lowered, last_builds = lowest
+    if not builds:
+        # Nothing between POOL_FLOOR and the budget even at lower minimums: offer cheaper builds, never pricier ones.
+        builds, notes = [], ["조건과 예산에 맞는 호환 조합을 찾지 못함"]
+        cheapest = _cheapest_total(catalog, req, specs)
+        if cheapest is not None and cheapest > hi:
+            basis = f"최소 사양을 낮춰도({', '.join(lowered)})" if lowered else "이 조건(최소 사양 포함)으로"
+            notes.append(f"{basis} 가능한 최저 견적은 {cheapest:,}원")
+        near = [b for b in last_builds if b.total <= hi]
+        if near:
+            builds = near
+            notes = [f"예산의 {POOL_FLOOR * 100:.0f}~100% 안 조합이 없어 더 저렴한 조합을 제시함"]
+            if lowered:
+                notes.insert(0, f"예산에 맞추기 위해 최소 사양을 낮춤: {', '.join(lowered)}")
+        else:
+            lowered = ()
+
+    pick_notes: list[str] = []
+    picks = _pick_plans(builds, pick_notes)
+    if len(picks) < len(PLAN_TYPES):
+        # Not enough spread for the full price gaps: keep the order, shrink the gaps.
+        relaxed_notes: list[str] = []
+        relaxed = _pick_plans(builds, relaxed_notes, 1.0, 0.999)
+        if len(relaxed) > len(picks):
+            picks, pick_notes = relaxed, relaxed_notes
+            if len(relaxed) == len(PLAN_TYPES):
+                notes.append("가격 간격을 충분히 벌릴 조합이 부족해 간격을 줄여 제시함")
+    notes.extend(n for n in pick_notes if n not in notes)
     plans: list[Plan] = []
     for plan_type in PLAN_TYPES:
         if pick := picks.get(plan_type.key):
             warnings = [c.detail for c in pick.checks if c.status == "warn"]
             plans.append(Plan(len(plans) + 1, plan_type, pick, _explain(catalog, req, specs, alloc, pick), warnings))
-    return Result(req, alloc, specs, plans, notes, len(builds), builds)
+    return Result(req, alloc, specs, plans, notes, len(builds), builds, lowered)
 
 
 def evaluate(catalog: Catalog, req: Request, part_ids: dict[str, str | None]) -> dict:
@@ -628,7 +752,7 @@ def evaluate(catalog: Catalog, req: Request, part_ids: dict[str, str | None]) ->
         "ok": all(c.status != "fail" for c in build.checks),
         "total": build.total,
         "budgetDelta": build.total - req.budget,
-        "withinBand": abs(build.total - req.budget) <= req.budget * BUDGET_BAND,
+        "withinBand": build.total <= req.budget * BUDGET_CEILING,
         "performance": round(build.performance, 1),
         "popularity": round(build.popularity, 3),
         "checks": [c.as_dict() for c in build.checks],

@@ -1,18 +1,18 @@
 from pcquote.engine.recommend import Scorer, alternatives, evaluate, recommend
-from pcquote.engine.requirements import BUDGET_BAND, Request
+from pcquote.engine.requirements import CHEAP_GAP, POOL_FLOOR, STRONG_GAP, Request
 
 
 def _ids(plan):
     return {c: (p.id if p else None) for c, p in plan.build.parts.items()}
 
 
-def test_three_distinct_plans_inside_budget_band(catalog):
+def test_three_distinct_plans_under_budget_ceiling(catalog):
     req = Request(budget=1_800_000, uses=("gaming",))
     result = recommend(catalog, req)
     assert [p.type.key for p in result.plans] == ["balanced", "performance", "value"]
     assert len({p.build.key for p in result.plans}) == 3
     for plan in result.plans:
-        assert abs(plan.build.total - req.budget) <= req.budget * BUDGET_BAND
+        assert plan.build.total <= req.budget
         assert all(c.status != "fail" for c in plan.build.checks)
 
 
@@ -23,12 +23,12 @@ def test_each_plan_is_best_by_its_own_score_among_builds_that_keep_the_order(cat
     base = plans["balanced"].build
     if "performance" in plans:
         strong = plans["performance"]
-        allowed = [b for b in result.builds if b.performance > base.performance and b.total >= base.total]
+        allowed = [b for b in result.builds if b.performance > base.performance and b.total >= base.total * STRONG_GAP]
         assert scorer.score(strong.build, strong.type) == max(scorer.score(b, strong.type) for b in allowed)
     if "value" in plans:
         cheap = plans["value"]
         cap = plans["performance"].build.performance if "performance" in plans else float("inf")
-        allowed = [b for b in result.builds if b.total < base.total and b.performance <= cap]
+        allowed = [b for b in result.builds if b.total <= base.total * CHEAP_GAP and b.performance <= cap]
         assert scorer.score(cheap.build, cheap.type) == max(scorer.score(b, cheap.type) for b in allowed)
 
 
@@ -120,5 +120,42 @@ def test_fallback_stays_near_budget(catalog):
     # No fixture build reaches 2.2M; the offer must not drop to a 1M build.
     result = recommend(catalog, Request(budget=2_200_000))
     assert result.plans
-    assert all(p.build.total >= 2_200_000 * 0.7 for p in result.plans)
+    assert all(2_200_000 * POOL_FLOOR <= p.build.total <= 2_200_000 for p in result.plans)
     assert result.notes
+
+
+def test_plans_never_exceed_budget_and_are_priced_apart(catalog):
+    for budget in (1_500_000, 1_800_000):
+        result = recommend(catalog, Request(budget=budget, uses=("gaming",)))
+        totals = {p.type.key: p.build.total for p in result.plans}
+        assert all(t <= budget for t in totals.values())
+        if len(totals) == 3:
+            assert totals["performance"] >= totals["balanced"] * STRONG_GAP
+            assert totals["value"] <= totals["balanced"] * CHEAP_GAP
+
+
+def test_budget_below_minimum_lowers_specs_step_by_step(catalog):
+    # Gaming QHD needs 32GB in the fixture's cheapest build above 1.2M; 16GB fits.
+    result = recommend(catalog, Request(budget=1_200_000, uses=("gaming",), resolution="QHD"))
+    assert result.plans and result.relaxed == ("메모리 32GB → 16GB",)
+    assert all(p.build.total <= 1_200_000 for p in result.plans)
+    assert result.min_specs.ram_gb == 16 and result.min_specs.ssd_gb == 1000  # stops at the first step that fits
+    assert any("최소 사양을 낮춤" in n for n in result.notes)
+
+
+def test_gpu_reference_drops_one_resolution_last(catalog):
+    result = recommend(catalog, Request(budget=1_100_000, uses=("gaming",), resolution="QHD"))
+    assert result.plans and result.relaxed[-1] == "그래픽카드 기준 RTX 5060 Ti급 → RTX 4060급"
+    assert result.min_specs.gpu_reference == "RTX 4060"
+
+
+def test_specs_stay_when_the_budget_fits_them(catalog):
+    result = recommend(catalog, Request(budget=1_500_000, uses=("gaming",), resolution="QHD"))
+    assert result.plans and result.relaxed == ()
+    assert result.min_specs.ram_gb == 32
+
+
+def test_minimum_price_note_kept_when_even_lower_specs_do_not_fit(catalog):
+    result = recommend(catalog, Request(budget=1_000_000, uses=("gaming",), resolution="QHD"))
+    assert not result.plans and result.relaxed == ()
+    assert any("최저 견적" in n for n in result.notes)
