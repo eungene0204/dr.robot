@@ -1,0 +1,1383 @@
+{
+  "_schema": {
+    "turns": "고객이 상담 화면에 차례로 입력한 문장. 두 번째부터는 같은 상담의 추가 요청",
+    "settings": "매장 설정(assembly 조립비, excludedBrands 제외 브랜드). 없으면 조립비 0",
+    "expect.profile/resolution": "상담사가 이해해야 하는 용도·해상도. 생략하면 검사하지 않음",
+    "expect.budget": "원 단위 숫자, [최소, 최대] 범위, 또는 null(예산 없음)",
+    "expect.white/wifi/os": "생략하면 false로 검사",
+    "expect.plans": "full=3안 모두, any=1안 이상, none=견적 없음(안내 메시지 필요)",
+    "expect.models": "고객이 지목한 모델이 균형안에 들어가야 함 (category → 모델 토큰 중 하나)",
+    "expect.brands": "고객이 지목한 제조사가 균형안에 들어가야 함 (category → 이름에 포함될 문자열 중 하나)",
+    "expect.minRamGb/minSsdGb/minVramGb": "용도 규칙과 별개로 고객이 직접 요구한 사양 하한"
+  },
+  "cases": [
+    {
+      "id": "Z001",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. FHD 모니터가 집에 있습니다. 본체 예산은 1,750,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1750000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z002",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. FHD 모니터는 따로 있어요. 본체 예산은 1,760,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1760000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z003",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. FHD 화면을 쓰고 있습니다. 본체 예산은 1,770,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1770000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z004",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. FHD 모니터 이미 보유 중입니다. 본체 예산은 1,780,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1780000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z005",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. 지금 FHD 모니터 사용하고 있어요. 본체 예산은 1,790,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1790000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z006",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. FHD 모니터 사 둔 게 있습니다. 본체 예산은 1,800,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1800000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z007",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. 기존 FHD 모니터 계속 쓸 거예요. 본체 예산은 1,810,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1810000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z008",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. 집에서 쓰는 모니터가 FHD입니다. 본체 예산은 1,820,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1820000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z009",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. FHD 디스플레이를 가지고 있습니다. 본체 예산은 1,830,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1830000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z010",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. FHD 모니터는 구입해 놨어요. 본체 예산은 1,840,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1840000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z011",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. QHD 모니터가 집에 있습니다. 본체 예산은 2,550,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2550000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z012",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. QHD 모니터는 따로 있어요. 본체 예산은 2,560,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2560000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z013",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. QHD 화면을 쓰고 있습니다. 본체 예산은 2,570,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2570000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z014",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. QHD 모니터 이미 보유 중입니다. 본체 예산은 2,580,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2580000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z015",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. 지금 QHD 모니터 사용하고 있어요. 본체 예산은 2,590,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2590000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z016",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. QHD 모니터 사 둔 게 있습니다. 본체 예산은 2,600,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2600000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z017",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. 기존 QHD 모니터 계속 쓸 거예요. 본체 예산은 2,610,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2610000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z018",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. 집에서 쓰는 모니터가 QHD입니다. 본체 예산은 2,620,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2620000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z019",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. QHD 디스플레이를 가지고 있습니다. 본체 예산은 2,630,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2630000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z020",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. QHD 모니터는 구입해 놨어요. 본체 예산은 2,640,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2640000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z021",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. 4K 모니터가 집에 있습니다. 본체 예산은 4,250,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4250000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z022",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. 4K 모니터는 따로 있어요. 본체 예산은 4,260,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4260000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z023",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. 4K 화면을 쓰고 있습니다. 본체 예산은 4,270,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4270000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z024",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. 4K 모니터 이미 보유 중입니다. 본체 예산은 4,280,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4280000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z025",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. 지금 4K 모니터 사용하고 있어요. 본체 예산은 4,290,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4290000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z026",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. 4K 모니터 사 둔 게 있습니다. 본체 예산은 4,300,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4300000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z027",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. 기존 4K 모니터 계속 쓸 거예요. 본체 예산은 4,310,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4310000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z028",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. 집에서 쓰는 모니터가 4K입니다. 본체 예산은 4,320,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4320000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z029",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. 4K 디스플레이를 가지고 있습니다. 본체 예산은 4,330,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4330000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z030",
+      "group": "모니터 보유",
+      "turns": [
+        "새 게임 본체 주문합니다. 4K 모니터는 구입해 놨어요. 본체 예산은 4,340,000원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4340000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z031",
+      "group": "해상도 거절·동의어",
+      "turns": [
+        "4K 말고 FHD 모니터가 집에 있어요. 게임 본체 178만원으로요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1780000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z032",
+      "group": "해상도 거절·동의어",
+      "turns": [
+        "QHD 말고 FHD 모니터는 따로 있습니다. 게임 본체 182만원이에요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1820000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z033",
+      "group": "해상도 거절·동의어",
+      "turns": [
+        "FHD 말고 QHD 모니터를 갖고 있어요. 게임용 258만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2580000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z034",
+      "group": "해상도 거절·동의어",
+      "turns": [
+        "4K는 필요 없고 QHD 모니터 있습니다. 게임용 262만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2620000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z035",
+      "group": "해상도 거절·동의어",
+      "turns": [
+        "FHD는 아니고 4K 모니터를 씁니다. 게임용 428만원 준비했어요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4280000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z036",
+      "group": "해상도 거절·동의어",
+      "turns": [
+        "QHD 말고 4K 화면을 쓸 겁니다. 게임용 본체 432만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4320000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z037",
+      "group": "해상도 거절·동의어",
+      "turns": [
+        "4K 말고 1080p 모니터 있어요. 게임 본체 186만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1860000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z038",
+      "group": "해상도 거절·동의어",
+      "turns": [
+        "FHD 말고 1440p 디스플레이 있습니다. 게임용 266만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2660000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z039",
+      "group": "해상도 거절·동의어",
+      "turns": [
+        "QHD 말고 UHD 모니터가 있습니다. 게임 본체 436만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4360000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z040",
+      "group": "해상도 거절·동의어",
+      "turns": [
+        "4K는 제외하고 풀HD 모니터로 게임할 거예요. 본체 188만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1880000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z041",
+      "group": "보유·옵션 구분",
+      "turns": [
+        "FHD 모니터 있습니다. 윈도우는 집에 있는 거 쓸게요. 게임용 본체 172만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1720000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z042",
+      "group": "보유·옵션 구분",
+      "turns": [
+        "FHD 모니터 따로 있어요. 윈도우는 넣어주세요. 게임 본체 192만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1920000,
+        "resolution": "FHD",
+        "plans": "any",
+        "os": true
+      }
+    },
+    {
+      "id": "Z043",
+      "group": "보유·옵션 구분",
+      "turns": [
+        "QHD 모니터 있습니다. 와이파이는 필요 없어요. 게임용 252만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2520000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z044",
+      "group": "보유·옵션 구분",
+      "turns": [
+        "QHD 모니터 집에 있어요. 와이파이 넣어주세요. 게임용 272만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2720000,
+        "resolution": "QHD",
+        "plans": "any",
+        "wifi": true
+      }
+    },
+    {
+      "id": "Z045",
+      "group": "보유·옵션 구분",
+      "turns": [
+        "4K 모니터 가지고 있습니다. 화이트는 빼주세요. 게임용 422만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4220000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z046",
+      "group": "보유·옵션 구분",
+      "turns": [
+        "4K 화면 있습니다. 흰색 케이스와 윈도우 넣어주세요. 게임용 452만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4520000,
+        "resolution": "4K",
+        "plans": "any",
+        "white": true,
+        "os": true
+      }
+    },
+    {
+      "id": "Z047",
+      "group": "보유·옵션 구분",
+      "turns": [
+        "FHD 모니터는 보유 중입니다. 윈도우 없이 유선으로 쓸 게임 본체 174만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1740000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z048",
+      "group": "보유·옵션 구분",
+      "turns": [
+        "QHD 모니터 이미 있어요. 화이트 말고 블랙, 윈도우 포함 게임 본체 282만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2820000,
+        "resolution": "QHD",
+        "plans": "any",
+        "os": true
+      }
+    },
+    {
+      "id": "Z049",
+      "group": "보유·옵션 구분",
+      "turns": [
+        "4K 모니터는 집에 있습니다. 무선랜과 윈도우 포함 게임 본체 462만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4620000,
+        "resolution": "4K",
+        "plans": "any",
+        "wifi": true,
+        "os": true
+      }
+    },
+    {
+      "id": "Z050",
+      "group": "보유·옵션 구분",
+      "turns": [
+        "FHD 모니터 샀습니다. 흰 케이스로 와이파이 포함 게임 본체 202만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2020000,
+        "resolution": "FHD",
+        "plans": "any",
+        "white": true,
+        "wifi": true
+      }
+    },
+    {
+      "id": "Z051",
+      "group": "사무 보유",
+      "turns": [
+        "경리 회계와 엑셀용 본체 부탁합니다. FHD 모니터 이미 있습니다. 본체 예산 740,000원입니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 740000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z052",
+      "group": "사무 보유",
+      "turns": [
+        "사무용 웹 개발용 본체 부탁합니다. FHD 모니터 이미 있습니다. 본체 예산 1,240,000원입니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 1240000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z053",
+      "group": "사무 보유",
+      "turns": [
+        "사무용 앱 개발용 본체 부탁합니다. FHD 모니터 이미 있습니다. 본체 예산 1,340,000원입니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 1340000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z054",
+      "group": "사무 보유",
+      "turns": [
+        "문서 작성과 인강용 본체 부탁합니다. FHD 모니터 이미 있습니다. 본체 예산 640,000원입니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 640000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z055",
+      "group": "사무 보유",
+      "turns": [
+        "주식 HTS용 본체 부탁합니다. FHD 모니터 이미 있습니다. 본체 예산 1,040,000원입니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 1040000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z056",
+      "group": "편집 보유",
+      "turns": [
+        "프리미어 영상 편집 작업용으로 QHD 모니터 있습니다. 새 본체 3,040,000원으로 부탁합니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 3040000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z057",
+      "group": "편집 보유",
+      "turns": [
+        "다빈치 리졸브 편집 작업용으로 QHD 모니터 있습니다. 새 본체 4,040,000원으로 부탁합니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 4040000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z058",
+      "group": "편집 보유",
+      "turns": [
+        "AutoCAD 설계 작업용으로 QHD 모니터 있습니다. 새 본체 2,640,000원으로 부탁합니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 2640000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z059",
+      "group": "편집 보유",
+      "turns": [
+        "블렌더 렌더링 작업용으로 QHD 모니터 있습니다. 새 본체 3,540,000원으로 부탁합니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 3540000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z060",
+      "group": "편집 보유",
+      "turns": [
+        "스케치업 모델링 작업용으로 QHD 모니터 있습니다. 새 본체 2,940,000원으로 부탁합니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 2940000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z061",
+      "group": "AI 보유",
+      "turns": [
+        "PyTorch 딥러닝용 새 PC에 QHD 모니터는 따로 있습니다. 본체 예산 3,440,000원입니다."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": 3440000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z062",
+      "group": "AI 보유",
+      "turns": [
+        "ComfyUI 이미지 생성용 새 PC에 QHD 모니터는 따로 있습니다. 본체 예산 3,840,000원입니다."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": 3840000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z063",
+      "group": "AI 보유",
+      "turns": [
+        "로컬 LLM용 새 PC에 QHD 모니터는 따로 있습니다. 본체 예산 5,040,000원입니다."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": 5040000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z064",
+      "group": "AI 보유",
+      "turns": [
+        "YOLO 학습용 새 PC에 QHD 모니터는 따로 있습니다. 본체 예산 3,640,000원입니다."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": 3640000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z065",
+      "group": "AI 보유",
+      "turns": [
+        "Ollama 실험용 새 PC에 QHD 모니터는 따로 있습니다. 본체 예산 4,640,000원입니다."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": 4640000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z066",
+      "group": "무상한 보유",
+      "turns": [
+        "FHD 모니터 있습니다. 사무용 본체는 예산 제한 없이 골라주세요."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": null,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z067",
+      "group": "무상한 보유",
+      "turns": [
+        "4K 모니터 있습니다. 게임 본체는 예산 상관없이 추천해주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": null,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z068",
+      "group": "무상한 보유",
+      "turns": [
+        "QHD 모니터 보유 중이고 영상 편집용 본체 예산은 무제한입니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": null,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z069",
+      "group": "무상한 보유",
+      "turns": [
+        "QHD 모니터 이미 있습니다. 로컬 AI용 본체 예산 제한 없습니다."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": null,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z070",
+      "group": "무상한 보유",
+      "turns": [
+        "FHD 모니터 집에 있어요. 회계 프로그램용 본체 예산 상관없이요."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": null,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z071",
+      "group": "보유·지정 사양",
+      "turns": [
+        "FHD 모니터 있어요. 게임용 램 32GB 이상으로 182만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1820000,
+        "resolution": "FHD",
+        "plans": "any",
+        "minRamGb": 32
+      }
+    },
+    {
+      "id": "Z072",
+      "group": "보유·지정 사양",
+      "turns": [
+        "QHD 모니터 집에 있어요. 게임용 램 64GB 이상으로 382만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 3820000,
+        "resolution": "QHD",
+        "plans": "any",
+        "minRamGb": 64
+      }
+    },
+    {
+      "id": "Z073",
+      "group": "보유·지정 사양",
+      "turns": [
+        "4K 모니터 있습니다. 게임용 SSD 2TB 이상으로 482만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4820000,
+        "resolution": "4K",
+        "plans": "any",
+        "minSsdGb": 2000
+      }
+    },
+    {
+      "id": "Z074",
+      "group": "보유·지정 사양",
+      "turns": [
+        "QHD 모니터 있습니다. 편집용 SSD 4TB 이상 492만원입니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 4920000,
+        "resolution": "QHD",
+        "plans": "any",
+        "minSsdGb": 4000
+      }
+    },
+    {
+      "id": "Z075",
+      "group": "보유·지정 사양",
+      "turns": [
+        "QHD 모니터 있습니다. AI용 VRAM 16GB 이상 442만원입니다."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": 4420000,
+        "resolution": "QHD",
+        "plans": "any",
+        "minVramGb": 16
+      }
+    },
+    {
+      "id": "Z076",
+      "group": "보유·지정 사양",
+      "turns": [
+        "QHD 모니터 집에 있습니다. 게임 CPU 9800X3D로 392만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 3920000,
+        "resolution": "QHD",
+        "plans": "any",
+        "models": {
+          "cpu": [
+            "9800x3d"
+          ]
+        }
+      }
+    },
+    {
+      "id": "Z077",
+      "group": "보유·지정 사양",
+      "turns": [
+        "QHD 모니터 보유 중입니다. 게임용 RTX 5070 넣어 322만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 3220000,
+        "resolution": "QHD",
+        "plans": "any",
+        "models": {
+          "gpu": [
+            "5070"
+          ]
+        }
+      }
+    },
+    {
+      "id": "Z078",
+      "group": "보유·지정 사양",
+      "turns": [
+        "4K 모니터는 따로 있어요. 게임용 RTX 5070 Ti 넣어 442만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4420000,
+        "resolution": "4K",
+        "plans": "any",
+        "models": {
+          "gpu": [
+            "5070ti"
+          ]
+        }
+      }
+    },
+    {
+      "id": "Z079",
+      "group": "보유·지정 사양",
+      "turns": [
+        "FHD 모니터 가지고 있어요. 게임 본체 인텔 CPU로 212만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2120000,
+        "resolution": "FHD",
+        "plans": "any",
+        "brands": {
+          "cpu": [
+            "intel",
+            "인텔"
+          ]
+        }
+      }
+    },
+    {
+      "id": "Z080",
+      "group": "보유·지정 사양",
+      "turns": [
+        "QHD 모니터 있습니다. 게임 본체 AMD CPU로 292만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2920000,
+        "resolution": "QHD",
+        "plans": "any",
+        "brands": {
+          "cpu": [
+            "amd",
+            "라이젠"
+          ]
+        }
+      }
+    },
+    {
+      "id": "Z081",
+      "group": "예산·매장 설정",
+      "turns": [
+        "FHD 모니터는 이미 있습니다. 게임 본체 백칠십팔만원으로 맞춰주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1780000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z082",
+      "group": "예산·매장 설정",
+      "turns": [
+        "QHD 모니터 있습니다. 게임 본체 2백70만원으로요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2700000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z083",
+      "group": "예산·매장 설정",
+      "turns": [
+        "4K 모니터는 집에 있어요. 게임 본체 4,550,000원까지요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4550000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z084",
+      "group": "예산·매장 설정",
+      "turns": [
+        "FHD 모니터 샀어요. 게임 본체만 1.8백만원으로 부탁합니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1800000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z085",
+      "group": "예산·매장 설정",
+      "turns": [
+        "QHD 모니터 가지고 있어요. 게임 본체 240~280만원 사이로 원해요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2800000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z086",
+      "group": "예산·매장 설정",
+      "turns": [
+        "QHD 게임용 총 290만원에 모니터 40만원 포함해서 견적 부탁합니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2500000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z087",
+      "group": "예산·매장 설정",
+      "turns": [
+        "QHD 게임 본체 285만원, 모니터는 별도로 50만원 준비했어요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2850000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z088",
+      "group": "예산·매장 설정",
+      "turns": [
+        "FHD 모니터 집에 있습니다. 게임 본체 205만원에 조립비 포함 부탁드려요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2050000,
+        "resolution": "FHD",
+        "plans": "any"
+      },
+      "settings": {
+        "assembly": 40000
+      }
+    },
+    {
+      "id": "Z089",
+      "group": "예산·매장 설정",
+      "turns": [
+        "QHD 모니터 있습니다. MSI 제외하고 게임 본체 305만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 3050000,
+        "resolution": "QHD",
+        "plans": "any"
+      },
+      "settings": {
+        "excludedBrands": [
+          "MSI"
+        ]
+      }
+    },
+    {
+      "id": "Z090",
+      "group": "예산·매장 설정",
+      "turns": [
+        "QHD 모니터 있습니다. ASUS 제외하고 게임 본체 315만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 3150000,
+        "resolution": "QHD",
+        "plans": "any"
+      },
+      "settings": {
+        "excludedBrands": [
+          "ASUS"
+        ]
+      }
+    },
+    {
+      "id": "Z091",
+      "group": "추가 상담",
+      "turns": [
+        "게임용 본체 215만원 QHD로 부탁합니다.",
+        "아직 FHD 모니터가 있습니다. FHD로 할게요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2150000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z092",
+      "group": "추가 상담",
+      "turns": [
+        "게임 본체 285만원 FHD로 주문합니다.",
+        "QHD 모니터 따로 있어요. QHD로 변경해주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2850000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z093",
+      "group": "추가 상담",
+      "turns": [
+        "게임용 본체 465만원 QHD입니다.",
+        "4K 모니터가 집에 있습니다. 4K로 바꿔주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4650000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z094",
+      "group": "추가 상담",
+      "turns": [
+        "게임 본체 FHD 175만원입니다.",
+        "모니터는 FHD 그대로고 예산 15만원 올려주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1900000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z095",
+      "group": "추가 상담",
+      "turns": [
+        "게임 본체 QHD 295만원 부탁해요.",
+        "QHD 모니터는 있고 예산 20만원 줄여주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2750000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z096",
+      "group": "추가 상담",
+      "turns": [
+        "FHD 모니터 있습니다. 게임 본체 195만원입니다.",
+        "윈도우도 넣어주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1950000,
+        "resolution": "FHD",
+        "plans": "any",
+        "os": true
+      }
+    },
+    {
+      "id": "Z097",
+      "group": "추가 상담",
+      "turns": [
+        "QHD 모니터 있어요. 화이트 게임 본체 285만원입니다.",
+        "블랙으로 바꾸고 와이파이도 넣어주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2850000,
+        "resolution": "QHD",
+        "plans": "any",
+        "wifi": true
+      }
+    },
+    {
+      "id": "Z098",
+      "group": "추가 상담",
+      "turns": [
+        "4K 모니터 있습니다. 윈도우 포함 게임 본체 455만원입니다.",
+        "윈도우는 집에 있는 거 쓸게요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4550000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "Z099",
+      "group": "추가 상담",
+      "turns": [
+        "QHD 모니터 있어요. 게임 본체 395만원입니다.",
+        "램 64GB랑 SSD 2TB 이상으로 바꿔주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 3950000,
+        "resolution": "QHD",
+        "plans": "any",
+        "minRamGb": 64,
+        "minSsdGb": 2000
+      }
+    },
+    {
+      "id": "Z100",
+      "group": "추가 상담",
+      "turns": [
+        "게임 QHD 본체 365만원입니다.",
+        "예산 제한 없이 해주세요. QHD 모니터는 이미 있습니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": null,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    }
+  ]
+}

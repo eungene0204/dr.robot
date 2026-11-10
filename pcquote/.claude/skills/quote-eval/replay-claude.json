@@ -1,0 +1,439 @@
+{
+ "로스트아크 쾌적하게 할 컴퓨터, 예산 130만원": {
+  "profile": "gaming",
+  "budget": 1300000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "주식 HTS 모니터 4대 연결할 컴퓨터 100만원": {
+  "profile": "office",
+  "budget": 1000000,
+  "resolution": "FHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "모니터 연결 단자 종류(HDMI/DP)를 알려 주세요."
+  ]
+ },
+ "컴퓨터 하나 맞추려고요. 120만원 있어요": {
+  "profile": "office",
+  "budget": 1200000,
+  "resolution": "FHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "주로 어떤 용도로 쓰실 예정인가요? (게임, 영상 편집, 사무 등)",
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "오버워치2 하려고요, 120만원": {
+  "profile": "gaming",
+  "budget": 1200000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "사이버펑크 2077 QHD 풀옵션으로 하고 싶어요 350만원": {
+  "profile": "gaming",
+  "budget": 3500000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": []
+ },
+ "몬헌 와일즈 돌릴 PC 250만원 QHD": {
+  "profile": "gaming",
+  "budget": 2500000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": []
+ },
+ "겜용 컴 100만원": {
+  "profile": "gaming",
+  "budget": 1000000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "디아블로4, GTA5 정도 FHD로 130만원": {
+  "profile": "gaming",
+  "budget": 1300000,
+  "resolution": "FHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": []
+ },
+ "15만원 컴퓨터": {
+  "profile": "office",
+  "budget": null,
+  "resolution": "FHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "주로 어떤 용도로 쓰실 예정인가요? (게임, 영상 편집, 사무 등)"
+  ]
+ },
+ "배틀그라운드 140만원": {
+  "profile": "gaming",
+  "budget": 1400000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "발로란트 240프레임 뽑고 싶어요 180만원 FHD": {
+  "profile": "gaming",
+  "budget": 1800000,
+  "resolution": "FHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": []
+ },
+ "피파 온라인 할 컴퓨터 100만원": {
+  "profile": "gaming",
+  "budget": 1000000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "메이플스토리용 90만원": {
+  "profile": "gaming",
+  "budget": 900000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "로블록스 하는 아이 컴퓨터 80만원": {
+  "profile": "gaming",
+  "budget": 800000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "서든어택 FHD 110만원": {
+  "profile": "gaming",
+  "budget": 1100000,
+  "resolution": "FHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": []
+ },
+ "검은사막 4K로 450만원": {
+  "profile": "gaming",
+  "budget": 4500000,
+  "resolution": "4K",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": []
+ },
+ "엘든링 QHD 230만원": {
+  "profile": "gaming",
+  "budget": 2300000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": []
+ },
+ "팰월드 친구들이랑 할 컴퓨터 170만원": {
+  "profile": "gaming",
+  "budget": 1700000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "스트리트 파이터 6 FHD 140만원": {
+  "profile": "gaming",
+  "budget": 1400000,
+  "resolution": "FHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": []
+ },
+ "개임용 150만원": {
+  "profile": "gaming",
+  "budget": 1500000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "주식 차트 모니터 6대 띄울 컴퓨터 150만원": {
+  "profile": "office",
+  "budget": 1500000,
+  "resolution": "FHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "모니터 연결 단자 종류(HDMI/DP)를 알려 주세요."
+  ]
+ },
+ "코딩 학원 수업용 PC 한 대 70만원": {
+  "profile": "office",
+  "budget": 700000,
+  "resolution": "FHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "어떤 언어나 개발 도구를 수업에 쓰나요?"
+  ]
+ },
+ "파이썬 데이터 분석, 판다스 정도 100만원": {
+  "profile": "office",
+  "budget": 1000000,
+  "resolution": "FHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "다루는 데이터 크기는 어느 정도인가요?"
+  ]
+ },
+ "겜컴 맞추려고요 150만원": {
+  "profile": "gaming",
+  "budget": 1500000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "예산 1500000": {
+  "profile": "office",
+  "budget": 1500000,
+  "resolution": "FHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "주로 어떤 용도로 쓰실 예정인가요? (게임, 영상 편집, 사무 등)",
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "리그 오브 레전드 하는 컴퓨터 90만원": {
+  "profile": "gaming",
+  "budget": 900000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "배틀필드 6 QHD 250만원": {
+  "profile": "gaming",
+  "budget": 2500000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": []
+ },
+ "콜 오브 듀티 FHD 160만원": {
+  "profile": "gaming",
+  "budget": 1600000,
+  "resolution": "FHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": []
+ },
+ "포트나이트 할 컴 110만원": {
+  "profile": "gaming",
+  "budget": 1100000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "GTA6 나오면 할 컴퓨터 300만원": {
+  "profile": "gaming",
+  "budget": 3000000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "철권8 하려고요 140만원": {
+  "profile": "gaming",
+  "budget": 1400000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "원신, 젠레스존제로 QHD 200만원": {
+  "profile": "gaming",
+  "budget": 2000000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": []
+ },
+ "이터널 리턴 120만원": {
+  "profile": "gaming",
+  "budget": 1200000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "레인보우 식스 시즈 240Hz 180만원": {
+  "profile": "gaming",
+  "budget": 1800000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "에이펙스 레전드 FHD 150만원": {
+  "profile": "gaming",
+  "budget": 1500000,
+  "resolution": "FHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": []
+ },
+ "던파랑 메이플 할 컴퓨터 100만원": {
+  "profile": "gaming",
+  "budget": 1000000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "리니지 여러 개 띄울 컴퓨터 200만원": {
+  "profile": "gaming",
+  "budget": 2000000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "와우 하는 컴퓨터 140만원": {
+  "profile": "gaming",
+  "budget": 1400000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "마비노기 모바일 PC로 100만원": {
+  "profile": "gaming",
+  "budget": 1000000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ },
+ "9800X3D에 5080 조합 600만원 4K": {
+  "profile": "gaming",
+  "budget": 6000000,
+  "resolution": "4K",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": []
+ },
+ "4070 Ti SUPER로 300만원 QHD": {
+  "profile": "gaming",
+  "budget": 3000000,
+  "resolution": "QHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": []
+ },
+ "컴퓨터": {
+  "profile": "office",
+  "budget": null,
+  "resolution": "FHD",
+  "white": false,
+  "wifi": false,
+  "os": false,
+  "questions": [
+   "주로 어떤 용도로 쓰실 예정인가요? (게임, 영상 편집, 사무 등)",
+   "사용하실 모니터 해상도는 어떻게 되나요?"
+  ]
+ }
+}

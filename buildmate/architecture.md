@@ -156,3 +156,5 @@ BIOS 버전 문자열의 대소 관계를 제조사 공통 규칙으로 추정�
 - 2026-11-08: pcquote 엔진·화면 추천/검사/발행 API가 budget=null 무상한을 지원한다. 세부 탐색·응답 규약은 [pcquote 구조](../pcquote/docs/architecture.md#2026-11-08-무상한-견적과-llm-평가). 실제 해석은 무료 LLM 기본 호출, 실패 시 규칙 대체이며 평가 도구가 각 턴의 method/fallback을 기록한다.
 
 - 2026-11-11: LLM 제공자는 `LLM_PROVIDER=exaone`으로 전환. `pcquote/backend/.env`의 EXAONE_API_KEY와 EXAONE_MODEL(k-exaone_v2.5)을 서버·평가 도구가 공유한다. api.exaone.ai/v1/chat/completions 직접 호출, low 추론·최소 4096 토큰·60초 timeout, JSON 스키마를 시스템 지시로 전달하고 기존 결과 검증 유지. 실패 시 규칙 대체하며 OpenRouter로 자동 전송하지 않는다.
+
+- 2026-11-11: Dr.Robot 루트 Git 저장소 하나로 통합. 루트 아래 buildmate/와 pcquote/를 함께 추적하고 기존 형제 경로를 유지한다. 루트 npm setup/dev/server/build/test/test:backend 명령 제공.

@@ -1,0 +1,12 @@
+{
+  "name": "dr-robot-workspace",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix buildmate run dev --",
+    "server": "npm --prefix buildmate run server",
+    "build": "npm --prefix buildmate run build",
+    "test": "npm --prefix buildmate test",
+    "test:backend": "cd pcquote/backend && uv run pytest",
+    "setup": "npm --prefix buildmate ci && cd pcquote/backend && uv sync"
+  }
+}
