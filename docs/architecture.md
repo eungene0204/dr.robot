@@ -12,7 +12,7 @@ flowchart LR
     API --> G[(PostgreSQL pcquote)]
     P[수집기 Python 배치] --> G
     API -->|견적 시 가격 갱신| S[다나와]
-    API -->|요구 해석·답변| L[OpenRouter]
+    API -->|요구 해석·답변| L[EXAONE API]
 ```
 
 | 경로 | 역할 |
@@ -22,7 +22,7 @@ flowchart LR
 | `backend/src/pcquote/screen.py` | 화면 형식 변환: requirement → 엔진 요청, 3안 → 화면 견적, 가격 갱신 후 재추천(최대 6회), 교체 검사, 견적 저장 검증 |
 | `backend/src/pcquote/policy.py` | 매장 데이터 정책(필수 사양, NVMe 전용, 가격 24시간, 벤치마크 3표본·45일). buildmate JS와 판정 일치 확인 |
 | `backend/src/pcquote/consult.py` | 요구 문장 규칙(용도·예산(한글 숫자 포함)·해상도·모델명), 고객 선호(모델·브랜드·용량) 추출, 카탈로그 기반 답변. buildmate JS와 결과 일치 확인 |
-| `backend/src/pcquote/llm.py` | OpenRouter 호출, 요구 해석, 근거 기반 답변과 출력 검사(근거 밖 금액·FPS 수치) |
+| `backend/src/pcquote/llm.py` | EXAONE/OpenRouter 호출, 요구 해석, 근거 기반 답변과 출력 검사(근거 밖 금액·FPS 수치) |
 | `backend/src/pcquote/danawa.py` | 다나와 상품 페이지 JSON-LD 가격 수집(robots.txt, 출처당 2초, 허용 호스트, 재시도, 8MB) |
 | `backend/src/pcquote/importer.py` | 발행 카탈로그(documents.db `public/data/catalog.json`) → PostgreSQL. updated_at이 바뀌면 자동, 더 최신 가격은 보존, 빠진 부품은 숨김 |
 | `backend/src/pcquote/pipeline.py` | 수집 현황 문서 읽기, 수동 수집(`node pipeline/run.mjs --expand`) 실행 |
@@ -131,7 +131,7 @@ buildmate Node 수집 파이프라인(`pipeline/`)을 옮긴 것이다. 수집 �
 | 전원부 등급 | 없음 | H610·H810·A520·A620 보드에는 CPU 최대 전력 160W 이하만 | 엔트리 보드 전원부에 i7 K급을 얹는 조합을 막는 매장 정책 |
 | 수랭 쿨러 | 쿨러 높이 | 자동 추천 제외 | 라디에이터 장착 위치 데이터가 없다 |
 | 저장장치 | 용량 | NVMe로 확인된 내부 드라이브만 사용(SATA·인터페이스 미확인·액세서리·캐시 모듈·U.2 제외) | buildmate 매장 정책(2026-11-06 사용자 지시) 유지. `policy.py`가 같은 규칙을 적용하고, 가져오기 때 `interface` 사양을 채운다 |
-| 예산 상한 | 예산 이하 | 화면 견적·저장 모두 예산 상한(2026-11-07 변경, 이전 +5%). 예산 미지정 요청은 예산을 묻는다 | 배분 비율 계산에 예산이 필요하다 |
+| 예산 상한 | 예산 이하 | 화면 견적·저장 모두 명시 예산 상한(2026-11-07 변경, 이전 +5%). 미지정은 budget=null 무상한(2026-11-08) | 무상한은 배분 범위 없이 호환 후보 탐색 |
 | 가격 갱신 | 수집기 일괄 | 견적 때 선택된 부품 중 24시간 지난 가격만 다나와에서 다시 수집. 직전 대비 30% 넘게 바뀌면 보류 | buildmate 기존 동작 유지 |
 | 해상도별 GPU 하한 | "GPU 등급 하한" | FHD RTX 4060급, QHD RTX 5060 Ti급, 4K RTX 5070 Ti급(카탈로그 벤치마크 기준). 예산이 모자라면 5-1 순서로 낮춤 | 설명 가능한 기준 칩으로 정함. 2026-11 RTX 4060 최저가가 97만 원대라 100만 원 FHD 게임 견적이 불가능했음 |
 | 파워·케이스·쿨러 비율 | 합계만 | 파워 45%, 케이스 35%, 쿨러 20%로 나눔 | 부품군별 범위 제한에 필요 |
@@ -146,3 +146,11 @@ buildmate Node 수집 파이프라인(`pipeline/`)을 옮긴 것이다. 수집 �
 - 2026-11 스냅샷은 DDR5 16GB 최저가가 약 28만 원, DDR4는 약 13만 원이다. 그래서 같은 예산에서 DDR4를 쓸 수 있는 LGA1700 조합이 많이 뽑힌다.
 - 인기 순위는 부품군마다 상위 30개 제품군에만 있다(전체 6,829개 중 366개). 순위 밖 제품은 모두 0점이라 서로 구분되지 않는다. 화이트 부품은 순위가 있는 제품이 적다. 순위는 4단계 수집기가 갱신하기 전까지 2026-11-05 수집값을 쓰고, 2026-11-19에 만료된다.
 - 세 안이 같은 GPU·보드를 공유하고 CPU만 다른 경우가 많다. 안끼리 더 크게 달라지게 할지는 운영하면서 정한다.
+
+## 2026-11-08 무상한 견적과 LLM 평가
+
+`Request.budget`·`RecommendIn.budget`은 int 또는 None이다. None이면 allocation은 0(배분 예산 없음), `_search`의 배분 범위와 총액 상한을 없애고 기본 최소 사양·호환·후보 축약 정책은 유지한다. `_recommend`는 후보 내 성능 최고안을 보존하면서 가격/성능 순서에 맞는 균형·절약 대안을 고른다. 조건에 맞는 대안이 없으면 해당 안은 생략한다. 실제 게임 성능이나 전역 최적성 보장은 아니다.
+
+화면의 `budgetCap=null`, 평가의 `budgetDelta=null`·`withinBand=true`를 사용한다. `screen.validate_issue`는 무상한이어도 부품 등록·가격·스냅샷·호환성을 검증하며 유한 예산에만 총액 상한을 검사한다. 저장 구조 변경은 없다.
+
+LLM 호출은 기존 `main` startup의 무료 primary/fallback 모델 설정을 기본으로 유지한다. `llm.interpret`가 2회 실패하면 method=local과 fallback 사유를 반환한다. 시나리오 평가 도구는 `--local` 없이 실행해야 실제 호출하며, 각 결과의 `requirement.interpretationSteps`에 각 턴의 실제 method/fallback을 보존한다.

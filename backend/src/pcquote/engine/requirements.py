@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import re
 from dataclasses import dataclass, field, replace
 
 from ..catalog import Catalog
@@ -35,7 +36,7 @@ CHEAP_GAP = 0.85
 
 @dataclass(frozen=True)
 class Request:
-    budget: int
+    budget: int | None
     uses: tuple[str, ...] = ("gaming",)
     resolution: str = "FHD"
     white: bool = False
@@ -49,7 +50,7 @@ class Request:
     min_ssd_gb: int = 0
     min_vram_gb: int = 0
     cpu_brand: str | None = None  # "intel" | "amd"
-    gpu_brand: str | None = None  # "nvidia" | "amd"
+    gpu_brand: str | None = None  # "nvidia" | "amd" | "intel"
     cpu_models: tuple[str, ...] = ()  # model tokens, e.g. "9800x3d"
     gpu_models: tuple[str, ...] = ()  # e.g. "5070", "5060ti"
 
@@ -58,12 +59,12 @@ class Request:
             raise ValueError(f"용도는 {', '.join(USES)} 중에서 고르세요.")
         if self.resolution not in RESOLUTIONS:
             raise ValueError("해상도는 FHD, QHD, 4K 중 하나입니다.")
-        if not 300_000 <= self.budget <= 20_000_000:
+        if self.budget is not None and not 300_000 <= self.budget <= 20_000_000:
             raise ValueError("예산은 30만~2,000만 원 사이로 입력하세요.")
 
     @property
-    def parts_budget(self) -> int:
-        return self.budget - self.assembly_fee
+    def parts_budget(self) -> int | float:
+        return self.budget - self.assembly_fee if self.budget is not None else float("inf")
 
     @property
     def needs_gpu(self) -> bool:
@@ -72,11 +73,11 @@ class Request:
     def preference_labels(self) -> list[str]:
         out = []
         if self.cpu_models:
-            out.append(f"CPU {'/'.join(m.upper() for m in self.cpu_models)}")
+            out.append(f"CPU {'/'.join(model_label(m) for m in self.cpu_models)}")
         elif self.cpu_brand:
             out.append(f"{BRAND_LABELS[self.cpu_brand]} CPU")
         if self.gpu_models:
-            out.append(f"그래픽카드 {'/'.join(m.upper() for m in self.gpu_models)}")
+            out.append(f"그래픽카드 {'/'.join(model_label(m) for m in self.gpu_models)}")
         elif self.gpu_brand:
             out.append(f"{GPU_BRAND_LABELS[self.gpu_brand]} 그래픽카드")
         if self.min_ram_gb:
@@ -92,8 +93,15 @@ class Request:
                        cpu_models=(), gpu_models=())
 
 
+def model_label(token: str) -> str:
+    """'4070tisuper' → '4070 Ti SUPER', '9070xt' → '9070 XT', '9800x3d' → '9800X3D', '14400f' → '14400F'."""
+    digits, suffix = re.match(r"(\d+)(.*)", token).groups()
+    words = {"ti": "Ti", "super": "SUPER", "tisuper": "Ti SUPER", "xt": "XT", "xtx": "XTX", "gre": "GRE"}
+    return f"{digits} {words[suffix]}" if suffix in words else (digits + suffix).upper()
+
+
 BRAND_LABELS = {"intel": "인텔", "amd": "AMD"}
-GPU_BRAND_LABELS = {"nvidia": "지포스", "amd": "라데온"}
+GPU_BRAND_LABELS = {"nvidia": "지포스", "amd": "라데온", "intel": "인텔 아크"}
 
 
 def size(gb: int) -> str:
@@ -112,6 +120,8 @@ class MinSpecs:
 
 def allocation(req: Request) -> dict[str, int]:
     """Won per category: the plan's ratios averaged over the selected uses."""
+    if req.budget is None:
+        return {k: 0 for k in (*REST_SPLIT, "cpu", "gpu", "board", "ram", "ssd")}
     shares = {k: sum(ALLOCATION[u][k] for u in req.uses) / len(req.uses) for k in ALLOCATION["gaming"]}
     if not req.needs_gpu:
         shares["gpu"] = 0.0

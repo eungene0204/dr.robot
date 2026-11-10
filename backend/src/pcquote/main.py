@@ -56,8 +56,7 @@ def _record_usage(u: dict) -> None:
 async def lifespan(app: FastAPI):
     create_schema()
     llm.load_env_files([BACKEND / ".env", importer.BUILDMATE / ".env"])
-    app.state.complete = llm.create_llm(os.environ.get("OPENROUTER_API_KEY"), os.environ.get("OPENROUTER_MODEL"),
-                                        os.environ.get("OPENROUTER_FALLBACK_MODEL"), on_usage=_record_usage)
+    app.state.complete = llm.configured_llm(on_usage=_record_usage)
     source = SourceClient(cache=PgPageCache())
     app.state.collect = lambda record: collect_price(source, record)
     yield
@@ -307,7 +306,7 @@ class Camel(BaseModel):
 
 
 class RecommendIn(Camel):
-    budget: int = Field(ge=300_000, le=20_000_000)
+    budget: int | None = Field(default=None, ge=300_000, le=20_000_000)
     uses: list[str] = Field(default_factory=lambda: ["gaming"], min_length=1)
     resolution: str = "FHD"
     white: bool = False

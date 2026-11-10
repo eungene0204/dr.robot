@@ -10,7 +10,7 @@ then judges the result against the case's expectations and the store rules.
 
 Prices are not refreshed from Danawa (collect=None), so plans use the stored snapshot.
 Verdicts: FAIL = spec'd behaviour broken, GAP = customer demand the system does not serve,
-WARN = suspicious but allowed. Report: pcquote/reports/quote-eval/<timestamp>.{json,md}.
+WARN = suspicious but allowed, INFO = context only (e.g. stale snapshot prices; does not change the case status). Report: pcquote/reports/quote-eval/<timestamp>.{json,md}.
 """
 
 from __future__ import annotations
@@ -25,7 +25,7 @@ from datetime import datetime
 from pathlib import Path
 
 from pcquote import importer, llm, screen
-from pcquote.consult import detect_profile, explicit_budget, model_key, parse_requirement, unlimited_budget_requested
+from pcquote.consult import budget_change, detect_profile, explicit_budget, model_key, parse_requirement, unlimited_budget_requested
 from pcquote.engine.requirements import POOL_FLOOR, min_specs
 from pcquote.policy import price_state
 from pcquote.service import CatalogService
@@ -39,20 +39,27 @@ PLAN_ORDER = ("enhanced", "balanced", "saving")
 
 def screen_requirement(turns: list[str], interpret) -> dict:
     req = None
+    interpretation_steps = []
     for prompt in turns:
         own = parse_requirement(prompt)
         fresh = req is None or bool(detect_profile(prompt) and detect_profile(prompt) != req["profile"])
         context = prompt if fresh else f"{req['text']}\n추가 요청: {prompt}"
         interpreted = interpret(context)
+        interpretation_steps.append({"method": interpreted.get("method"), "fallback": interpreted.get("fallback")})
         if fresh:
             ui = {"white": own["white"], "wifi": own["wifi"], "os": own["os"]}
         else:  # applyText sets the UI state from the local parse of the combined context
             p = parse_requirement(context)
             ui = {k: p[k] for k in ("profile", "white", "wifi", "os", "resolution")}
-        stated = explicit_budget(prompt)
-        budget = None if unlimited_budget_requested(prompt) else stated if stated is not None else (
-            None if fresh else req.get("budget"))
+        stated, change = explicit_budget(prompt), budget_change(prompt)
+        if unlimited_budget_requested(prompt):
+            budget = None
+        elif not fresh and req.get("budget") is not None and change is not None:  # "10만원만 더 올려줘"
+            budget = req["budget"] + change
+        else:
+            budget = stated if stated is not None else (None if fresh else req.get("budget"))
         req = parse_requirement(context, {**interpreted, **ui, "budget": budget, "allowOver": False})
+    req["interpretationSteps"] = interpretation_steps
     return req
 
 
@@ -123,9 +130,9 @@ def check_plan(v: Verdicts, state, plan: dict, req: dict, settings: dict, expect
     summed = sum(p.get("price") or 0 for p in parts.values()) + int(settings.get("assembly") or 0)
     if summed != total:
         v.add("FAIL", "합계", f"부품 합 {won(summed)} ≠ 표시 합계 {won(total)}", pid)
-    if total > cap:
+    if cap is not None and total > cap:
         v.add("FAIL", "예산 초과", f"{won(total)} > 예산 {won(cap)}", pid)
-    elif total < cap * POOL_FLOOR:
+    elif cap is not None and total < cap * POOL_FLOOR:
         v.add("WARN", "예산 활용", f"{won(total)}는 예산의 {total / cap:.0%}", pid)
     for c in plan["checks"]:
         if not c["ok"]:
@@ -183,7 +190,7 @@ def check_plan(v: Verdicts, state, plan: dict, req: dict, settings: dict, expect
     stale = [c for c, p in parts.items() if not p.get("virtual") and p.get("category") != "os"
              and price_state(p, state.loaded_at) != "fresh"]
     if stale:
-        v.add("WARN", "가격 신선도", f"갱신 필요 {len(stale)}개: {', '.join(stale)}", pid)
+        v.add("INFO", "가격 신선도", f"갱신 필요 {len(stale)}개: {', '.join(stale)}", pid)
     for c, p in parts.items():
         alt = cheaper_equivalent(state, p)
         if alt:
@@ -252,12 +259,15 @@ def run_case(case: dict, state_service: CatalogService, interpret) -> dict:
     state = state_service.get()
     plans = check_plans(v, out, expect)
     if plans:
-        specs = min_specs(screen.to_request(req, settings, state.parts), state.catalog)
+        engine_req = screen.to_request(req, settings, state.parts)
+        if "반영하지 못했어요" in (out.get("notice") or ""):  # the engine dropped the customer's preferences
+            engine_req = engine_req.without_preferences()
+        specs = min_specs(engine_req, state.catalog)
         for p in plans.values():
             check_plan(v, state, p, req, settings, expect, specs, out.get("notice") or "")
     return {"id": case["id"], "group": case["group"], "turns": case["turns"],
             "requirement": {k: req.get(k) for k in ("profile", "budget", "budgetSource", "resolution", "white", "wifi", "os",
-                                                     "models", "method", "questions")},
+                                                     "models", "method", "questions", "interpretationSteps")},
             "message": out.get("message"), "notice": out.get("notice"), "notes": out.get("notes"),
             "plans": [summarize_plan(p) for p in plans.values()], "verdicts": v.items,
             "ms": round((time.perf_counter() - started) * 1000)}
@@ -268,10 +278,10 @@ def status(result: dict) -> str:
     return next((l for l in ("FAIL", "GAP", "WARN") if l in levels), "PASS")
 
 
-def write_report(results: list[dict], meta: dict) -> Path:
+def write_report(results: list[dict], meta: dict, tag: str = "") -> Path:
     out_dir = ROOT / "reports" / "quote-eval"
     out_dir.mkdir(parents=True, exist_ok=True)
-    stamp = datetime.now().strftime("%Y%m%d-%H%M%S")
+    stamp = datetime.now().strftime("%Y%m%d-%H%M%S") + (f"-{tag}" if tag else "")
     (out_dir / f"{stamp}.json").write_text(json.dumps({"meta": meta, "results": results}, ensure_ascii=False, indent=1))
     counts = {s: sum(status(r) == s for r in results) for s in ("PASS", "WARN", "GAP", "FAIL")}
     lines = [f"# 견적 시나리오 평가 {stamp}", "",
@@ -298,24 +308,50 @@ def write_report(results: list[dict], meta: dict) -> Path:
     return path
 
 
+def replay_llm(path: Path, missing: dict):
+    """A stand-in for the OpenRouter call that answers from a file of recorded interpretations.
+
+    merge_interpretation keeps only the LLM's profile (when the rules detect none) and its questions, so only texts
+    without a rule-detected profile need a recorded answer; others get the rule reading. Texts with no answer are
+    collected in `missing` and also fall back to the rule reading.
+    """
+    answers = json.loads(path.read_text(encoding="utf-8")) if path.exists() else {}
+
+    def complete(messages, **_):
+        text = messages[-1]["content"]
+        if text in answers:
+            return answers[text]
+        local = parse_requirement(text)
+        stub = {k: local[k] for k in ("resolution", "white", "wifi", "os")}
+        stub |= {"profile": local["profile"], "budget": local["budget"] if 200_000 <= (local["budget"] or 0) <= 20_000_000 else None,
+                 "questions": []}
+        if not any(detect_profile(v) for v in text.split("\n추가 요청:")):
+            missing[text] = stub
+        return stub
+    return complete
+
+
 def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--local", action="store_true", help="LLM 없이 규칙 해석만 사용")
     ap.add_argument("--only", help="쉼표로 구분한 케이스 ID")
     ap.add_argument("--cases", default=str(HERE / "cases.json"))
+    ap.add_argument("--tag", default="", help="보고서 파일 이름 뒤에 붙일 표시(병렬 실행 구분)")
+    ap.add_argument("--replay", help="LLM 대신 쓸 해석 답 파일(JSON: 화면이 보낸 문장 → REQUIREMENT_SCHEMA 답)")
     args = ap.parse_args()
 
     cases = json.loads(Path(args.cases).read_text(encoding="utf-8"))["cases"]
     if args.only:
         wanted = set(args.only.split(","))
         cases = [c for c in cases if c["id"] in wanted]
-    complete = None
-    if not args.local:
+    complete, missing = None, {}
+    if args.replay:
+        complete = replay_llm(Path(args.replay), missing)
+    elif not args.local:
         llm.load_env_files([ROOT / "backend" / ".env", importer.BUILDMATE / ".env"])
-        complete = llm.create_llm(os.environ.get("OPENROUTER_API_KEY"), os.environ.get("OPENROUTER_MODEL"),
-                                  os.environ.get("OPENROUTER_FALLBACK_MODEL"))
+        complete = llm.configured_llm()
         if complete is None:
-            print("OPENROUTER_API_KEY/OPENROUTER_MODEL이 없습니다. --local로 실행하세요.", file=sys.stderr)
+            print("LLM API 키/모델 설정이 없습니다. --local로 실행하세요.", file=sys.stderr)
             return 2
     interpret = lambda text: llm.interpret(text, complete)  # noqa: E731
     service = CatalogService()
@@ -327,9 +363,13 @@ def main() -> int:
         for i in r["verdicts"]:
             if i["level"] in ("FAIL", "GAP"):
                 print(f"       {i['level']} {i['check']}{' (' + i['plan'] + ')' if i.get('plan') else ''}: {i['detail']}")
-    meta = {"interpret": "local" if args.local else os.environ.get("OPENROUTER_MODEL"),
+    if missing:
+        out = Path(args.replay).with_suffix(f".missing{('-' + args.tag) if args.tag else ''}.json")
+        out.write_text(json.dumps(missing, ensure_ascii=False, indent=1), encoding="utf-8")
+        print(f"답이 없는 문장 {len(missing)}개(규칙 해석으로 대신함): {out}", file=sys.stderr)
+    meta = {"interpret": f"replay:{Path(args.replay).name}" if args.replay else "local" if args.local else (os.environ.get("EXAONE_MODEL", "k-exaone_v2.5") if getattr(complete, "provider", None) == "exaone" else os.environ.get("OPENROUTER_MODEL")),
             "catalogVersion": service.get().version, "ranAt": datetime.now().isoformat(timespec="seconds")}
-    path = write_report(results, meta)
+    path = write_report(results, meta, args.tag)
     counts = {s: sum(status(r) == s for r in results) for s in ("PASS", "WARN", "GAP", "FAIL")}
     print("\n" + " · ".join(f"{k} {v}" for k, v in counts.items()) + f"\n보고서: {path}")
     return 1 if counts["FAIL"] else 0

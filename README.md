@@ -44,3 +44,5 @@ cd backend
 uv run python -m pcquote.collector daily          # 매일 0시 LaunchAgent가 scripts/run_collector_daily.sh로 실행
 uv run python -m pcquote.collector run --expand   # 수동 수집(신제품 발견 포함)
 ```
+
+EXAONE 직접 연결: `pcquote/backend/.env`에 `LLM_PROVIDER=exaone`, `EXAONE_API_KEY`, `EXAONE_MODEL=k-exaone_v2.5`를 설정한다. 키는 서버 전용이며 git과 브라우저에 노출하지 않는다. 서버와 평가 도구가 같은 제공자 설정을 사용하고, 실패하면 규칙으로 대체한다.

@@ -11,7 +11,8 @@ description: 고객 예상 요청 시나리오로 견적 파이프라인(요구 
 
 - **FAIL**: 명세된 동작이 깨짐. 해석 불일치(용도·예산·해상도·화이트·와이파이·OS), 예산 초과, 합계 불일치, 호환성 실패, 용도별 최소 사양(RAM·SSD·GPU 하한·AI VRAM) 미달, 옵션 미반영, 제외 브랜드 포함, 3안 누락·순서 역전.
 - **GAP**: 고객이 요구했지만 시스템에 기능이 없음. 모델·브랜드 지정, 고객이 직접 말한 RAM·SSD·VRAM 하한, 화이트 통일.
-- **WARN**: 허용되지만 의심스러움. 같은 사양 30% 이상 저렴한 제품 존재, 고사양 GPU에 3만 원 미만 파워, 오래된 가격, 예산 55% 미만 활용, 중복 안.
+- **WARN**: 허용되지만 의심스러움. 같은 사양 30% 이상 저렴한 제품 존재, 고사양 GPU에 3만 원 미만 파워, 예산 55% 미만 활용, 중복 안, 반영하지 못하고 안내한 고객 선호.
+- **INFO**: 판정에 영향 없음. 오래된 스냅샷 가격(평가는 가격을 갱신하지 않음).
 
 ## 절차
 
@@ -21,7 +22,9 @@ description: 고객 예상 요청 시나리오로 견적 파이프라인(요구 
    cd pcquote/backend && uv run python ../.claude/skills/quote-eval/run_eval.py          # LLM 해석
    uv run python ../.claude/skills/quote-eval/run_eval.py --local                        # 규칙 해석만
    uv run python ../.claude/skills/quote-eval/run_eval.py --only G03,X04                 # 일부만
+   uv run python ../.claude/skills/quote-eval/run_eval.py --replay ../.claude/skills/quote-eval/replay-claude.json
    ```
+   LLM 한도·장애로 OpenRouter를 쓸 수 없으면 `--replay`로 기록된 해석 답을 쓴다. LLM 답은 규칙이 용도를 못 정한 문장의 용도와 질문만 견적에 반영되므로, 그런 문장에만 답이 필요하다. 답이 없는 문장은 `replay-claude.missing*.json`에 모이니 `INTERPRET_SYSTEM`대로 답을 써서 `replay-claude.json`에 더한다. 기록된 답은 실제 모델보다 정확할 수 있어, 실제 모델 품질 확인은 한도가 풀린 뒤 LLM 실행으로 한다.
    보고서는 `pcquote/reports/quote-eval/<시각>.md`와 `.json`에 남는다.
 3. FAIL·GAP·WARN 각각을 **원인 분류**한다. 끝난 기준: 모든 FAIL과 GAP에 다음 중 하나가 붙어 있다.
    - **해석 결함**: `consult.py` 규칙이나 LLM 병합이 고객 말을 놓침(예: 한글 숫자 예산).

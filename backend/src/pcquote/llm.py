@@ -1,4 +1,4 @@
-"""OpenRouter LLM: requirement interpretation and grounded question answers.
+"""EXAONE / OpenRouter LLM: requirement interpretation and grounded question answers.
 
 Ported from buildmate (backend/llm.mjs, answer-harness.mjs, server.mjs ``interpret``).
 The server gathers evidence, the LLM answers from it, and the answer is checked
@@ -16,10 +16,11 @@ from pathlib import Path
 
 import httpx
 
-from .consult import answer_question, merge_interpretation, model_key, model_tokens, parse_requirement
+from .consult import answer_question, detect_profile, merge_interpretation, model_key, model_tokens, parse_requirement
 from .policy import usable_part
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
+EXAONE_URL = "https://api.exaone.ai/v1/chat/completions"
 Complete = Callable[..., dict]
 
 
@@ -37,20 +38,48 @@ def load_env_files(paths: list[Path]) -> None:
             os.environ.setdefault(key, value)
 
 
+def configured_llm(**kwargs) -> Complete | None:
+    """Server and evaluation tools share provider selection; never cross-provider fallback."""
+    provider = os.environ.get("LLM_PROVIDER", "exaone" if os.environ.get("EXAONE_API_KEY") else "openrouter")
+    if provider == "exaone":
+        return create_llm(os.environ.get("EXAONE_API_KEY"), os.environ.get("EXAONE_MODEL") or "k-exaone_v2.5",
+                          provider="exaone", **kwargs)
+    if provider == "openrouter":
+        return create_llm(os.environ.get("OPENROUTER_API_KEY"), os.environ.get("OPENROUTER_MODEL"),
+                          os.environ.get("OPENROUTER_FALLBACK_MODEL"), **kwargs)
+    raise ValueError("LLM_PROVIDER는 exaone 또는 openrouter여야 합니다.")
+
+
 def create_llm(key: str | None, model: str | None, fallback: str | None = None,
-               on_usage: Callable[[dict], None] = lambda u: None, client: httpx.Client | None = None) -> Complete | None:
+               on_usage: Callable[[dict], None] = lambda u: None, client: httpx.Client | None = None,
+               *, provider: str = "openrouter") -> Complete | None:
+    if provider not in ("exaone", "openrouter"):
+        raise ValueError("지원하지 않는 LLM 제공자입니다.")
     if not key or not model:
         return None
     http = client or httpx.Client()
 
     def complete(*, messages: list[dict], schema: dict, name: str, max_tokens: int = 700, timeout: float = 30,
                  temperature: float = 0) -> dict:
-        # Reasoning models spend the token budget on reasoning and return no content, so reasoning is off.
+        # OpenRouter reasoning is disabled; EXAONE below uses its documented low reasoning mode.
         body = {"model": model, **({"models": [model, fallback], "route": "fallback"} if fallback else {}),
                 "reasoning": {"enabled": False}, "messages": messages,
                 "response_format": {"type": "json_schema", "json_schema": {"name": name, "strict": True, "schema": schema}},
                 "max_tokens": max_tokens, "temperature": temperature}
-        r = http.post(OPENROUTER_URL, json=body, timeout=timeout,
+        if provider == "exaone":
+            # The documented API has mandatory thinking and no structured-output parameter.
+            # Ask for JSON explicitly and retain the existing schema/evidence checks downstream.
+            system = "\n".join(m["content"] for m in messages if m.get("role") == "system")
+            system += ("\n출력 형식: 반드시 다음 JSON 스키마에 맞는 JSON 객체만 출력하라. "
+                       "위의 평문 지시는 JSON 안의 answer 문자열에 적용한다. "
+                       "JSON 밖에 설명이나 마크다운을 덧붙이지 마라. 스키마: "
+                       + json.dumps(schema, ensure_ascii=False))
+            body = {"model": model, "messages": [{"role": "system", "content": system},
+                *[m for m in messages if m.get("role") != "system"]],
+                "reasoning_effort": "low", "max_tokens": max(4096, max_tokens),
+                "temperature": temperature, "stream": False}
+        r = http.post(EXAONE_URL if provider == "exaone" else OPENROUTER_URL, json=body,
+                      timeout=max(60, timeout) if provider == "exaone" else timeout,
                       headers={"Authorization": f"Bearer {key}", "X-Title": "Dr.Robot"})
         if r.status_code >= 400:
             raise RuntimeError(f"LLM 응답 오류 ({r.status_code})")
@@ -61,10 +90,11 @@ def create_llm(key: str | None, model: str | None, fallback: str | None = None,
         usage = data.get("usage") or {}
         on_usage({"model": data.get("model") or model, "tokens": usage.get("total_tokens") or 0, "cost": usage.get("cost")})
         try:
-            return json.loads(re.sub(r"^```(?:json)?\s*|\s*```$", "", content))
+            return json.loads(re.sub(r"^```(?:json)?\s*|\s*```$", "", content.strip()))
         except json.JSONDecodeError as e:
             raise RuntimeError("LLM 응답이 JSON 형식이 아닙니다.") from e
 
+    complete.provider = provider
     return complete
 
 
@@ -98,9 +128,24 @@ def valid_requirement(p) -> bool:
     return isinstance(q, list) and len(q) <= 3 and all(isinstance(x, str) and len(x) <= 300 for x in q)
 
 
+USE_QUESTION = "주로 어떤 용도로 쓰실 예정인가요? (게임, 영상 편집, 사무, AI 등)"
+
+
+def _local(text: str, reason: str | None = None) -> dict:
+    """Rule reading; when the LLM failed and the rules found no purpose, ask for it instead of guessing silently."""
+    out = {**parse_requirement(text), "questions": [], "method": "local"}
+    if reason is not None:
+        out["fallback"] = reason
+        if not any(detect_profile(v) for v in text.split("\n추가 요청:")):
+            out["questions"] = [USE_QUESTION]
+    return out
+
+
 def interpret(text: str, complete: Complete | None) -> dict:
+    """LLM reading merged with the rules; an LLM outage (rate limit, timeout, bad answer) falls back to the rules
+    so the consultation keeps producing quotes."""
     if complete is None:
-        return {**parse_requirement(text), "questions": [], "method": "local"}
+        return _local(text)
     last: Exception | None = None
     for _ in range(2):
         try:
@@ -108,10 +153,10 @@ def interpret(text: str, complete: Complete | None) -> dict:
                          schema=REQUIREMENT_SCHEMA, name="requirements", timeout=20)
             if not valid_requirement(p):
                 raise ValueError("요구 명세 검증 실패")
-            return {**merge_interpretation(text, p), "method": "openrouter"}
+            return {**merge_interpretation(text, p), "method": getattr(complete, "provider", "openrouter")}
         except Exception as e:  # noqa: BLE001 — retried once, then reported
             last = e
-    raise RuntimeError(f"요구 해석을 완료하지 못했습니다: {last}")
+    return _local(text, str(last))
 
 
 # --- grounded answers ----------------------------------------------------------

@@ -115,9 +115,17 @@ def test_recommend_returns_screen_plans(client):
     assert all(c["ok"] for c in plan["checks"])
 
 
-def test_recommend_requires_budget(client):
-    r = client.post("/api/recommend/fresh", json={"requirement": {**REQ, "budget": None}, "settings": SETTINGS})
-    assert r.status_code == 422 and "예산" in r.json()["error"]
+def test_unlimited_quote_can_be_generated_evaluated_and_issued(client):
+    req = {**REQ, "budget": None, "text": "QHD 게임용 예산 제한 없음"}
+    body = fresh(client, req)
+    plan = body["plans"][0]
+    assert plan and plan["budgetCap"] is None
+    ids = {c: p["id"] for c, p in plan["parts"].items()}
+    ev = client.post("/api/quotes/evaluate", json={"requirement": req, "settings": SETTINGS, "parts": ids})
+    assert ev.status_code == 200 and all(c["ok"] for c in ev.json()["checks"])
+    saved = client.post("/api/quotes", json={**issue_body(plan, body), "req": req})
+    assert saved.status_code == 201, saved.text
+    assert saved.json()["req"]["budget"] is None
     assert client.post("/api/recommend/fresh", json={"requirement": {**REQ, "profile": "x"}, "settings": SETTINGS}).status_code == 400
 
 
@@ -258,3 +266,18 @@ def test_recommend_tells_staff_when_specs_were_lowered(client):
     assert any(body["plans"])
     assert body["notice"] == "예산에 맞추기 위해 최소 사양을 낮췄어요: 메모리 32GB → 16GB."
     assert fresh(client)["notice"] is None
+
+
+def test_requirements_fall_back_to_rules_when_the_llm_fails(client):
+    def outage(**k):
+        raise RuntimeError("LLM 응답 오류 (429)")
+
+    app.state.complete = outage
+    r = client.post("/api/requirements", json={"text": "배그용 150만"})
+    assert r.status_code == 200
+    body = r.json()
+    assert (body["profile"], body["budget"], body["method"], body["fallback"]) == ("gaming", 1_500_000, "local", "LLM 응답 오류 (429)")
+    assert body["questions"] == []
+    assert any(fresh(client, body)["plans"])  # quota exhaustion still reaches the quote engine
+    unknown = client.post("/api/requirements", json={"text": "컴퓨터 하나 120만원"}).json()
+    assert unknown["questions"] == ["주로 어떤 용도로 쓰실 예정인가요? (게임, 영상 편집, 사무, AI 등)"]  # no silent guess

@@ -1,6 +1,6 @@
-"""Run representative consultation questions through the answer harness against the configured OpenRouter model.
+"""Run representative consultation questions through the answer harness against the configured LLM provider.
 
-Uses the PostgreSQL catalog and needs OPENROUTER_API_KEY / OPENROUTER_MODEL
+Uses the PostgreSQL catalog and needs EXAONE_API_KEY / EXAONE_MODEL (or legacy OpenRouter settings)
 (read from backend/.env or buildmate/.env like the server).
 
     uv run python scripts/llm_eval.py
@@ -25,10 +25,9 @@ PLAN_NAMES = ["최적 균형안", "성능 강화안", "절약안"]
 
 def main() -> int:
     llm.load_env_files([Path(__file__).resolve().parents[1] / ".env", importer.BUILDMATE / ".env"])
-    complete = llm.create_llm(os.environ.get("OPENROUTER_API_KEY"), os.environ.get("OPENROUTER_MODEL"),
-                              os.environ.get("OPENROUTER_FALLBACK_MODEL"))
+    complete = llm.configured_llm()
     if complete is None:
-        print("OPENROUTER_API_KEY와 OPENROUTER_MODEL을 .env에 설정하세요.", file=sys.stderr)
+        print("EXAONE_API_KEY와 EXAONE_MODEL을 .env에 설정하세요.", file=sys.stderr)
         return 1
     state = CatalogService().get()
     now = utcnow()

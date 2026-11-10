@@ -266,7 +266,9 @@ def gpu_brand(p: Part) -> str | None:
     text = f"{p.benchmark_name or ''} {p.name}".lower()
     if any(k in text for k in ("nvidia", "지포스", "geforce", "rtx", "gtx")):
         return "nvidia"
-    return "amd" if any(k in text for k in ("radeon", "라데온", "rx ")) else None
+    if any(k in text for k in ("radeon", "라데온", "rx ")):
+        return "amd"
+    return "intel" if any(k in text for k in ("arc ", "아크", "intel")) else None
 
 
 def ranged(pool: list[Part], target: int, tolerance: float) -> list[Part]:
@@ -505,7 +507,7 @@ def _search(catalog: Catalog, req: Request, specs: MinSpecs, alloc: dict[str, in
             ids = {p.id for p in candidates}
             candidates = candidates + [p for p in platform_anchors(catalog, c, base[c], req.parts_budget) if p.id not in ids]
         pools[c] = reduce(catalog, c, candidates)
-    return _Search(catalog, req, pools).builds(cap=req.budget * BUDGET_CEILING)
+    return _Search(catalog, req, pools).builds(cap=req.budget * BUDGET_CEILING if req.budget is not None else math.inf)
 
 
 def _rank_text(catalog: Catalog, part: Part) -> str:
@@ -525,6 +527,10 @@ def _explain(catalog: Catalog, req: Request, specs: MinSpecs, alloc: dict[str, i
         floor = f", 최소 기준 {specs.gpu_reference}급 충족" if specs.gpu_reference else ""
         reasons["gpu"] = (f"GPU 배분 {share('gpu')}({alloc['gpu']:,}원) 기준. "
                           f"성능 지수 {catalog.norm(gpu):.0f}/100, VRAM {gpu.spec('vram')}GB{floor}{rt('gpu')}")
+    if req.budget is None:
+        reasons["cpu"] = f"예산 제한 없이 탐색한 CPU 성능 지수 {catalog.norm(cpu):.0f}/100{rt('cpu')}"
+        if p.get("gpu"):
+            reasons["gpu"] = f"예산 제한 없이 탐색한 GPU 성능 지수 {catalog.norm(p['gpu']):.0f}/100{rt('gpu')}"
     b = p["board"]
     reasons["board"] = f"{board_chipset(b) or ''} {b.spec('socket')}·{b.spec('form')}·DDR{b.spec('ddr')} 호환{rt('board')}".strip()
     r = p["ram"]
@@ -677,6 +683,28 @@ def recommend(catalog: Catalog, req: Request) -> Result:
 def _recommend(catalog: Catalog, req: Request) -> Result:
     specs = min_specs(req, catalog)
     alloc = allocation(req)
+    if req.budget is None:
+        # No invented customer budget or allocation ranges. Candidate reduction still bounds the search.
+        builds = _search(catalog, req, specs, alloc, None, [])
+        notes = ["예산 제한 없이 호환 후보를 탐색했습니다. 성능은 Blender 대체 지수이며 전역 최적 성능을 보장하지 않습니다."]
+        picks = {}
+        if builds:
+            best = max(builds, key=lambda b: (b.performance, -b.total))
+            lower = [b for b in builds if b.key != best.key and b.total < best.total and b.performance < best.performance]
+            base = max(lower, key=lambda b: (b.performance, -b.total)) if lower else best
+            picks[PLAN_TYPES[0].key] = base
+            if base is not best:
+                picks[PLAN_TYPES[1].key] = best
+            cheap = [b for b in builds if b.key not in {base.key, best.key} and b.total < base.total
+                     and b.performance <= best.performance]
+            if cheap:
+                picks[PLAN_TYPES[2].key] = max(cheap, key=lambda b: (b.value, -b.total))
+        plans = [Plan(i + 1, t, picks[t.key], _explain(catalog, req, specs, alloc, picks[t.key]),
+                      [c.detail for c in picks[t.key].checks if c.status == "warn"])
+                 for i, t in enumerate(PLAN_TYPES) if t.key in picks]
+        if not plans:
+            notes.append("조건에 맞는 호환 조합을 찾지 못함")
+        return Result(req, alloc, specs, plans, notes, len(builds), builds)
     hi = req.budget * BUDGET_CEILING
     # A level whose cheapest build is over the budget is skipped without the full search.
     builds, notes, last_builds = _collect(catalog, req, specs, alloc) if _fits(catalog, req, specs) else ([], [], [])
@@ -751,8 +779,8 @@ def evaluate(catalog: Catalog, req: Request, part_ids: dict[str, str | None]) ->
     return {
         "ok": all(c.status != "fail" for c in build.checks),
         "total": build.total,
-        "budgetDelta": build.total - req.budget,
-        "withinBand": build.total <= req.budget * BUDGET_CEILING,
+        "budgetDelta": build.total - req.budget if req.budget is not None else None,
+        "withinBand": req.budget is None or build.total <= req.budget * BUDGET_CEILING,
         "performance": round(build.performance, 1),
         "popularity": round(build.popularity, 3),
         "checks": [c.as_dict() for c in build.checks],

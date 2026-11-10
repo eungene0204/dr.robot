@@ -38,8 +38,8 @@ def valid_budget(req: dict) -> bool:
     return b is None or (isinstance(b, (int, float)) and not isinstance(b, bool) and 200_000 <= b <= 20_000_000)
 
 
-def budget_cap(req: dict) -> int:
-    return math.floor(req["budget"])
+def budget_cap(req: dict) -> int | None:
+    return math.floor(req["budget"]) if has_budget(req) else None
 
 
 def os_part(req: dict, parts: dict[str, dict]) -> dict | None:
@@ -48,11 +48,9 @@ def os_part(req: dict, parts: dict[str, dict]) -> dict | None:
 
 def to_request(req: dict, settings: dict, parts: dict[str, dict], exclude_parts: list[str] = ()) -> Request:
     """OS is not an engine category, so its price comes off the budget."""
-    if not has_budget(req):
-        raise ScreenError("예산을 알려 주세요. 추천 엔진은 예산 비율로 부품을 고릅니다.")
     os_price = (os_part(req, parts) or {}).get("price") or 0
-    budget = int(req["budget"]) - os_price
-    if budget < MIN_BUDGET:
+    budget = int(req["budget"]) - os_price if has_budget(req) else None
+    if budget is not None and budget < MIN_BUDGET:
         raise ScreenError(f"예산은 {MIN_BUDGET + os_price:,}원 이상이어야 합니다.")
     try:
         return Request(budget=budget, uses=(req.get("profile") or "gaming",), resolution=req.get("resolution") or "QHD",
@@ -202,7 +200,7 @@ def validate_issue(state: State, data: dict, now: datetime) -> tuple[int, dict] 
     assembly = settings.get("assembly", 0)
     if not isinstance(assembly, (int, float)) or not 0 <= assembly <= 500_000:
         return 400, {"error": "조립비 오류"}
-    if req.get("profile") not in PROFILES or not has_budget(req) or not valid_budget(req):
+    if req.get("profile") not in PROFILES or not valid_budget(req):
         return 422, {"error": "허용 예산을 초과했습니다."}
     try:
         result = evaluate_quote(state, req, settings, parts)
@@ -211,7 +209,7 @@ def validate_issue(state: State, data: dict, now: datetime) -> tuple[int, dict] 
     if any(not c["ok"] for c in result["checks"]):
         return 422, {"error": "호환성 오류가 있습니다.", "checks": result["checks"]}
     amount = quote_total(parts, settings)
-    if amount > budget_cap(req):
+    if has_budget(req) and amount > budget_cap(req):
         return 422, {"error": "허용 예산을 초과했습니다."}
     parts["board"] = bios_note(parts["board"], result["warnings"])
     return {**plan, "parts": parts, "total": amount, "checks": result["checks"], "performance": result["performance"],

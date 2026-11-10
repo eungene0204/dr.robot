@@ -1,0 +1,1379 @@
+{
+  "_schema": {
+    "turns": "고객이 상담 화면에 차례로 입력한 문장. 두 번째부터는 같은 상담의 추가 요청",
+    "settings": "매장 설정(assembly 조립비, excludedBrands 제외 브랜드). 없으면 조립비 0",
+    "expect.profile/resolution": "상담사가 이해해야 하는 용도·해상도. 생략하면 검사하지 않음",
+    "expect.budget": "원 단위 숫자, [최소, 최대] 범위, 또는 null(예산 없음)",
+    "expect.white/wifi/os": "생략하면 false로 검사",
+    "expect.plans": "full=3안 모두, any=1안 이상, none=견적 없음(안내 메시지 필요)",
+    "expect.models": "고객이 지목한 모델이 균형안에 들어가야 함 (category → 모델 토큰 중 하나)",
+    "expect.brands": "고객이 지목한 제조사가 균형안에 들어가야 함 (category → 이름에 포함될 문자열 중 하나)",
+    "expect.minRamGb/minSsdGb/minVramGb": "용도 규칙과 별개로 고객이 직접 요구한 사양 하한"
+  },
+  "cases": [
+    {
+      "id": "W001",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "중학생 아들이 롤이랑 디스코드 같이 씁니다. FHD 본체 115만원 견적 주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1150000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W002",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "퇴근 후 배틀그라운드 하는 용도예요. QHD에 본체 205만원까지 가능합니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2050000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W003",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "발로란트 게임 연습용이고 FHD 모니터 있습니다. 155만원짜리 본체 찾습니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1550000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W004",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "오버워치 게임만 주말에 해요. QHD로 본체 185만원 부탁합니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1850000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W005",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "로스트아크 레이드 갈 때 쓸 PC를 225만원 QHD로 사고 싶습니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2250000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W006",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "디아블로4 게임용 본체요. QHD 화면이고 245만원 상한입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2450000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W007",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "사이버펑크 게임을 4K로 할 새 본체, 예산 435만원 잡았습니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4350000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W008",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "마인크래프트 게임과 온라인 수업 겸용입니다. FHD 본체 135만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1350000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W009",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "게임 방송 시작할 거라 QHD 본체를 315만원 안으로 원합니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 3150000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W010",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "스팀 게임 전용으로 4K 본체 한 대 주문합니다. 최대 395만원입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 3950000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W011",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "몬헌 와일즈 게임용 QHD PC, 부품값 합해서 275만원 안에 맞춰주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2750000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W012",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "엘든링 게임하려고 FHD 본체에 165만원 쓸 생각입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1650000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W013",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "검은사막 게임 위주로 쓸 4K PC가 필요합니다. 465만원까지요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4650000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W014",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "피파랑 스타크래프트 게임용으로 FHD 145만원짜리 데스크톱 부탁드립니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1450000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W015",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "철권8 게임 전용 PC, QHD 본체에 예산 215만원 있습니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2150000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W016",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "와우 게임이랑 웹서핑 할 PC인데 QHD에 195만원으로 부탁합니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1950000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W017",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "아이 로블록스 게임용 FHD PC 주문할게요. 본체는 105만원 한도입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1050000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W018",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "VR 게임용 데스크톱을 QHD 기준 335만원에 구성해주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 3350000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W019",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "원신 게임하는 4K PC에 375만원 쓸 수 있습니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 3750000,
+        "resolution": "4K",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W020",
+      "group": "게임·혼합 용도",
+      "turns": [
+        "배그 게임 QHD 본체만 살 거예요. 예산은 제한 없이 성능 우선으로 부탁해요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": null,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W021",
+      "group": "사무·학습·개발",
+      "turns": [
+        "세무사 사무실에서 회계 프로그램과 엑셀만 쓸 본체 72만원입니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 720000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W022",
+      "group": "사무·학습·개발",
+      "turns": [
+        "웹 개발 취업 준비하며 브라우저와 에디터 쓸 겁니다. 본체 125만원이요."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 1250000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W023",
+      "group": "사무·학습·개발",
+      "turns": [
+        "앱 개발 공부 시작하려고 데스크톱을 135만원에 삽니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 1350000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W024",
+      "group": "사무·학습·개발",
+      "turns": [
+        "코딩 과외 수업에 쓸 PC를 본체 92만원에 맞춰주세요."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 920000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W025",
+      "group": "사무·학습·개발",
+      "turns": [
+        "한글 문서랑 인터넷만 쓸 부모님 PC, 58만원으로 부탁합니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 580000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W026",
+      "group": "사무·학습·개발",
+      "turns": [
+        "엑셀 VBA와 사무 업무용 본체 예산 118만원입니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 1180000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W027",
+      "group": "사무·학습·개발",
+      "turns": [
+        "주식 HTS와 인터넷에 쓸 PC를 108만원으로 구성해 주세요."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 1080000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W028",
+      "group": "사무·학습·개발",
+      "turns": [
+        "아이 줌 수업과 인강 보는 본체 68만원짜리가 필요합니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 680000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W029",
+      "group": "사무·학습·개발",
+      "turns": [
+        "매장 POS 프로그램 전용 PC, 본체 48만원까지 생각하고 있습니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 480000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W030",
+      "group": "사무·학습·개발",
+      "turns": [
+        "키오스크 운영할 PC를 예산 57만원으로 주문합니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 570000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W031",
+      "group": "사무·학습·개발",
+      "turns": [
+        "CCTV 녹화 전용으로 데스크톱 78만원 견적 부탁합니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 780000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W032",
+      "group": "사무·학습·개발",
+      "turns": [
+        "회사 인사팀 급여대장 작성하는 사무용 PC 83만원입니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 830000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W033",
+      "group": "사무·학습·개발",
+      "turns": [
+        "온라인 쇼핑몰 주문 처리와 엑셀 쓰는 사무용 본체, 88만원입니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 880000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W034",
+      "group": "사무·학습·개발",
+      "turns": [
+        "유튜브 시청과 인터넷 뱅킹용 PC를 63만원 안에서 살게요."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 630000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W035",
+      "group": "사무·학습·개발",
+      "turns": [
+        "비대면 수업 듣는 대학생입니다. 문서 작업용 PC 82만원입니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 820000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W036",
+      "group": "사무·학습·개발",
+      "turns": [
+        "도서관 열람실 검색용 사무 PC 한 대, 예산 53만원입니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 530000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W037",
+      "group": "사무·학습·개발",
+      "turns": [
+        "회사 웹 개발용 데스크톱으로 145만원 생각하고 있습니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 1450000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W038",
+      "group": "사무·학습·개발",
+      "turns": [
+        "병원 접수하는 사무용 PC를 76만원에 맞추려고 합니다."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 760000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W039",
+      "group": "사무·학습·개발",
+      "turns": [
+        "회계 업무용 본체, 예산 제한 없이 적당한 구성을 추천해주세요."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": null,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W040",
+      "group": "사무·학습·개발",
+      "turns": [
+        "인터넷 강의와 한글 보고서 작성용 컴퓨터 67만원으로 부탁드려요."
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 670000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W041",
+      "group": "편집·설계",
+      "turns": [
+        "프리미어 프로 편집 프로젝트용 새 PC에 285만원을 쓰려고 합니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 2850000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W042",
+      "group": "편집·설계",
+      "turns": [
+        "다빈치 리졸브 편집실 본체 한 대, 415만원까지 가능합니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 4150000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W043",
+      "group": "편집·설계",
+      "turns": [
+        "블렌더 렌더링 배우는데 본체 345만원 생각 중입니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 3450000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W044",
+      "group": "편집·설계",
+      "turns": [
+        "포토샵으로 쇼핑몰 상세페이지 편집할 PC 165만원 부탁드려요."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 1650000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W045",
+      "group": "편집·설계",
+      "turns": [
+        "애프터이펙트 모션그래픽 편집을 위해 본체 385만원 씁니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 3850000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W046",
+      "group": "편집·설계",
+      "turns": [
+        "스케치업 인테리어 렌더링 컴퓨터 305만원으로 맞추고 싶어요."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 3050000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W047",
+      "group": "편집·설계",
+      "turns": [
+        "오토캐드 CAD 도면 작업용 본체에 255만원 준비했습니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 2550000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W048",
+      "group": "편집·설계",
+      "turns": [
+        "솔리드웍스 모델링 작업용 데스크톱 425만원 견적 주세요."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 4250000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W049",
+      "group": "편집·설계",
+      "turns": [
+        "클립스튜디오 웹툰 편집용 새 본체에 185만원 지출 예정입니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 1850000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W050",
+      "group": "편집·설계",
+      "turns": [
+        "퓨전360 설계 수업에 필요한 본체 235만원입니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 2350000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W051",
+      "group": "편집·설계",
+      "turns": [
+        "카티아 자동차 설계용 PC를 325만원에 구매하려고 합니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 3250000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W052",
+      "group": "편집·설계",
+      "turns": [
+        "인벤터 기계 설계 작업용으로 295만원 안에서 골라주세요."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 2950000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W053",
+      "group": "편집·설계",
+      "turns": [
+        "라이노와 그래스호퍼 건축 모델링 PC, 예산 285만원입니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 2850000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W054",
+      "group": "편집·설계",
+      "turns": [
+        "시네마4D 렌더링 작업실 본체 445만원 견적 부탁합니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 4450000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W055",
+      "group": "편집·설계",
+      "turns": [
+        "영상 편집용 컴퓨터를 예산 상관없이 사고 싶습니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": null,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W056",
+      "group": "AI·연구",
+      "turns": [
+        "로컬 LLM 실험하는 연구실 본체, 예산 475만원입니다."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": 4750000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W057",
+      "group": "AI·연구",
+      "turns": [
+        "딥러닝 실습 머신을 365만원 정도로 구성하고 싶습니다."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": 3650000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W058",
+      "group": "AI·연구",
+      "turns": [
+        "ComfyUI 이미지 생성 전용 본체, 395만원 예산입니다."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": 3950000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W059",
+      "group": "AI·연구",
+      "turns": [
+        "SDXL 학습용 PC를 455만원 안으로 주문하려 합니다."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": 4550000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W060",
+      "group": "AI·연구",
+      "turns": [
+        "PyTorch CUDA 학습하려고 295만원짜리 PC 찾고 있습니다."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": 2950000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W061",
+      "group": "AI·연구",
+      "turns": [
+        "YOLO 객체 인식 학습용 본체 예산 345만원입니다."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": 3450000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W062",
+      "group": "AI·연구",
+      "turns": [
+        "RAG 서버 실험용 데스크톱으로 575만원까지 쓸 수 있습니다."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": 5750000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W063",
+      "group": "AI·연구",
+      "turns": [
+        "텐서플로 수업용 컴퓨터를 본체 285만원으로 사고 싶어요."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": 2850000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W064",
+      "group": "AI·연구",
+      "turns": [
+        "Whisper 음성 인식 모델 작업용 PC를 315만원에 맞추겠습니다."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": 3150000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W065",
+      "group": "AI·연구",
+      "turns": [
+        "Ollama 실행할 AI 본체를 525만원으로 구성해 주세요."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": 5250000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W066",
+      "group": "모델·용량 지정",
+      "turns": [
+        "QHD 게임용 365만원, CPU는 9800X3D로 고정해주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 3650000,
+        "resolution": "QHD",
+        "plans": "any",
+        "models": {
+          "cpu": [
+            "9800x3d"
+          ]
+        }
+      }
+    },
+    {
+      "id": "W067",
+      "group": "모델·용량 지정",
+      "turns": [
+        "QHD 게임용 325만원, 7800X3D를 꼭 사용하고 싶습니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 3250000,
+        "resolution": "QHD",
+        "plans": "any",
+        "models": {
+          "cpu": [
+            "7800x3d"
+          ]
+        }
+      }
+    },
+    {
+      "id": "W068",
+      "group": "모델·용량 지정",
+      "turns": [
+        "QHD 게임용 본체 285만원에 RTX 5070을 넣어주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2850000,
+        "resolution": "QHD",
+        "plans": "any",
+        "models": {
+          "gpu": [
+            "5070"
+          ]
+        }
+      }
+    },
+    {
+      "id": "W069",
+      "group": "모델·용량 지정",
+      "turns": [
+        "4K 게임용 본체 395만원, 그래픽카드는 RTX 5070 Ti로 부탁합니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 3950000,
+        "resolution": "4K",
+        "plans": "any",
+        "models": {
+          "gpu": [
+            "5070ti"
+          ]
+        }
+      }
+    },
+    {
+      "id": "W070",
+      "group": "모델·용량 지정",
+      "turns": [
+        "FHD 게임 본체 175만원, 인텔 CPU를 원합니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1750000,
+        "resolution": "FHD",
+        "plans": "any",
+        "brands": {
+          "cpu": [
+            "intel",
+            "인텔"
+          ]
+        }
+      }
+    },
+    {
+      "id": "W071",
+      "group": "모델·용량 지정",
+      "turns": [
+        "QHD 게임 본체 235만원, AMD CPU로 골라주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2350000,
+        "resolution": "QHD",
+        "plans": "any",
+        "brands": {
+          "cpu": [
+            "amd",
+            "라이젠"
+          ]
+        }
+      }
+    },
+    {
+      "id": "W072",
+      "group": "모델·용량 지정",
+      "turns": [
+        "QHD 게임용 375만원 견적에 램 64GB 이상 넣어주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 3750000,
+        "resolution": "QHD",
+        "plans": "any",
+        "minRamGb": 64
+      }
+    },
+    {
+      "id": "W073",
+      "group": "모델·용량 지정",
+      "turns": [
+        "편집용 465만원 견적이고 SSD 4TB 이상이 필요합니다."
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 4650000,
+        "resolution": "QHD",
+        "plans": "any",
+        "minSsdGb": 4000
+      }
+    },
+    {
+      "id": "W074",
+      "group": "모델·용량 지정",
+      "turns": [
+        "AI용 425만원 견적, VRAM 16GB 이상 원해요."
+      ],
+      "expect": {
+        "profile": "ai",
+        "budget": 4250000,
+        "resolution": "QHD",
+        "plans": "any",
+        "minVramGb": 16
+      }
+    },
+    {
+      "id": "W075",
+      "group": "모델·용량 지정",
+      "turns": [
+        "게임 QHD 본체 385만원, RAM 64GB와 NVMe SSD 2TB 이상으로요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 3850000,
+        "resolution": "QHD",
+        "plans": "any",
+        "minRamGb": 64,
+        "minSsdGb": 2000
+      }
+    },
+    {
+      "id": "W076",
+      "group": "옵션·거절",
+      "turns": [
+        "QHD 게임 본체 255만원입니다. 케이스는 흰색으로 원해요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2550000,
+        "resolution": "QHD",
+        "plans": "any",
+        "white": true
+      }
+    },
+    {
+      "id": "W077",
+      "group": "옵션·거절",
+      "turns": [
+        "QHD 게임 본체 265만원, 보드에 와이파이 꼭 있어야 합니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2650000,
+        "resolution": "QHD",
+        "plans": "any",
+        "wifi": true
+      }
+    },
+    {
+      "id": "W078",
+      "group": "옵션·거절",
+      "turns": [
+        "QHD 게임 본체 275만원에 윈도우 정품도 넣어주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2750000,
+        "resolution": "QHD",
+        "plans": "any",
+        "os": true
+      }
+    },
+    {
+      "id": "W079",
+      "group": "옵션·거절",
+      "turns": [
+        "QHD 게임 본체 285만원, 화이트에 무선랜도 넣어주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2850000,
+        "resolution": "QHD",
+        "plans": "any",
+        "white": true,
+        "wifi": true
+      }
+    },
+    {
+      "id": "W080",
+      "group": "옵션·거절",
+      "turns": [
+        "QHD 게임 본체 295만원, 무선랜과 윈도우 포함 견적 주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2950000,
+        "resolution": "QHD",
+        "plans": "any",
+        "wifi": true,
+        "os": true
+      }
+    },
+    {
+      "id": "W081",
+      "group": "옵션·거절",
+      "turns": [
+        "QHD 게임 본체 305만원, 화이트랑 운영체제 포함입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 3050000,
+        "resolution": "QHD",
+        "plans": "any",
+        "white": true,
+        "os": true
+      }
+    },
+    {
+      "id": "W082",
+      "group": "옵션·거절",
+      "turns": [
+        "QHD 게임 본체 315만원, 흰색 케이스에 와이파이와 윈도우까지요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 3150000,
+        "resolution": "QHD",
+        "plans": "any",
+        "white": true,
+        "wifi": true,
+        "os": true
+      }
+    },
+    {
+      "id": "W083",
+      "group": "옵션·거절",
+      "turns": [
+        "QHD 게임 본체 245만원입니다. 윈도우 필요 없고 유선랜 씁니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2450000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W084",
+      "group": "옵션·거절",
+      "turns": [
+        "QHD 게임 본체 225만원, 화이트 말고 블랙으로 해주시면 됩니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2250000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W085",
+      "group": "옵션·거절",
+      "turns": [
+        "QHD 게임 본체 235만원에 와이파이는 빼고 윈도우만 포함해주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2350000,
+        "resolution": "QHD",
+        "plans": "any",
+        "os": true
+      }
+    },
+    {
+      "id": "W086",
+      "group": "추가 상담",
+      "turns": [
+        "게임 QHD 본체 215만원으로 시작할게요.",
+        "예산 15만원 더 올릴게요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2300000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W087",
+      "group": "추가 상담",
+      "turns": [
+        "게임 QHD 본체 265만원 부탁합니다.",
+        "예산 25만원만 줄여주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2400000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W088",
+      "group": "추가 상담",
+      "turns": [
+        "게임 QHD 본체 255만원 화이트로 할게요.",
+        "블랙으로 바꿔주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2550000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W089",
+      "group": "추가 상담",
+      "turns": [
+        "게임 QHD 본체 265만원 와이파이 넣어주세요.",
+        "와이파이는 필요 없어요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2650000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W090",
+      "group": "추가 상담",
+      "turns": [
+        "게임 QHD 본체 275만원 윈도우 포함할게요.",
+        "윈도우 빼주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2750000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W091",
+      "group": "추가 상담",
+      "turns": [
+        "게임 QHD 본체 285만원 견적 주세요.",
+        "램 64GB 이상으로 바꿔주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2850000,
+        "resolution": "QHD",
+        "plans": "any",
+        "minRamGb": 64
+      }
+    },
+    {
+      "id": "W092",
+      "group": "추가 상담",
+      "turns": [
+        "게임 QHD 본체 295만원입니다.",
+        "SSD 2TB 이상이면 좋겠어요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2950000,
+        "resolution": "QHD",
+        "plans": "any",
+        "minSsdGb": 2000
+      }
+    },
+    {
+      "id": "W093",
+      "group": "추가 상담",
+      "turns": [
+        "게임 4K 본체 415만원으로 살게요.",
+        "해상도는 QHD로 바꾸겠습니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 4150000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W094",
+      "group": "추가 상담",
+      "turns": [
+        "게임 FHD 본체 165만원 부탁해요.",
+        "예산을 195만원으로 바꾸고 싶어요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1950000,
+        "resolution": "FHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W095",
+      "group": "추가 상담",
+      "turns": [
+        "게임 QHD 본체 285만원으로요.",
+        "와이파이와 윈도우도 포함해주세요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2850000,
+        "resolution": "QHD",
+        "plans": "any",
+        "wifi": true,
+        "os": true
+      }
+    },
+    {
+      "id": "W096",
+      "group": "예산·주변기기",
+      "turns": [
+        "QHD 게임용, 이백육십오만원 안에서 주문하고 싶어요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2650000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W097",
+      "group": "예산·주변기기",
+      "turns": [
+        "QHD 게임용 본체를 2,350,000원으로 맞추려고요."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2350000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W098",
+      "group": "예산·주변기기",
+      "turns": [
+        "QHD 게임용 본체에 1.9백만원 준비했는데 견적 부탁합니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 1900000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W099",
+      "group": "예산·주변기기",
+      "turns": [
+        "QHD 게임용, 모니터 35만원 포함 총 250만원이 상한입니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2150000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    },
+    {
+      "id": "W100",
+      "group": "예산·주변기기",
+      "turns": [
+        "QHD 게임용 본체 예산 245만원이고 모니터는 따로 45만원 씁니다."
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2450000,
+        "resolution": "QHD",
+        "plans": "any"
+      }
+    }
+  ]
+}
