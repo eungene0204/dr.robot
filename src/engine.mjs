@@ -18,20 +18,56 @@ function amount(number){
  for(const token of number.replaceAll(',','').match(/\d+(?:\.\d+)?|\D/g)){if(koreanUnits[token]){total+=(current??1)*koreanUnits[token];current=null}else current=Number(koreanDigits[token]??token)}
  return total+(current??0);
 }
-// Digits ("150만원") or Korean numerals mixed with digits ("백오십만원", "2백만원"); Korean numerals only count before 만.
+// Digits ("150만원", "2,000,000 won") or Korean numerals mixed with digits ("백오십만원", "2백만원"); Korean numerals only count before 만.
+const amounts=text=>[...text.matchAll(/((?:\d[\d,]*(?:\.\d+)?|[일이삼사오육칠팔구십백천])+)\s*(억\s*원?|만\s*원?|원|won|krw)/gi)].filter(m=>/^[만억]/.test(m[2])||/^\d/.test(m[1])).map(m=>({start:m.index,end:m.index+m[0].length,value:Math.round(amount(m[1])*(m[2].startsWith('억')?100000000:m[2].startsWith('만')?10000:1))}));
+// "예산 이백 정도", "삼백 내외": a Korean numeral with 백/천 and no unit means 만 원 in a PC budget.
+const bareBudget=/(?<![가-힣\d])((?:(?:\d+|[일이삼사오육칠팔구])?[백천])+(?:\d+|[일이삼사오육칠팔구십])*)(?=\s*(?:정도|쯤|내외|언저리|선|으로|로|이하|이내|까지|안쪽|만큼)|\s*$|[\s,.])/g;
+// Bare digits: six or more are won ("예산 1500000"); 30~2000 mean 만 원 when the budget context is clear ("예산 200",
+// "배그컴 170" at the end, "300 정도요", "150에서 200 사이", "예산만 200으로"). Resolutions and part sizes ("램 32로") are not budgets.
+const rawWon=/(?<![\d.,a-z])(\d{1,3}(?:,\d{3}){2,}|\d{6,})(?![\d,a-z가-힣])/gi;
+const bareDigits=/(?<=예산(?:은|을|만|이|도)?|[\s(])(\d{2,4})(?=\s*(?:정도|쯤|내외|언저리|선(?![가-힣])|으로|로(?![가-힣])|에서|사이|이하|이내|까지|언더|안쪽)|\s*[.!?~]*\s*$)/g;
+const budgetWord=/예산\s*(?:은|는|을|만|이|도)?\s*$/,partWord=/(?:램|메모리|ram|ssd|vram|파워|모니터|인치|주사율|hz|cpu|그래픽\s*카드|글카|용량|와트)\s*(?:은|는|을|를|도|만|이)?\s*$/i;
+// "모니터 30만원 포함해서 총 200만원" → 170만 원; a peripheral's own amount ("모니터는 따로 30만원") is not the PC budget.
+const included=/(?:모니터|키보드|마우스|주변\s*기기)[^,.\d\n]{0,8}$/,includes=/^\s*(?:까지|도)?\s*(?:포함|합쳐|같이)/;
 export function explicitBudget(text){
- const matches=[...text.matchAll(/((?:\d[\d,]*(?:\.\d+)?|[일이삼사오육칠팔구십백천])+)\s*(만\s*원?|원)/g)].filter(m=>m[2].startsWith('만')||/^\d/.test(m[1]));
- const last=matches.at(-1);if(!last)return null;
- return Math.round(amount(last[1])*(last[2].startsWith('만')?10000:1));
+ const found=amounts(text);
+ // Find the total independently from explicitly included peripheral amounts.
+ const pc=found.filter(f=>!included.test(text.slice(0,f.start)));
+ if(pc.length){const sum=pc.at(-1).value;const extras=found.reduce((n,f)=>{const peripheral=text.slice(0,f.start).match(included);return n+(peripheral&&!/따로|별도/.test(peripheral[0])&&includes.test(text.slice(f.end))?f.value:0)},0);return extras>0&&extras<sum?sum-extras:sum;}
+ if(found.length)return found.at(-1).value;
+ const bare=[...text.matchAll(bareBudget)].at(-1);if(bare)return amount(bare[1])*10000;
+ const raw=[...text.matchAll(rawWon)].at(-1);if(raw)return Number(raw[1].replaceAll(',',''));
+ const digits=[...text.matchAll(bareDigits)].filter(m=>{const n=Number(m[1]),before=text.slice(0,m.index);return n>=30&&n<=2000&&m[1]!=='1080'&&m[1]!=='1440'&&(budgetWord.test(before)||!(/[a-z]\s*$/i.test(before)||partWord.test(before)));});
+ return digits.length?Number(digits.at(-1)[1])*10000:null;
 }
-// "3D" only as a word: the X3D in a CPU model name (9800X3D) is not 3D work.
-export const detectProfile=value=>/편집|프리미어|다빈치|렌더|(?<![a-z0-9])3D|어도비|adobe|premiere|포토샵|photoshop|라이트룸|lightroom|일러스트레이터|illustrator|애프터\s*이펙트|after\s*effects|블렌더|blender|캐드|(?<![a-z])(?:auto)?cad(?![a-z])|스케치업|sketchup|솔리드웍스|solidworks/i.test(value)?'editing':/로컬|딥러닝|머신\s*러닝|LLM|개발|AI|스테이블\s*디퓨전|stable\s*diffusion|파이토치|pytorch/i.test(value)?'ai':/사무|엑셀|학습|POS/i.test(value)?'office':/게임|게이밍|배그|롤|gaming/i.test(value)?'gaming':/인터넷|웹\s*서핑|웹\s*브라우|문서|인강|온라인\s*강의|유튜브|동영상\s*시청/i.test(value)?'office':null;
+// Relative change in a follow-up ("예산 10만원만 더 올려줘" → +100,000, "30만원 줄여주세요" → -300,000). Only a text whose
+// single amount is followed by an up/down verb counts, so "모니터 30만원 빼고 170만원" stays an explicit 170만 원.
+export function budgetChange(text){
+ const found=amounts(text);if(found.length!==1)return null;const rest=text.slice(found[0].end);
+ if(/^(?:만|정도|쯤|가량)?\s*(?:더\s*)?(?:올|늘|추가|높|증액|써도|쓸게)/.test(rest))return found[0].value;
+ if(/^(?:만|정도|쯤|가량)?\s*(?:더\s*)?(?:줄|낮|깎|빼|내려|내리|감액|덜)/.test(rest))return -found[0].value;
+ return null;
+}
+// "3D" only as a word: the X3D in a CPU model name (9800X3D) is not 3D work. Gaming beats office ("사무용인데 가끔 배그도 해요" needs a graphics card); 롤 is not 컨트롤·스크롤·롤러.
+// Options are judged by their last mention; a refusal later in the same clause turns it off ("화이트 말고 블랙", "윈도우는 빼주세요").
+const optionPatterns={white:/화이트|흰색|하얀|흰\s*(?:케이스|컬러|본체)|white/gi,wifi:/와이파이|wi-?fi|무선(?!\s*(?:마우스|키보드|이어폰|헤드셋|헤드폰|충전|패드|컨트롤러))/gi,os:/윈도우|windows|운영\s*체제|OS\s*포함/gi};
+// The refusal window ends at a clause joint ("윈도우 넣고 와이파이는 빼줘": the 빼 belongs to 와이파이).
+const refusal=/^(?:(?!고\s)[^,.\n]){0,10}?(?:말고|빼|제외|필요\s*없|없어도|없이|안\s*넣|넣지|아니|싫|집에\s*있|(?<!수도 )(?:있는\s*거|있어요|있습니다)|따로)/;
+// Last mentioned resolution that is not refused ("4K 말고 QHD로" → QHD); 5K·8K use the 4K floor.
+// Owning a monitor defines its resolution; ownership only opts out of purchasable options.
+const resolutionRefusal=/^(?:(?!고\s)[^,.\n]){0,10}?(?:말고|빼|제외|필요\s*없|없어도|없이|안\s*넣|넣지|아니|싫)/;
+const resolutionPatterns={'4K':/[458]k|uhd|2160/gi,FHD:/fhd|1080|풀\s*hd|full\s*hd/gi,QHD:/qhd|1440/gi};
+const resolutionOf=value=>{const found=Object.entries(resolutionPatterns).flatMap(([name,pattern])=>[...value.matchAll(pattern)].filter(m=>!resolutionRefusal.test(value.slice(m.index+m[0].length))).map(m=>[m.index,name])).sort((a,b)=>a[0]-b[0]);return found.at(-1)?.[1]??(detectProfile(value)==='office'?'FHD':null);};
+// White is also cancelled by a later "블랙으로 바꿔주세요" ("화이트 앤 블랙 투톤", "블랙 포인트로" keep it).
+const black=/(?:블랙|검정\s*색?|검은\s*색|black)\s*(?:으로|로)(?![가-힣]*\s*포인트)/i;
+export const optionRequested=(name,text)=>{const last=[...text.matchAll(optionPatterns[name])].at(-1);if(!last)return false;const rest=text.slice(last.index+last[0].length);return !refusal.test(rest)&&!(name==='white'&&black.test(rest));};
+export const detectProfile=value=>/편집|프리미어|다빈치|렌더|(?<![a-z0-9])3D|어도비|adobe|premiere|포토샵|photoshop|라이트룸|lightroom|일러스트레이터|illustrator|애프터\s*이펙트|after\s*effects|블렌더|blender|캐드|(?<![a-z])(?:auto)?cad(?![a-z])|스케치업|sketchup|솔리드웍스|solidworks|마야|maya|라이노|rhino|그래스\s*호퍼|grasshopper|레빗|revit|클립\s*스튜디오|clip\s*studio|웹툰|3ds\s*max|시네마\s*4d|c4d|지브러시|zbrush|캡컷|capcut|브이레이|v-?ray|루미온|lumion|키샷|keyshot|후디니|houdini|퓨전\s*360|fusion\s*360|카티아|catia|인벤터|inventor/i.test(value)?'editing':/로컬|딥러닝|머신\s*러닝|LLM|(?<!웹\s?|앱\s?)개발|AI|스테이블\s*디퓨전|stable\s*diffusion|파이토치|pytorch|sdxl|로라\s*학습|lora|comfy\s*ui|컴피\s*ui|ollama|올라마|파인\s*튜닝|fine-?tun|whisper|cuda|쿠다|llama|vllm|허깅\s*페이스|hugging\s*face|텐서\s*플로|tensorflow|케라스|keras|(?<![a-z])(?:rag|yolo|tts)(?![a-z])|강화\s*학습|음성\s*합성|객체\s*인식/i.test(value)?'ai':/게임|게이밍|배그|(?<![컨트스크])롤(?![러백])|gaming/i.test(value)?'gaming':/사무|회계|엑셀|학습|POS|키오스크|kiosk|cctv|녹화|감시|웹\s*개발|앱\s*개발|코딩|프로그래밍|주식|hts|차트/i.test(value)?'office':/인터넷|웹\s*서핑|웹\s*브라우|문서|인강|온라인\s*강의|유튜브|동영상\s*시청|줌\s*(?:수업|회의|강의)|zoom|화상\s*(?:수업|회의|강의)|(?:온라인|원격|비대면)\s*수업/i.test(value)?'office':null;
 export function parseRequirement(text,options={}) {
  const statedBudget=explicitBudget(text);
  const requests=text.split(/\n추가 요청:\s*/);
  const profile=requests.map(detectProfile).filter(Boolean).at(-1)??'gaming';
- const resolution=requests.map(value=>/4k/i.test(value)?'4K':/FHD|1080/i.test(value)?'FHD':/QHD|1440/i.test(value)?'QHD':detectProfile(value)==='office'?'FHD':null).filter(Boolean).at(-1)??'QHD';
- return {text,profile,budget:statedBudget,resolution,models:modelTokens(text),white:/화이트|흰색/.test(text),wifi:/와이파이|무선|wifi/i.test(text),os:/윈도우|windows|OS 포함/i.test(text),allowOver:false,...options,...(unlimitedBudgetRequested(text)?{budget:null,allowOver:false}:{}),budgetSource:unlimitedBudgetRequested(text)?'unlimited':options.budget!=null?(statedBudget!==null?'text':'manual'):statedBudget!==null?'text':'unspecified'};
+ const resolution=requests.map(resolutionOf).filter(Boolean).at(-1)??'QHD';
+ return {text,profile,budget:statedBudget,resolution,models:modelTokens(text),white:optionRequested('white',text),wifi:optionRequested('wifi',text),os:optionRequested('os',text),allowOver:false,...options,...(unlimitedBudgetRequested(text)?{budget:null,allowOver:false}:{}),budgetSource:unlimitedBudgetRequested(text)?'unlimited':options.budget!=null?(statedBudget!==null?'text':'manual'):statedBudget!==null?'text':'unspecified'};
 }
 // Text the customer stated wins over an LLM reading; the LLM only names a purpose the rules cannot detect and adds follow-up questions (never a budget prompt).
 export function mergeInterpretation(text,llm){

@@ -261,3 +261,5 @@ button.plan-part-row:hover,button.plan-part-row[aria-expanded=true]{background:v
 .issue-check{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
 .issue-check input{width:16px;height:16px;accent-color:var(--accent);cursor:pointer}
 .issue-check input:disabled{cursor:not-allowed}
+.restore-button{float:right;margin-right:12px;gap:4px;border:1px solid var(--line);background:var(--surface);color:var(--accent);border-radius:4px;padding:3px 8px;font-size:12px;font-weight:500;white-space:nowrap}.restore-button:hover:not(:disabled){background:var(--surface-raised)}
+.results-note .interpretation{font-weight:600;color:var(--text)}

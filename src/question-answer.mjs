@@ -22,7 +22,7 @@ export function isQuestion(text){
  return /\?$|？$|(?:수\s*있(?:나|나요|을까|어|습니까)|되나|되나요|될까|돌아가|가능(?:한가|할까|해|한지)|어때|어떤가|차이|뭐가|무엇|얼마|괜찮)/.test(value);
 }
 const money=n=>new Intl.NumberFormat('ko-KR').format(n)+'원';
-const RESOLUTION=text=>/4k|2160/i.test(text)?'4K':/qhd|1440/i.test(text)?'QHD':/fhd|1080/i.test(text)?'FHD':null;
+const RESOLUTION=text=>/4k|uhd|2160/i.test(text)?'4K':/qhd|1440/i.test(text)?'QHD':/fhd|1080/i.test(text)?'FHD':null;
 // Answers only from catalog evidence; never asserts game FPS, which the catalog does not hold.
 export function answerQuestion(text,catalog,policy={}){
  const tokens=modelTokens(text);const resolution=RESOLUTION(text);const gaming=/게임|게이밍|fps|프레임|배그|롤/i.test(text)||Boolean(resolution);

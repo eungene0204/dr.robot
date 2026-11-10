@@ -10,6 +10,7 @@ const apiMock=(snapshot,mode='live',state={})=>async(url,options={})=>{
  const method=options.method||'GET';let value=null;
  if(url==='/api/health')value={ok:true,mode,llm:Boolean(state.answer)};
  else if(url==='/api/answer')value=state.answer(JSON.parse(options.body));
+ else if(url==='/api/requirements')value=state.requirements?.(JSON.parse(options.body))??{};
  else if(String(url).includes('/catalog'))value=snapshot;
  else if(url==='/api/recommend/fresh'){const data=JSON.parse(options.body);value={plans:buildRecommendations(data.requirement,data.settings,snapshot.parts),catalogVersion:snapshot.catalogVersion};}
  else if(url==='/api/settings'){if(method==='PUT')state.settings=JSON.parse(options.body);value=state.settings||null;}
@@ -59,6 +60,8 @@ test('UI: 상담 → 3안 비교 → 호환성 재검증 → 견적서 발행',a
  assert.equal(w.document.querySelector('#request').value,'');
  assert.ok(w.document.querySelector('table tbody'));
  const originalCpu=cpuName(w);const originalTotal=w.document.querySelector('.plan-card .plan-price').textContent;
+ const restore=()=>w.document.querySelector('[aria-label="최적 균형안 최초 추천으로 되돌리기"]');
+ assert.ok(restore()?.disabled,'교체 전에는 되돌리기 버튼 비활성');
  w.document.querySelector('[aria-label="프로세서 대체 부품 목록"]').click();await wait(30);
  const replacements=[...w.document.querySelectorAll('.alternative-option')].filter(b=>!b.disabled);
  assert.ok(replacements.length>0);
@@ -69,7 +72,11 @@ test('UI: 상담 → 3안 비교 → 호환성 재검증 → 견적서 발행',a
  assert.notEqual(cpuName(w),originalCpu);
  assert.ok(w.document.querySelector('.plan-card .plan-parts').textContent.includes(replacementName));
  assert.notEqual(w.document.querySelector('.plan-card .plan-price').textContent,originalTotal);
- await restoreCpu(w,originalCpu);
+ assert.equal(restore().disabled,false,'교체 후 되돌리기 버튼 활성');
+ restore().click();await wait(40);
+ assert.equal(cpuName(w),originalCpu,'최초 추천 CPU로 복원');
+ assert.equal(w.document.querySelector('.plan-card .plan-price').textContent,originalTotal,'최초 추천 합계로 복원');
+ assert.ok(restore().disabled,'복원 후 다시 비활성');
  w.document.querySelector('[aria-label="최적 균형안 CPU 쿨러 교체"]').click();await wait(30);
  const coolingTabs=w.document.querySelector('[aria-label="쿨러 냉각 방식"]');assert.ok(coolingTabs);
  const air=[...coolingTabs.querySelectorAll('button')].find(b=>b.textContent==='공랭');air.click();await wait(30);assert.equal(air.getAttribute('aria-selected'),'true');assert.ok(w.document.querySelectorAll('.alternative-option').length>0);assert.match(w.document.querySelector('.alternatives-list').textContent,/공랭/);
@@ -157,7 +164,7 @@ test('UI: DB 상태 API에서 진행 중인 상담과 부품 선택을 복원한
  [...rw.document.querySelectorAll('button')].find(b=>b.textContent.includes('새 견적 상담')).click();await wait(500);dom.window.close();dom=open();await wait(120);assert.ok(dom.window.document.querySelector('.chat-welcome'));assert.equal(dom.window.document.querySelector('.comparison'),null);
  }finally{dom.window.close()}
 });
-test('UI: 예산 없는 4K 요청을 상한 없이 생성·발행하고 제한 없음으로 표시한다',async()=>{const state={};const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/?demo=1',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;try{w.fetch=apiMock(null,'demo',state);w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await waitFor(()=>w.document.querySelector('#request'));const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,'4K 게임용 PC');input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await waitFor(()=>w.document.querySelector('.plan-price'));assert.match(w.document.querySelector('.chat-messages').textContent,/예산 제한 없음/);assert.doesNotMatch(w.document.querySelector('.results').textContent,/Infinity|NaN/);assert.match(w.document.querySelector('.plan-price').textContent,/예산 제한 없이 성능 우선/);const issue=[...w.document.querySelectorAll('button')].find(b=>b.textContent.includes('선택안 견적서 발행'));issue.click();await waitFor(()=>w.document.querySelector('.quote-modal'));assert.equal(state.quotes[0].req.budget,null);assert.match(w.document.querySelector('.quote-summary').textContent,/예산 제한 없음/);assert.ok(state.quotes[0].plan.parts.ssd.capacity>=2000);}finally{w.close()}});
+test('UI: 예산 없는 4K 요청을 상한 없이 생성·발행하고 제한 없음으로 표시한다',async()=>{const state={};const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/?demo=1',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;try{w.fetch=apiMock(null,'demo',state);w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await waitFor(()=>w.document.querySelector('#request'));const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,'4K 게임용 PC');input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await waitFor(()=>w.document.querySelector('.plan-price'));assert.match(w.document.querySelector('.chat-messages').textContent,/예산 제한 없음/);assert.doesNotMatch(w.document.querySelector('.results').textContent,/Infinity|NaN/);assert.match(w.document.querySelector('.plan-price').textContent,/예산 제한 없이 성능 우선/);const issue=[...w.document.querySelectorAll('button')].find(b=>b.textContent.includes('선택안 견적서 발행'));issue.click();await waitFor(()=>w.document.querySelector('.quote-modal'));assert.equal(state.quotes[0].req.budget,null);assert.match(w.document.querySelector('.quote-summary').textContent,/예산 제한 없음/);assert.ok(state.quotes[0].plan.parts.ssd.capacity>=2000);assert.match(w.document.querySelector('.results-note').textContent,/^요구 해석: 규칙 기반\. 표시된 대체 지수는/);}finally{w.close()}});
 test('UI: 견적 뒤 질문은 기존 견적 아래에 답만 이어 붙이고, 용도가 바뀐 견적 요청은 이전 예산을 쓰지 않는다',async()=>{
  const {readFileSync}=await import('node:fs');const snapshot=JSON.parse(readFileSync('public/data/catalog.json'));
  for(const p of snapshot.parts){if(p.priceEvidence)p.priceEvidence.observedAt=new Date().toISOString();if(p.benchmark)p.benchmark.observedAt=new Date().toISOString();}
@@ -242,4 +249,14 @@ test('UI: pcquote 견적은 예산 +5% 안이면 발행할 수 있고, 부품 �
   await waitFor(()=>w.document.querySelector('.plan-card').textContent.includes(otherBoard.name));
   assert.doesNotMatch(w.document.body.textContent,/출고 전 확인: BIOS 업데이트 후 지원/);
  }finally{w.close();}
+});
+test('UI: 결과 안내문에 요구 해석이 LLM 기반인지 규칙 기반인지 표시하고, LLM 실패는 드러내지 않는다',async()=>{
+ for(const [requirements,label] of [[()=>({method:'openrouter',questions:[]}),'요구 해석: LLM 기반.'],[()=>({method:'exaone',questions:[]}),'요구 해석: LLM 기반.'],[()=>({method:'local',fallback:'LLM 응답 오류 (429)',questions:[]}),'요구 해석: 규칙 기반.']]){
+  const state={answer:()=>({text:'',sources:[]}),requirements};const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/?demo=1',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
+  try{w.fetch=apiMock(null,'demo',state);w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await waitFor(()=>w.document.querySelector('#request'));
+   const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,'150만원 QHD 게임용');input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);
+   w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await waitFor(()=>w.document.querySelector('.results-note'));
+   const strong=w.document.querySelector('.results-note .interpretation');assert.equal(strong?.textContent.trim(),label);
+   assert.doesNotMatch(w.document.querySelector('.results').outerHTML,/실패|오류|429/);  // customers share this screen
+  }finally{w.close()}}
 });

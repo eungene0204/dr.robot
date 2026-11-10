@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {catalog} from '../src/catalog.mjs';
-import {parseRequirement,mergeInterpretation,recommend,assembleBuild,validate,total,explicitBudget,detectProfile} from '../src/engine.mjs';
+import {parseRequirement,mergeInterpretation,recommend,assembleBuild,validate,total,explicitBudget,detectProfile,budgetChange} from '../src/engine.mjs';
 const settings={assembly:30000};
 test('한글 예산과 용도를 구조화한다',()=>{const r=parseRequirement('프리미어 4K 편집, 250만 원, 화이트');assert.equal(r.budget,2500000);assert.equal(r.profile,'editing');assert.equal(r.resolution,'4K');assert.equal(r.white,true)});
 test('어도비 등 크리에이티브 도구 요청은 편집 용도로 해석한다',()=>{for(const text of ['200만원 이하 adobe용 견적','포토샵 라이트룸용 150만 원','애프터 이펙트 작업용'])assert.equal(parseRequirement(text).profile,'editing',text)});
@@ -135,4 +135,77 @@ test('budget in Korean numerals and X3D model names match the server rules (quot
   for (const [text, profile] of [['9800X3D로 350만원 4K 게이밍', 'gaming'], ['블렌더 3D 렌더링', 'editing'], ['캐드(CAD) 도면 작업', 'editing'],
     ['AutoCAD 작업용', 'editing'], ['스테이블 디퓨전 이미지 생성', 'ai']])
     assert.equal(detectProfile(text), profile, text);
+});
+
+test('options follow refusals and synonyms; gaming beats office (quote-eval scenarios)', () => {
+  for (const [text, [white, wifi, os]] of [['화이트 말고 블랙으로 180만원', [false, false, false]], ['200만원 QHD 게임용 화이트\n추가 요청: 화이트 말고 블랙으로 해주세요', [false, false, false]],
+    ['하얀색으로 맞춘 게임용', [true, false, false]], ['흰 케이스로 해주세요', [true, false, false]], ['블랙 감성, 무선 마우스는 따로 살게요', [false, false, false]],
+    ['와이파이는 필요 없어요 유선 써요', [false, false, false]], ['와이파이 랜카드 포함', [false, true, false]], ['윈도우는 집에 있는 거 쓸게요', [false, false, false]],
+    ['150만원 윈도우 포함\n추가 요청: 윈도우는 빼주세요', [false, false, false]], ['윈도우도 넣어주세요', [false, false, true]], ['흰색 케이스, 무선랜, 윈도우 정품 포함 200만원', [true, true, true]]]) {
+    const r = parseRequirement(text);
+    assert.deepEqual([r.white, r.wifi, r.os], [white, wifi, os], text);
+  }
+  for (const [text, profile, resolution] of [['사무용인데 가끔 배그도 해요', 'gaming', 'QHD'], ['초등학생 줌 수업용 45만원', 'office', 'FHD'], ['엑셀 매크로 컨트롤', 'office', 'FHD'], ['UHD 모니터로 게임', 'gaming', '4K'], ['2160p 게이밍', 'gaming', '4K']]) {
+    const r = parseRequirement(text);
+    assert.deepEqual([r.profile, r.resolution], [profile, resolution], text);
+  }
+});
+
+test('relative budget, clause-bound refusals, resolution synonyms and tool names (quote-eval scenarios)', () => {
+  for (const [text, budget] of [['예산 이백 정도로 QHD 게임용', 2000000], ['budget 2,000,000 won', 2000000], ['천천히 생각해 볼게요', null]]) assert.equal(explicitBudget(text), budget, text);
+  for (const [text, change] of [['예산 10만원만 더 올려줘', 100000], ['예산을 30만원 줄여주세요', -300000], ['모니터 30만원 빼고 170만원', null], ['예산을 200만원으로 줄여주세요', null]]) assert.equal(budgetChange(text), change, text);
+  for (const [text, resolution, os, wifi] of [['윈도우 넣고 와이파이는 빼줘', 'QHD', true, false], ['윈도우 없이 120만원', 'QHD', false, false], ['운영체제 포함해서', 'QHD', true, false],
+    ['300만원 4K 게임용\n추가 요청: 4K 말고 QHD로 해주세요', 'QHD', false, false], ['풀HD 모니터', 'FHD', false, false], ['5K 모니터로 게임', '4K', false, false]]) {
+    const r = parseRequirement(text); assert.deepEqual([r.resolution, r.os, r.wifi], [resolution, os, wifi], text);
+  }
+  for (const [text, profile] of [['마야 애니메이션', 'editing'], ['레빗 BIM', 'editing'], ['클립스튜디오 웹툰', 'editing'], ['SDXL 로라 학습', 'ai'], ['Ollama 70B', 'ai']]) assert.equal(detectProfile(text), profile, text);
+});
+
+test('bare-number budgets, work names and switching to black match the pcquote rules', () => {
+  for (const [text, budget] of [['배그컴 170', 1700000], ['편집컴 300 정도요', 3000000], ['예산 1500000', 1500000], ['2백오십 정도 QHD 게임', 2500000],
+    ['예산 1억', 100000000], ['용도는 그대로고 예산만 200으로', 2000000], ['RTX 5070으로 바꿔줘', null], ['1440으로 해주세요', null], ['램 32로', null], ['파워 750으로', null]]) assert.equal(explicitBudget(text), budget, text);
+  for (const [text, profile] of [['퓨전360 기계 설계', 'editing'], ['RAG 서버', 'ai'], ['YOLO 객체인식 학습', 'ai'], ['매장 키오스크용 PC', 'office'], ['CCTV 녹화용 PC', 'office']]) assert.equal(detectProfile(text), profile, text);
+  assert.equal(parseRequirement('모니터는 FHD인데 나중에 QHD로 바꿀 수도 있어요').resolution, 'QHD');
+  assert.equal(parseRequirement('200만원 QHD 게임용 화이트\n추가 요청: 블랙으로 바꿔주세요').white, false);
+  assert.equal(parseRequirement('화이트 앤 블랙 투톤').white, true);
+});
+
+test('peripheral amounts and web development match the pcquote rules', () => {
+  for (const [text, budget] of [['모니터 30만원 포함해서 총 200만원, 게임용 QHD', 1700000], ['150만원 모니터는 따로 30만원', 1500000], ['모니터 30만원 빼고 170만원', 1700000]]) assert.equal(explicitBudget(text), budget, text);
+  for (const [text, profile] of [['웹 개발 공부용 데스크탑', 'office'], ['코딩 학원 수업용', 'office'], ['주식 HTS 모니터 4대', 'office'], ['게임 개발 언리얼', 'ai']]) assert.equal(detectProfile(text), profile, text);
+});
+
+
+test('회계 프로그램 요청은 사무용 FHD로 해석한다', () => {
+  const req = parseRequirement('회계 프로그램용 컴퓨터를 새로 사려는데 85만원 안에서 본체 추천해주세요.');
+  assert.equal(req.profile, 'office');
+  assert.equal(req.resolution, 'FHD');
+});
+
+
+test('모니터 보유 표현은 해상도 거절이 아니며 옵션 보유 거절은 유지한다', () => {
+  for (const text of [
+    '발로란트 게임 연습용이고 FHD 모니터 있습니다. 155만원짜리 본체 찾습니다.',
+    '게임용 FHD 모니터 있어요',
+    '게임용 FHD 모니터 집에 있습니다',
+    '게임용 FHD 모니터는 따로 있어요',
+    '4K 말고 FHD 모니터 있습니다',
+  ]) assert.equal(parseRequirement(text).resolution, 'FHD', text);
+  const r = parseRequirement('FHD 말고 4K로 게임, 윈도우는 집에 있습니다');
+  assert.equal(r.resolution, '4K');
+  assert.equal(r.os, false);
+});
+
+
+test('주변기기 포함 금액은 총액 언급 순서와 무관하게 차감한다', () => {
+  for (const [text, budget] of [
+    ['QHD 게임용 총 290만원에 모니터 40만원 포함해서 견적 부탁합니다.', 2500000],
+    ['모니터 40만원 포함 총 290만원 QHD 게임용', 2500000],
+    ['총 290만원, 키보드 마우스 10만원 합쳐서 게임용', 2800000],
+    ['총 300만원, 모니터 40만원 포함, 키보드 10만원 포함', 2500000],
+    ['모니터 40만원 포함, 총 300만원, 키보드 10만원 포함', 2500000],
+    ['총 290만원, 모니터는 따로 40만원', 2900000],
+    ['본체 250만원, 모니터는 별도 40만원', 2500000],
+    ['모니터 40만원 빼고 본체 250만원', 2500000],
+  ]) assert.equal(explicitBudget(text), budget, text);
 });
