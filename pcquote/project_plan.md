@@ -59,3 +59,5 @@
 - 기존 화면·백엔드 이력을 보존해 루트 buildmate/·pcquote/로 통합. 루트 README와 npm 실행 명령 추가. 런타임 상대 경로·키·운영 파일 유지. srs.md 검토: 사용자 기능 변경 없음. 검증 결과는 통합 intent에 기록.
 
 - 통합 검증: 루트 npm 명령으로 백엔드 270개·화면 88개·빌드 통과, API health 정상, 키 제외 및 중첩 Git·서브모듈 없음 확인. 기존 main은 유지하며 unified-workspace 브랜치로 통합.
+
+- GitHub unified-workspace 푸시 완료. 원격 커밋 일치와 두 폴더 포함, 기존 두 HEAD의 조상 관계 확인.
