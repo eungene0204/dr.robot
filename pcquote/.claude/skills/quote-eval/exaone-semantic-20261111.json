@@ -1,0 +1,47 @@
+{
+  "description": "2026-11-11 EXAONE 검증: detect_profile가 None인 표현에서 실제 LLM의 용도 보완 확인. 규칙 실행 결과와 구분한다. 모델 사용 불가 시에는 용도 확인 질문을 반환하고 견적 생성을 멈추는 것을 허용한다. 이 결과는 LLM 해석 성공과 별도로 기록한다.",
+  "cases": [
+    {
+      "id": "E001",
+      "group": "LLM 용도 보완",
+      "turns": [
+        "크루세이더 킹즈 3를 즐길 본체 250만원"
+      ],
+      "expect": {
+        "profile": "gaming",
+        "budget": 2500000,
+        "resolution": "QHD",
+        "plans": "any",
+        "clarificationOnFallback": true
+      }
+    },
+    {
+      "id": "E002",
+      "group": "LLM 용도 보완",
+      "turns": [
+        "LaTeX로 논문을 작성할 본체 150만원"
+      ],
+      "expect": {
+        "profile": "office",
+        "budget": 1500000,
+        "resolution": "FHD",
+        "plans": "any",
+        "clarificationOnFallback": true
+      }
+    },
+    {
+      "id": "E003",
+      "group": "LLM 용도 보완",
+      "turns": [
+        "CINEMA 4D로 모션그래픽 만들 본체 350만원"
+      ],
+      "expect": {
+        "profile": "editing",
+        "budget": 3500000,
+        "resolution": "QHD",
+        "plans": "any",
+        "clarificationOnFallback": true
+      }
+    }
+  ]
+}

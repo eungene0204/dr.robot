@@ -257,7 +257,7 @@ def test_unlimited_budget_is_not_a_hidden_twenty_million_cap():
     expensive_gpu = part('g-expensive', 'gpu', 'RTX 5090 32GB premium', 25_000_000, 500,
                          'NVIDIA GeForce RTX 5090', watts=575, length=360, vram=32,
                          connector='12v2x6', minPsu=1000)
-    result = recommend(with_parts(expensive_gpu), Request(budget=None, uses=('gaming',), resolution='4K'))
+    result = recommend(with_parts(expensive_gpu), Request(budget=None, uses=('gaming',), resolution='4K', memo='예산 제한 없이 최고 성능'))
     assert result.plans and any(p.build.total > 20_000_000 for p in result.plans)
     assert all(c.status != 'fail' for p in result.plans for c in p.build.checks)
     assert not result.relaxed
@@ -291,3 +291,47 @@ def test_resolution_refusals_and_owned_options_are_independent():
 ])
 def test_peripheral_inclusions_do_not_depend_on_amount_order(text, budget):
     assert explicit_budget(text) == budget
+
+
+def test_unspecified_overwatch_quote_does_not_recommend_a_flagship(catalog):
+    req = Request(budget=None, uses=('gaming',), resolution='QHD', memo='오버워치용 견적')
+    result = recommend(catalog, req)
+    assert result.plans
+    selected = [(p.type.key, p.build.parts['gpu'].name, p.build.total) for p in result.plans]
+    assert all(p.build.parts['gpu'].id != 'g-5090' for p in result.plans), selected
+
+
+@pytest.mark.parametrize('memo', ['오버워치용 견적', '게임용 견적', '롤 FHD 게임용', '게임 예산 제한 없음', '최고 성능은 필요 없고 적당한 게임용'])
+def test_default_no_budget_keeps_a_suitable_gpu_even_if_flagship_is_popular(memo):
+    from dataclasses import replace
+    parts = [replace(p, popularity_rank=1, popularity_observed_at=NOW) if p.id == 'g-5090' else p for p in sample_parts()]
+    result = recommend(Catalog(parts, now=NOW), Request(budget=None, uses=('gaming',), resolution='QHD', memo=memo))
+    assert len(result.plans) == 3
+    assert all(p.build.parts['gpu'].id in {'g-5060ti','g-5070'} for p in result.plans)
+    assert result.request.budget is None
+    assert all(c.status != 'fail' for p in result.plans for c in p.build.checks)
+
+
+@pytest.mark.parametrize('kwargs', [
+    {'memo':'예산 제한 없이 최고 성능'},
+    {'gpu_models':('5090',), 'memo':'오버워치용 5090 지정'},
+    {'uses':('ai',),'min_vram_gb':32,'memo':'로컬 AI VRAM 32GB 이상'},
+])
+def test_real_high_end_requests_are_not_blocked_by_default_adequacy(catalog, kwargs):
+    fields = {'budget':None,'uses':('gaming',),'resolution':'QHD',**kwargs}
+    result = recommend(catalog, Request(**fields))
+    assert result.plans
+    assert any(p.build.parts['gpu'].id=='g-5090' for p in result.plans)
+    assert all(c.status!='fail' for p in result.plans for c in p.build.checks)
+
+
+@pytest.mark.parametrize('text',['오버워치용 견적','Overwatch 2 게임 PC'])
+def test_overwatch_name_is_a_known_game_without_guessing(text):
+    assert detect_profile(text)=='gaming'
+
+
+def test_price_refresh_failure_does_not_promote_a_flagship(catalog):
+    req = Request(budget=None, uses=('gaming',), resolution='QHD', memo='오버워치용 견적',
+                  exclude_parts=('g-4060','g-5060ti','g-5070','g-5070ti'))
+    result = recommend(catalog, req)
+    assert not result.plans, '적정 후보의 가격 확인이 실패하면 5090으로 자동 승급하면 안 된다'

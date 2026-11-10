@@ -14,6 +14,7 @@ from conftest import sample_parts  # noqa: E402
 from pcquote.db import (  # noqa: E402
     Base, PartRow, PriceHistoryRow, PriceReviewRow, engine, put_document, session_factory,
 )
+from pcquote.knowledge import graph
 from pcquote.main import app  # noqa: E402
 from pcquote.service import CatalogService, iso  # noqa: E402
 
@@ -81,7 +82,8 @@ def fresh(c, req=REQ):
 
 def test_health_settings_and_state(client):
     assert client.get("/api/health").json() == {"ok": True, "mode": "live", "llm": False, "storage": "postgresql",
-                                                "engine": "pcquote"}
+                                                "engine": "pcquote", "requirementsTimeoutMs": 160000,
+                                                "knowledgeGames": graph().games()}
     assert client.get("/api/settings").json() is None
     store = {"store": "Dr.Robot", "assembly": 30000, "validHours": 24}
     assert client.put("/api/settings", json=store).json() == store
@@ -251,8 +253,8 @@ def test_answer_with_llm_is_checked(client):
 def test_requirements_with_llm_keeps_stated_text(client):
     app.state.complete = lambda **k: {"profile": "ai", "budget": 5_000_000, "resolution": "4K", "white": False,
                                       "wifi": False, "os": False, "questions": ["예산은요?", "모니터는요?"]}
-    r = client.post("/api/requirements", json={"text": "배그용 150만"}).json()
-    assert (r["profile"], r["budget"], r["questions"], r["method"]) == ("gaming", 1_500_000, ["모니터는요?"], "openrouter")
+    r = client.post("/api/requirements", json={"text": "배그용 화이트 QHD"}).json()
+    assert (r["profile"], r["budget"], r["resolution"], r["white"], r["questions"], r["method"]) == ("gaming", None, "QHD", True, [], "local")
 
 
 def test_engine_recommend_endpoint(client):
@@ -273,11 +275,50 @@ def test_requirements_fall_back_to_rules_when_the_llm_fails(client):
         raise RuntimeError("LLM 응답 오류 (429)")
 
     app.state.complete = outage
-    r = client.post("/api/requirements", json={"text": "배그용 150만"})
+    r = client.post("/api/requirements", json={"text": "배그용 PC"})
     assert r.status_code == 200
     body = r.json()
-    assert (body["profile"], body["budget"], body["method"], body["fallback"]) == ("gaming", 1_500_000, "local", "LLM 응답 오류 (429)")
+    assert (body["profile"], body["budget"], body["method"]) == ("gaming", None, "local")
+    assert "fallback" not in body  # Known game avoids the model entirely.
     assert body["questions"] == []
     assert any(fresh(client, body)["plans"])  # quota exhaustion still reaches the quote engine
     unknown = client.post("/api/requirements", json={"text": "컴퓨터 하나 120만원"}).json()
     assert unknown["questions"] == ["주로 어떤 용도로 쓰실 예정인가요? (게임, 영상 편집, 사무, AI 등)"]  # no silent guess
+
+
+def test_pending_purpose_cannot_generate_a_quote(client):
+    response = client.post('/api/recommend/fresh', json={
+        'requirement': {**REQ, 'needsPurpose': True}, 'settings': SETTINGS})
+    assert response.status_code == 400
+    assert '용도' in response.json()['error']
+
+
+
+def test_unknown_purpose_timeout_then_clarification_keeps_budget(client):
+    def timeout(**kwargs):
+        raise TimeoutError('timeout')
+    app.state.complete = timeout
+    first = client.post('/api/requirements', json={'text': 'LaTeX로 논문을 작성할 본체 150만원'}).json()
+    assert first['needsPurpose'] is True and first['profile'] is None
+    assert client.post('/api/recommend/fresh', json={'requirement': first, 'settings': SETTINGS}).status_code == 400
+    clarified = client.post('/api/requirements', json={'text': first['text']+'\n추가 요청: 사무용이에요'}).json()
+    assert clarified['profile'] == 'office' and clarified['resolution'] == 'FHD' and clarified['budget'] == 1500000
+    assert not clarified.get('needsPurpose')
+    assert any(fresh(client, clarified)['plans'])
+
+
+def test_game_graph_api_and_normalized_quote(client):
+    graph_data=client.get('/api/knowledge/graph').json()
+    assert len([n for n in graph_data['nodes'] if n['kind']=='game'])==8
+    resolved=client.get('/api/knowledge/resolve',params={'text':'오버워치 200fps'}).json()
+    assert resolved['gpuModels']==['5060'] and not resolved['fpsGuaranteed']
+    req={**REQ,'budget':None,'text':'오버워치용 견적','resolutionExplicit':False}
+    body=fresh(client,req)
+    assert body['requirement']['resolution']=='FHD'
+    assert body['requirement']['resolutionBasis']=='service_default'
+    assert body['gameEvidence']['selectionApplied']
+    assert all(p['parts']['gpu']['id']=='g-4060' for p in body['plans'] if p)
+    explicit=fresh(client,{**req,'resolution':'QHD','resolutionExplicit':True})
+    assert explicit['requirement']['resolution']=='QHD'
+    assert not explicit['gameEvidence']['restrictGpu']
+    assert client.get('/api/knowledge/resolve',params={'text':'오버워치','resolution':'bogus'}).status_code==422

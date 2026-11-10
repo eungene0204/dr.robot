@@ -24,6 +24,7 @@ from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 
 from . import importer, llm, screen
+from .knowledge import graph
 from .catalog import CATEGORIES
 from .collector.store import PgPageCache, lock_held
 from .danawa import SourceClient, collect_price
@@ -95,7 +96,20 @@ def service() -> CatalogService:
 
 @app.get("/api/health")
 def health() -> dict:
-    return {"ok": True, "mode": "live", "llm": app.state.complete is not None, "storage": "postgresql", "engine": "pcquote"}
+    return {"ok": True, "mode": "live", "llm": app.state.complete is not None, "storage": "postgresql", "engine": "pcquote",
+            "requirementsTimeoutMs": llm.REQUIREMENTS_TIMEOUT_MS, "knowledgeGames": graph().games()}
+
+
+@app.get("/api/knowledge/graph")
+def game_graph():
+    return graph().data
+
+
+@app.get("/api/knowledge/resolve")
+def game_knowledge(text: str, resolution: str = "FHD"):
+    if resolution not in RESOLUTIONS:
+        return error(422, "해상도는 FHD, QHD, 4K 중 하나입니다.")
+    return graph().resolve(text[:2000], resolution)
 
 
 @app.get("/api/settings")
@@ -211,7 +225,7 @@ def answer(data: dict = Body(...)):
 def _valid_quote_request(requirement, settings) -> bool:
     assembly = (settings or {}).get("assembly")
     return (isinstance(requirement, dict) and requirement.get("profile") in screen.PROFILES
-            and screen.valid_budget(requirement) and _number(assembly) and 0 <= assembly <= 500_000)
+            and not requirement.get("needsPurpose") and screen.valid_budget(requirement) and _number(assembly) and 0 <= assembly <= 500_000)
 
 
 @app.post("/api/recommend/fresh")

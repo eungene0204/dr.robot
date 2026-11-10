@@ -41,7 +41,7 @@ _AI = re.compile(r"로컬|딥러닝|머신\s*러닝|LLM|(?<!웹)(?<!웹 )(?<!앱
 # Web development and coding classes need no graphics card ("웹 개발 공부용", "코딩 학원").
 _OFFICE = re.compile(r"사무|회계|엑셀|학습|POS|키오스크|kiosk|cctv|녹화|감시|웹\s*개발|앱\s*개발|코딩|프로그래밍|주식|hts|차트", re.I)
 # 롤 = League of Legends, not 컨트롤·스크롤·롤러.
-_GAMING = re.compile(r"게임|게이밍|배그|(?<![컨트스크])롤(?![러백])|gaming", re.I)
+_GAMING = re.compile(r"게임|게이밍|배그|오버\s*워치|overwatch|(?<![컨트스크])롤(?![러백])|gaming", re.I)
 _LIGHT = re.compile(r"인터넷|웹\s*서핑|웹\s*브라우|문서|인강|온라인\s*강의|유튜브|동영상\s*시청|"
                     r"줌\s*(?:수업|회의|강의)|zoom|화상\s*(?:수업|회의|강의)|(?:온라인|원격|비대면)\s*수업", re.I)
 # Options are judged by their last mention; a mention followed in the same clause by a refusal turns it off
@@ -51,7 +51,7 @@ _WIFI = re.compile(r"와이파이|wi-?fi|무선(?!\s*(?:마우스|키보드|이�
 _OS = re.compile(r"윈도우|windows|운영\s*체제|OS\s*포함", re.I)
 # The window ends at a clause joint ("윈도우 넣고 와이파이는 빼줘": the 빼 belongs to 와이파이).
 _REFUSAL = re.compile(r"(?:(?!고\s)[^,.\n]){0,10}?(?:말고|빼|제외|필요\s*없|없어도|없이|안\s*넣|넣지|아니|싫|집에\s*있|(?<!수도 )(?:있는\s*거|있어요|있습니다)|따로)")
-_UNLIMITED = re.compile(r"예산\s*(?:제한\s*없|상관\s*없|무관|무제한)|(?:돈|가격|비용)\s*(?:은|는|이)?\s*상관\s*없|금액\s*제한\s*없", re.I)
+_UNLIMITED = re.compile(r"예산\s*(?:은|는|이)?\s*(?:제한\s*없|상관\s*없|무관|무제한)|(?:돈|가격|비용)\s*(?:은|는|이)?\s*상관\s*없|금액\s*제한\s*없", re.I)
 # JavaScript \b is ASCII-only; re.ASCII keeps "p\b" etc. behaving the same before Korean text.
 _MODEL = re.compile(r"(rtx|gtx|rx|i[3579]-?)?\s?(\d{3,5})\s?(x3d2?|xtx|xt|gre|ti\s?super|ti|super|kf|ks|k|f|x|g)?"
                     r"(?![\d만원]|[,.]\d|\s?(?:만|원|p\b|hz|gb|tb|w\b))", re.I | re.ASCII)
@@ -267,6 +267,7 @@ def parse_requirement(text: str, options: dict | None = None) -> dict:
     out = {
         "text": text, "profile": profiles[-1] if profiles else "gaming", "budget": stated,
         "resolution": resolutions[-1] if resolutions else "QHD", "models": model_tokens(text),
+        "resolutionExplicit": any(pattern.search(text) for pattern in _RESOLUTIONS.values()),
         "white": option_requested(_WHITE, text), "wifi": option_requested(_WIFI, text),
         "os": option_requested(_OS, text), "allowOver": False, **options,
     }
@@ -285,7 +286,10 @@ def merge_interpretation(text: str, llm: dict) -> dict:
     """Text the customer stated wins; the LLM only names a purpose the rules cannot detect and adds questions."""
     local = parse_requirement(text)
     stated = any(detect_profile(v) for v in _ADD.split(text))
-    return {**local, "profile": local["profile"] if stated else llm.get("profile"),
+    profile = local["profile"] if stated else llm.get("profile")
+    if profile == "office" and not any(_resolution_of(v) for v in _ADD.split(text)):
+        local["resolution"] = "FHD"
+    return {**local, "profile": profile,
             "questions": [q for q in (llm.get("questions") or []) if "예산" not in q]}
 
 

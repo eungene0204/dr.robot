@@ -164,7 +164,7 @@ test('UI: DB 상태 API에서 진행 중인 상담과 부품 선택을 복원한
  [...rw.document.querySelectorAll('button')].find(b=>b.textContent.includes('새 견적 상담')).click();await wait(500);dom.window.close();dom=open();await wait(120);assert.ok(dom.window.document.querySelector('.chat-welcome'));assert.equal(dom.window.document.querySelector('.comparison'),null);
  }finally{dom.window.close()}
 });
-test('UI: 예산 없는 4K 요청을 상한 없이 생성·발행하고 제한 없음으로 표시한다',async()=>{const state={};const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/?demo=1',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;try{w.fetch=apiMock(null,'demo',state);w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await waitFor(()=>w.document.querySelector('#request'));const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,'4K 게임용 PC');input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await waitFor(()=>w.document.querySelector('.plan-price'));assert.match(w.document.querySelector('.chat-messages').textContent,/예산 제한 없음/);assert.doesNotMatch(w.document.querySelector('.results').textContent,/Infinity|NaN/);assert.match(w.document.querySelector('.plan-price').textContent,/예산 제한 없이 성능 우선/);const issue=[...w.document.querySelectorAll('button')].find(b=>b.textContent.includes('선택안 견적서 발행'));issue.click();await waitFor(()=>w.document.querySelector('.quote-modal'));assert.equal(state.quotes[0].req.budget,null);assert.match(w.document.querySelector('.quote-summary').textContent,/예산 제한 없음/);assert.ok(state.quotes[0].plan.parts.ssd.capacity>=2000);assert.match(w.document.querySelector('.results-note').textContent,/^요구 해석: 규칙 기반\. 표시된 대체 지수는/);}finally{w.close()}});
+test('UI: 예산 없는 4K 요청을 상한 없이 생성·발행하고 제한 없음으로 표시한다',async()=>{const state={};const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/?demo=1',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;try{w.fetch=apiMock(null,'demo',state);w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await waitFor(()=>w.document.querySelector('#request'));const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,'4K 게임용 PC');input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await waitFor(()=>w.document.querySelector('.plan-price'));assert.match(w.document.querySelector('.chat-messages').textContent,/예산 제한 없음/);assert.doesNotMatch(w.document.querySelector('.results').textContent,/Infinity|NaN/);assert.match(w.document.querySelector('.plan-price').textContent,/용도에 맞춘 적정 사양/);const issue=[...w.document.querySelectorAll('button')].find(b=>b.textContent.includes('선택안 견적서 발행'));issue.click();await waitFor(()=>w.document.querySelector('.quote-modal'));assert.equal(state.quotes[0].req.budget,null);assert.match(w.document.querySelector('.quote-summary').textContent,/예산 제한 없음/);assert.ok(state.quotes[0].plan.parts.ssd.capacity>=2000);assert.match(w.document.querySelector('.results-note').textContent,/^요구 해석: 규칙 기반\. 표시된 대체 지수는/);}finally{w.close()}});
 test('UI: 견적 뒤 질문은 기존 견적 아래에 답만 이어 붙이고, 용도가 바뀐 견적 요청은 이전 예산을 쓰지 않는다',async()=>{
  const {readFileSync}=await import('node:fs');const snapshot=JSON.parse(readFileSync('public/data/catalog.json'));
  for(const p of snapshot.parts){if(p.priceEvidence)p.priceEvidence.observedAt=new Date().toISOString();if(p.benchmark)p.benchmark.observedAt=new Date().toISOString();}
@@ -251,12 +251,137 @@ test('UI: pcquote 견적은 예산 +5% 안이면 발행할 수 있고, 부품 �
  }finally{w.close();}
 });
 test('UI: 결과 안내문에 요구 해석이 LLM 기반인지 규칙 기반인지 표시하고, LLM 실패는 드러내지 않는다',async()=>{
- for(const [requirements,label] of [[()=>({method:'openrouter',questions:[]}),'요구 해석: LLM 기반.'],[()=>({method:'exaone',questions:[]}),'요구 해석: LLM 기반.'],[()=>({method:'local',fallback:'LLM 응답 오류 (429)',questions:[]}),'요구 해석: 규칙 기반.']]){
+ for(const [requirements,label] of [[()=>({method:'openrouter',profile:'gaming',resolution:'QHD',questions:[]}),'요구 해석: LLM 기반.'],[()=>({method:'exaone',profile:'gaming',resolution:'QHD',questions:[]}),'요구 해석: LLM 기반.'],[()=>({method:'local',fallback:'LLM 응답 오류 (429)',questions:[]}),'요구 해석: 규칙 기반.']]){
   const state={answer:()=>({text:'',sources:[]}),requirements};const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/?demo=1',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
   try{w.fetch=apiMock(null,'demo',state);w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await waitFor(()=>w.document.querySelector('#request'));
-   const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,'150만원 QHD 게임용');input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);
+   const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,requirements().method==='local'?'150만원 QHD 게임용':'배틀그라운드용 150만원 QHD');input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);
    w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await waitFor(()=>w.document.querySelector('.results-note'));
    const strong=w.document.querySelector('.results-note .interpretation');assert.equal(strong?.textContent.trim(),label);
    assert.doesNotMatch(w.document.querySelector('.results').outerHTML,/실패|오류|429/);  // customers share this screen
   }finally{w.close()}}
+});
+
+test('UI EXAONE: 용도 미확인 시 견적을 멈추고 답변 후 원래 예산으로 재개한다',async()=>{
+ const prompts=[];const state={answer:()=>({text:'',sources:[]}),requirements:({text})=>{prompts.push(text);return text.includes('사무용')?{method:'local',profile:'office',budget:1500000,resolution:'FHD',questions:[]}:{method:'local',profile:null,needsPurpose:true,questions:['주로 어떤 용도로 쓰실 예정인가요?']};}};
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/?demo=1',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
+ try{w.fetch=apiMock(null,'demo',state);w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await wait(150);
+  const send=async value=>{const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,value);input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await wait(30);await waitFor(()=>!w.document.querySelector('.chat-send .spin'));};
+  await send('LaTeX로 논문을 작성할 본체 150만원');
+  assert.equal(w.document.querySelectorAll('.plan-card').length,0,'용도를 모르면 게임용 견적을 만들지 않는다');
+  assert.equal(w.document.querySelector('.clarify'),null);assert.match(w.document.querySelector('.chat-messages').textContent,/주로 어떤 용도/);
+  await send('사무용이에요');await waitFor(()=>w.document.querySelector('.plan-card'));
+  assert.equal(prompts.length,1,'명확해진 후속 요청은 해석 API를 생략한다');
+  await waitFor(()=>state['/api/state/consult-demo']?.req?.profile==='office');
+  assert.match(state['/api/state/consult-demo'].req.text,/LaTeX.*150만원[\s\S]*사무용/);
+  assert.match(w.document.querySelector('.results-heading').textContent,/사무·학습.*FHD/);
+  assert.match([...w.document.querySelectorAll('.chat-message.assistant')].at(-1).textContent,/1,500,000원/);
+ }finally{w.close();}
+});
+
+test('UI EXAONE: 규칙에 없는 LaTeX의 정상 LLM 용도를 자동 게임 기본값으로 덮어쓰지 않는다',async()=>{
+ const state={answer:()=>({text:'',sources:[]}),requirements:()=>({method:'exaone',profile:'office',budget:1500000,resolution:'FHD',questions:[]})};
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/?demo=1',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
+ try{w.fetch=apiMock(null,'demo',state);w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await wait(150);
+  const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,'LaTeX로 논문을 작성할 본체 150만원');input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await waitFor(()=>w.document.querySelector('.plan-card'));
+  assert.match(w.document.querySelector('.results-heading').textContent,/사무·학습.*FHD/);
+ }finally{w.close();}
+});
+
+test('UI EXAONE: 서버 대기 정책에 따라 55초 해석 응답도 받아 견적을 만든다',async()=>{
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/?demo=1',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
+ let now=0;const timers=[];w.AbortSignal.timeout=ms=>{const c=new w.AbortController();timers.push({at:now+ms,c});return c.signal;};
+ const advance=ms=>{now+=ms;for(const t of timers)if(t.at<=now)t.c.abort(new w.DOMException('시간 초과','TimeoutError'));};
+ const state={answer:()=>({text:'',sources:[]})};const mock=apiMock(null,'demo',state);
+ try{w.fetch=async(url,options={})=>{
+   if(url==='/api/health')return {ok:true,json:async()=>({ok:true,mode:'demo',llm:true,requirementsTimeoutMs:160000})};
+   if(url==='/api/requirements'){advance(55000);if(options.signal.aborted)throw options.signal.reason;return {ok:true,json:async()=>({method:'exaone',profile:'office',budget:1500000,resolution:'FHD',questions:[]})};}
+   return mock(url,options);
+  };w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await wait(150);
+  const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,'LaTeX로 논문을 작성할 본체 150만원');input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await wait(30);await waitFor(()=>!w.document.querySelector('.chat-send .spin'));
+  assert.equal(w.document.querySelectorAll('.plan-card').length,3,'서버 처리 시간 안의 정상 응답을 기다린다');
+  assert.doesNotMatch(w.document.querySelector('.chat-messages').textContent,/준비하지 못했/);
+ }finally{w.close();}
+});
+
+test('UI EXAONE: 용도 확인 중 수동 사무 선택은 예산과 화이트·와이파이를 유지한다',async()=>{
+ let calls=0;const state={answer:()=>({text:'',sources:[]}),requirements:()=>{calls++;return {method:'local',profile:null,needsPurpose:true,questions:['주로 어떤 용도로 쓰실 예정인가요?']};}};
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/?demo=1',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
+ try{w.fetch=apiMock(null,'demo',state);w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await wait(150);
+  const type=async value=>{const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,value);input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);};
+  const submit=async()=>{w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await wait(30);await waitFor(()=>!w.document.querySelector('.chat-send .spin'));};
+  await type('LaTeX로 논문을 작성할 본체 150만원, 화이트 케이스와 와이파이 포함');await submit();
+  assert.equal(w.document.querySelectorAll('.plan-card').length,0);
+  w.document.querySelector('.options-toggle').click();await wait(30);
+  [...w.document.querySelectorAll('.profile-options button')].find(b=>b.textContent==='사무·학습').click();await wait(30);
+  await type('이 조건으로 견적 주세요');await submit();await waitFor(()=>w.document.querySelector('.plan-card'));
+  assert.match(w.document.querySelector('.results-heading').textContent,/사무·학습.*FHD/);
+  await waitFor(()=>state['/api/state/consult-demo']?.req?.needsPurpose===false);
+  assert.equal(calls,1,'수동으로 용도를 정한 후에는 해석 API를 다시 호출하지 않는다');
+  const req=state['/api/state/consult-demo'].req;
+  assert.equal(req.profile,'office');assert.equal(req.budget,1500000);assert.equal(req.white,true);assert.equal(req.wifi,true);
+ }finally{w.close();}
+});
+
+test('UI EXAONE: 명확한 용도는 직행하고 모호한 해석 요청이 실패하면 용도를 묻는다',async()=>{
+ for(const [text,planCount] of [['LaTeX로 논문을 작성할 본체 150만원',0],['사무용 본체 150만원',3]]){
+  const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/?demo=1',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
+  const mock=apiMock(null,'demo',{answer:()=>({text:'',sources:[]})});
+  try{w.fetch=(url,options)=>url==='/api/requirements'?Promise.reject(new w.DOMException('시간 초과','TimeoutError')):mock(url,options);w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await wait(150);
+   const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,text);input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await wait(30);await waitFor(()=>!w.document.querySelector('.chat-send .spin'));
+   assert.equal(w.document.querySelectorAll('.plan-card').length,planCount);
+   assert.equal(w.document.querySelector('.clarify'),null);if(planCount===0)assert.match(w.document.querySelector('.chat-messages').textContent,/주로 어떤 용도/);
+   assert.doesNotMatch(w.document.querySelector('.chat-messages').textContent,/준비하지 못했/);
+  }finally{w.close();}
+ }
+});
+
+test('UI 빠른 견적: 명확한 요청과 추가 증액·무제한은 해석 API를 호출하지 않는다',async()=>{
+ let calls=0;const state={answer:()=>({text:'',sources:[]}),requirements:()=>{calls++;return {method:'exaone',profile:'gaming',budget:1500000,resolution:'QHD',questions:[]};}};
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/?demo=1',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
+ try{w.fetch=apiMock(null,'demo',state);w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await wait(150);
+  const send=async text=>{const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,text);input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await wait(30);await waitFor(()=>!w.document.querySelector('.chat-send .spin'));};
+  await send('게임용 QHD 본체 150만원');assert.equal(calls,0);assert.equal(w.document.querySelectorAll('.plan-card').length,3);assert.match(w.document.querySelector('.interpretation').textContent,/규칙 기반/);
+  await send('예산 10만원만 더 올려줘');assert.equal(calls,0);assert.match([...w.document.querySelectorAll('.chat-message.assistant')].at(-1).textContent,/1,600,000원/);
+  await send('예산 제한 없이 해주세요');assert.equal(calls,0);assert.match([...w.document.querySelectorAll('.chat-message.assistant')].at(-1).textContent,/예산 제한 없음/);
+ }finally{w.close();}
+});
+
+test('UI: 복원된 질문과 모델 선택 질문은 패널 없이 견적을 바로 표시한다',async()=>{
+ const questions=['원하는 해상도는 무엇인가요?','Wi-Fi 내장이 필요한가요?','OS 포함이 필요한가요?'];
+ const state={answer:()=>({text:'',sources:[]}),requirements:()=>({method:'exaone',profile:'office',budget:1500000,resolution:'FHD',questions}),'/api/state/consult-demo':{questions}};
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/?demo=1',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
+ try{w.fetch=apiMock(null,'demo',state);w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await wait(150);
+  assert.equal(w.document.querySelector('.clarify'),null);assert.doesNotMatch(w.document.body.textContent,/확정 전 확인해 주세요/);
+  const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,'LaTeX로 논문 작성할 본체 150만원');input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await waitFor(()=>w.document.querySelector('.plan-card'));
+  assert.equal(w.document.querySelectorAll('.plan-card').length,3);assert.equal(w.document.querySelector('.clarify'),null);
+  assert.doesNotMatch(w.document.body.textContent,/확정 전 확인|Wi-Fi 내장이 필요한가요|답변을 요청사항에 추가/);
+ }finally{w.close();}
+});
+
+test('UI 게임 지식: 알려진 게임은 모델을 생략하고 서버가 정한 해상도와 출처를 표시한다',async()=>{
+ const {readFileSync}=await import('node:fs');const snapshot=JSON.parse(readFileSync('public/data/catalog.json'));
+ for(const p of snapshot.parts){if(p.priceEvidence)p.priceEvidence.observedAt=new Date().toISOString();if(p.benchmark)p.benchmark.observedAt=new Date().toISOString();}
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
+ try{
+ let modelCalls=0;
+ const state={answer:()=>({}),requirements:()=>{modelCalls++;return {method:'exaone',profile:'gaming'}}};
+ const fallback=apiMock(snapshot,'live',state);
+ w.fetch=async(url,options={})=>{
+  if(url==='/api/health')return {ok:true,json:async()=>({ok:true,mode:'live',llm:true,knowledgeGames:[{name:'Overwatch',aliases:['오버워치','OW2']}]})};
+  if(url==='/api/recommend/fresh'){
+   const {requirement:r,settings}=JSON.parse(options.body);assert.equal(r.resolutionExplicit,false);
+   const requirement={...r,resolution:'FHD',resolutionBasis:'service_default'};
+   const gameEvidence={selectionNote:'원문 실측 GPU 후보 적용',limitation:'현재 견적의 FPS를 보장하지 않습니다.',games:[{id:'game:overwatch',name:'Overwatch',status:'measured_gpu_advisory',sources:[{id:'test-source',publisher:'ComputerBase',url:'https://www.computerbase.de/',accessed_at:'2026-11-11'}]}]};
+   return {ok:true,json:async()=>({plans:buildRecommendations(requirement,settings,snapshot.parts),requirement,gameEvidence})};
+  }
+  return fallback(url,options);
+ };
+ w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await wait(150);
+ const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,'OW2 본체');input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);
+ w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await waitFor(()=>w.document.querySelector('.plan-card'));
+ assert.equal(modelCalls,0);assert.match(w.document.querySelector('.results-heading').textContent,/게임 · FHD/);
+ assert.match(w.document.querySelector('.game-evidence').textContent,/FPS를 보장하지/);
+ assert.match(w.document.querySelector('.game-evidence').textContent,/FHD 기본값/);
+ assert.equal(w.document.querySelector('.game-evidence a').href,'https://www.computerbase.de/');
+ }finally{w.close();}
 });

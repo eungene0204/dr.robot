@@ -1,0 +1,1817 @@
+{
+  "version": "2026-11-11.1",
+  "nodes": [
+    {
+      "name": "Overwatch",
+      "aliases": [
+        "오버워치",
+        "오버워치2",
+        "오버워치 2",
+        "Overwatch 2",
+        "OW2"
+      ],
+      "id": "game:overwatch",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/2357570/Overwatch_2/",
+      "publisher": "Blizzard Entertainment",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:overwatch",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 6,
+      "vram_gb": null,
+      "storage_gb": 50,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:overwatch:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i3",
+      "source_kind": "family",
+      "id": "hardware:intel-core-i3",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Phenom X3 8650",
+      "source_kind": "model",
+      "id": "hardware:amd-phenom-x3-8650",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 600 series",
+      "source_kind": "family",
+      "id": "hardware:nvidia-geforce-gtx-600-series",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon HD 7000 series",
+      "source_kind": "family",
+      "id": "hardware:amd-radeon-hd-7000-series",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 8,
+      "vram_gb": null,
+      "storage_gb": 50,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:overwatch:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i7",
+      "source_kind": "family",
+      "id": "hardware:intel-core-i7",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 5",
+      "source_kind": "family",
+      "id": "hardware:amd-ryzen-5",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 1060",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-1060",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 1650",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-1650",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon R9 380",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-r9-380",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 6400",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-6400",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "Intel Arc A770",
+      "source_kind": "model",
+      "id": "hardware:intel-arc-a770",
+      "kind": "hardware"
+    },
+    {
+      "name": "VALORANT",
+      "aliases": [
+        "발로란트",
+        "발로",
+        "Valorant"
+      ],
+      "id": "game:valorant",
+      "kind": "game"
+    },
+    {
+      "url": "https://support.riotgames.com/en-us/valorant/support-tools/minimum-recommended-pc-specs",
+      "publisher": "Riot Games",
+      "accessed_at": "2026-11-11",
+      "updated_at": "2026-05-21",
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "official_support",
+      "id": "source:valorant",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 4,
+      "vram_gb": 1,
+      "storage_gb": null,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": 30,
+      "evidence_kind": "official_target",
+      "vram_applies_to": "discrete_gpu_only",
+      "id": "game:valorant:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i3-540",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i3-540",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Athlon 200GE",
+      "source_kind": "model",
+      "id": "hardware:amd-athlon-200ge",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "Intel HD 4000",
+      "source_kind": "model",
+      "id": "hardware:intel-hd-4000",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon R5 220",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-r5-220",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 4,
+      "vram_gb": 1,
+      "storage_gb": null,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": 60,
+      "evidence_kind": "official_target",
+      "vram_applies_to": "discrete_gpu_only",
+      "id": "game:valorant:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i3-4150",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i3-4150",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 3 1200",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-3-1200",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GT 730",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gt-730",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon R7 240",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-r7-240",
+      "kind": "hardware"
+    },
+    {
+      "tier": "high_end",
+      "ram_gb": 4,
+      "vram_gb": 1,
+      "storage_gb": null,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": 144,
+      "evidence_kind": "official_target",
+      "vram_applies_to": "discrete_gpu_only",
+      "id": "game:valorant:high_end",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-9400F",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-9400f",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 5 2600X",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-5-2600x",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 1050 Ti",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-1050-ti",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon R7 370",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-r7-370",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "Intel Arc A310",
+      "source_kind": "model",
+      "id": "hardware:intel-arc-a310",
+      "kind": "hardware"
+    },
+    {
+      "name": "League of Legends",
+      "aliases": [
+        "리그 오브 레전드",
+        "리그오브레전드",
+        "롤",
+        "LoL"
+      ],
+      "id": "game:league_of_legends",
+      "kind": "game"
+    },
+    {
+      "url": "https://support.riotgames.com/en-us/league-of-legends/performance/minimum-and-recommended-system-requirements-league-of-legends",
+      "publisher": "Riot Games",
+      "accessed_at": "2026-11-11",
+      "updated_at": "2026-09-22",
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "official_support",
+      "id": "source:league_of_legends",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 2,
+      "vram_gb": 1,
+      "storage_gb": 16,
+      "storage_type": "HDD",
+      "resolution": "1024x768",
+      "preset": "Low",
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:league_of_legends:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i3-530",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i3-530",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD FX-4100",
+      "source_kind": "model",
+      "id": "hardware:amd-fx-4100",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce 400 series",
+      "source_kind": "family",
+      "id": "hardware:nvidia-geforce-400-series",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon HD 6570",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-hd-6570",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "Intel HD 4600",
+      "source_kind": "model",
+      "id": "hardware:intel-hd-4600",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 4,
+      "vram_gb": 2,
+      "storage_gb": 16,
+      "storage_type": "SSD",
+      "resolution": "1920x1080",
+      "preset": "High",
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:league_of_legends:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-8250",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-8250",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 560",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-560",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon HD 6950",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-hd-6950",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "Intel UHD 630",
+      "source_kind": "model",
+      "id": "hardware:intel-uhd-630",
+      "kind": "hardware"
+    },
+    {
+      "name": "PUBG: BATTLEGROUNDS",
+      "aliases": [
+        "배틀그라운드",
+        "배그",
+        "PUBG",
+        "Battlegrounds"
+      ],
+      "id": "game:pubg",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/578080/PUBG_BATTLEGROUNDS/",
+      "publisher": "KRAFTON",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:pubg",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 8,
+      "vram_gb": null,
+      "storage_gb": 40,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:pubg:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-4430",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-4430",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD FX-6300",
+      "source_kind": "model",
+      "id": "hardware:amd-fx-6300",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 960",
+      "vram_gb": 2,
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-960:vram2",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon R7 370",
+      "vram_gb": 2,
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-r7-370:vram2",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 16,
+      "vram_gb": null,
+      "storage_gb": 50,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:pubg:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-6600K",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-6600k",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 5 1600",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-5-1600",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 1060",
+      "vram_gb": 3,
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-1060:vram3",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 580",
+      "vram_gb": 4,
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-580:vram4",
+      "kind": "hardware"
+    },
+    {
+      "name": "Counter-Strike 2",
+      "aliases": [
+        "카운터 스트라이크2",
+        "카운터스트라이크2",
+        "카스2",
+        "CS2",
+        "Counter Strike 2"
+      ],
+      "id": "game:counter_strike_2",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/730/CounterStrike_2/",
+      "publisher": "Valve",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:counter_strike_2",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 8,
+      "vram_gb": 1,
+      "storage_gb": 85,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "cpu_hardware_threads_min": 4,
+      "gpu_features": [
+        "DirectX 11",
+        "Shader Model 5.0"
+      ],
+      "id": "game:counter_strike_2:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-750",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-750",
+      "kind": "hardware"
+    },
+    {
+      "name": "Fortnite",
+      "aliases": [
+        "포트나이트",
+        "포나"
+      ],
+      "id": "game:fortnite",
+      "kind": "game"
+    },
+    {
+      "url": "https://www.epicgames.com/help/c-44968506/c-0/a16548002?lang=en-US",
+      "publisher": "Epic Games",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "official_support",
+      "id": "source:fortnite",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 8,
+      "vram_gb": null,
+      "storage_gb": null,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:fortnite:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i3-3225",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i3-3225",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon Vega 8",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-vega-8",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 16,
+      "vram_gb": 2,
+      "storage_gb": null,
+      "storage_type": "NVMe SSD",
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:fortnite:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-7300U",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-7300u",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 3 3300U",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-3-3300u",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 960",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-960",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon R9 280",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-r9-280",
+      "kind": "hardware"
+    },
+    {
+      "tier": "epic_quality",
+      "ram_gb": 16,
+      "vram_gb": 8,
+      "storage_gb": null,
+      "storage_type": "NVMe SSD",
+      "resolution": null,
+      "preset": "Epic",
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:fortnite:epic_quality",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i7-8700",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i7-8700",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 7 3700X",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-7-3700x",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce RTX 3070",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-rtx-3070",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 6700 XT",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-6700-xt",
+      "kind": "hardware"
+    },
+    {
+      "name": "Apex Legends",
+      "aliases": [
+        "에이펙스 레전드",
+        "에이펙스",
+        "에펙",
+        "Apex"
+      ],
+      "id": "game:apex_legends",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/1172470/Apex_Legends/",
+      "publisher": "Electronic Arts / Respawn",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:apex_legends",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 6,
+      "vram_gb": null,
+      "storage_gb": 75,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:apex_legends:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD FX-4350",
+      "source_kind": "model",
+      "id": "hardware:amd-fx-4350",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i3-6300",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i3-6300",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon HD 7790",
+      "vram_gb": 2,
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-hd-7790:vram2",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 950",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-950",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 8,
+      "vram_gb": null,
+      "storage_gb": 75,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:apex_legends:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon R9 290",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-r9-290",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 970",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-970",
+      "kind": "hardware"
+    },
+    {
+      "name": "Cyberpunk 2077",
+      "aliases": [
+        "사이버펑크2077",
+        "사이버펑크 2077",
+        "사펑",
+        "Cyberpunk"
+      ],
+      "id": "game:cyberpunk_2077",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/1091500/_2077/?curator_clanid=30637343&l=english",
+      "publisher": "CD PROJEKT RED",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:cyberpunk_2077",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 12,
+      "vram_gb": null,
+      "storage_gb": 70,
+      "storage_type": "SSD",
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:cyberpunk_2077:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i7-6700",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i7-6700",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 1060",
+      "vram_gb": 6,
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-1060:vram6",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 580",
+      "vram_gb": 8,
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-580:vram8",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "Intel Arc A380",
+      "source_kind": "model",
+      "id": "hardware:intel-arc-a380",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 16,
+      "vram_gb": null,
+      "storage_gb": 70,
+      "storage_type": "SSD",
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:cyberpunk_2077:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i7-12700",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i7-12700",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 7 7800X3D",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-7-7800x3d",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce RTX 2060 SUPER",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-rtx-2060-super",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 5700 XT",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-5700-xt",
+      "kind": "hardware"
+    },
+    {
+      "url": "https://www.computerbase.de/artikel/grafikkarten/grafikkarten-vergleich-radeon-rx-7600-xt-rx-9060-xt-geforce-rtx-4060-rtx-5060-intel-xe-arc-a580-b580-duell.93230/",
+      "publisher": "ComputerBase / DevPandi",
+      "accessed_at": "2026-11-11",
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "published_at": "2026-04-30",
+      "id": "source:computerbase-generation-comparison-2026-04-30",
+      "kind": "source"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 177.0,
+      "context": {
+        "game": "overwatch-2",
+        "results_url": "https://www.computerbase.de/artikel/grafikkarten/grafikkarten-vergleich-radeon-rx-7600-xt-rx-9060-xt-geforce-rtx-4060-rtx-5060-intel-xe-arc-a580-b580-duell.93230/seite-3",
+        "resolution": [
+          1920,
+          1080
+        ],
+        "preset": "custom_high_ultra",
+        "api": "DirectX 12 beta",
+        "upscaling": false,
+        "dynamic_resolution": false,
+        "render_scale_ui": "automatic",
+        "native_rendering_evidence": "author_methodology",
+        "frame_generation": null,
+        "ray_tracing": null,
+        "scene": null,
+        "unknown_fields": [
+          "exact_scene",
+          "game_build",
+          "frame_generation"
+        ]
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 7 9800X3D",
+        "motherboard": "ASUS ROG Strix B650E-F",
+        "memory_gb": 64,
+        "memory": "DDR5-6400 CL32",
+        "os": "Windows 11 24H2",
+        "runs": 3,
+        "aggregation": "mean_of_three_runs",
+        "background_applications": true,
+        "driver_version": null,
+        "measurement_date": null
+      },
+      "id": "measurement:cb-20260430-ow2-rtx4060",
+      "kind": "measurement"
+    },
+    {
+      "category": "gpu",
+      "label": "GeForce RTX 4060",
+      "model": "4060",
+      "vram_gb": 8,
+      "id": "hardware:geforce-rtx-4060:vram8",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 7 9800X3D",
+      "id": "hardware:amd-ryzen-7-9800x3d",
+      "kind": "hardware"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 236.0,
+      "context": {
+        "game": "overwatch-2",
+        "results_url": "https://www.computerbase.de/artikel/grafikkarten/grafikkarten-vergleich-radeon-rx-7600-xt-rx-9060-xt-geforce-rtx-4060-rtx-5060-intel-xe-arc-a580-b580-duell.93230/seite-3",
+        "resolution": [
+          1920,
+          1080
+        ],
+        "preset": "custom_high_ultra",
+        "api": "DirectX 12 beta",
+        "upscaling": false,
+        "dynamic_resolution": false,
+        "render_scale_ui": "automatic",
+        "native_rendering_evidence": "author_methodology",
+        "frame_generation": null,
+        "ray_tracing": null,
+        "scene": null,
+        "unknown_fields": [
+          "exact_scene",
+          "game_build",
+          "frame_generation"
+        ]
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 7 9800X3D",
+        "motherboard": "ASUS ROG Strix B650E-F",
+        "memory_gb": 64,
+        "memory": "DDR5-6400 CL32",
+        "os": "Windows 11 24H2",
+        "runs": 3,
+        "aggregation": "mean_of_three_runs",
+        "background_applications": true,
+        "driver_version": null,
+        "measurement_date": null
+      },
+      "id": "measurement:cb-20260430-ow2-rtx5060",
+      "kind": "measurement"
+    },
+    {
+      "category": "gpu",
+      "label": "GeForce RTX 5060",
+      "model": "5060",
+      "vram_gb": 8,
+      "id": "hardware:geforce-rtx-5060:vram8",
+      "kind": "hardware"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 61.0,
+      "context": {
+        "game": "cyberpunk-2077",
+        "results_url": "https://www.computerbase.de/artikel/grafikkarten/grafikkarten-vergleich-radeon-rx-7600-xt-rx-9060-xt-geforce-rtx-4060-rtx-5060-intel-xe-arc-a580-b580-duell.93230/seite-2",
+        "resolution": [
+          1920,
+          1080
+        ],
+        "preset": "custom_high_ultra",
+        "api": null,
+        "upscaling": false,
+        "frame_generation": false,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": "Dogtown walk from Mr. Hands pyramid toward stadium stairs and neon signs",
+        "unknown_fields": [
+          "game_build",
+          "api"
+        ]
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 7 9800X3D",
+        "motherboard": "ASUS ROG Strix B650E-F",
+        "memory_gb": 64,
+        "memory": "DDR5-6400 CL32",
+        "os": "Windows 11 24H2",
+        "runs": 3,
+        "aggregation": "mean_of_three_runs",
+        "background_applications": true,
+        "driver_version": null,
+        "measurement_date": null
+      },
+      "id": "measurement:cb-20260430-cp2077-rtx4060",
+      "kind": "measurement"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 91.3,
+      "context": {
+        "game": "cyberpunk-2077",
+        "results_url": "https://www.computerbase.de/artikel/grafikkarten/grafikkarten-vergleich-radeon-rx-7600-xt-rx-9060-xt-geforce-rtx-4060-rtx-5060-intel-xe-arc-a580-b580-duell.93230/seite-2",
+        "resolution": [
+          1920,
+          1080
+        ],
+        "preset": "custom_high_ultra",
+        "api": null,
+        "upscaling": false,
+        "frame_generation": false,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": "Dogtown walk from Mr. Hands pyramid toward stadium stairs and neon signs",
+        "unknown_fields": [
+          "game_build",
+          "api"
+        ]
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 7 9800X3D",
+        "motherboard": "ASUS ROG Strix B650E-F",
+        "memory_gb": 64,
+        "memory": "DDR5-6400 CL32",
+        "os": "Windows 11 24H2",
+        "runs": 3,
+        "aggregation": "mean_of_three_runs",
+        "background_applications": true,
+        "driver_version": null,
+        "measurement_date": null
+      },
+      "id": "measurement:cb-20260430-cp2077-rtx5060",
+      "kind": "measurement"
+    }
+  ],
+  "edges": [
+    {
+      "from": "game:overwatch",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:overwatch:minimum"
+    },
+    {
+      "from": "game:overwatch:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:overwatch"
+    },
+    {
+      "from": "game:overwatch:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i3",
+      "operator": "any",
+      "alternative_group": "game:overwatch:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:overwatch:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-phenom-x3-8650",
+      "operator": "any",
+      "alternative_group": "game:overwatch:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:overwatch:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-600-series",
+      "operator": "any",
+      "alternative_group": "game:overwatch:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:overwatch:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-hd-7000-series",
+      "operator": "any",
+      "alternative_group": "game:overwatch:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:overwatch",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:overwatch:recommended"
+    },
+    {
+      "from": "game:overwatch:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:overwatch"
+    },
+    {
+      "from": "game:overwatch:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i7",
+      "operator": "any",
+      "alternative_group": "game:overwatch:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:overwatch:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5",
+      "operator": "any",
+      "alternative_group": "game:overwatch:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:overwatch:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1060",
+      "operator": "any",
+      "alternative_group": "game:overwatch:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:overwatch:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1650",
+      "operator": "any",
+      "alternative_group": "game:overwatch:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:overwatch:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-r9-380",
+      "operator": "any",
+      "alternative_group": "game:overwatch:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:overwatch:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-6400",
+      "operator": "any",
+      "alternative_group": "game:overwatch:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:overwatch:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-arc-a770",
+      "operator": "any",
+      "alternative_group": "game:overwatch:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:valorant",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:valorant:minimum"
+    },
+    {
+      "from": "game:valorant:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:valorant"
+    },
+    {
+      "from": "game:valorant:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i3-540",
+      "operator": "any",
+      "alternative_group": "game:valorant:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:valorant:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-athlon-200ge",
+      "operator": "any",
+      "alternative_group": "game:valorant:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:valorant:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-hd-4000",
+      "operator": "any",
+      "alternative_group": "game:valorant:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:valorant:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-r5-220",
+      "operator": "any",
+      "alternative_group": "game:valorant:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:valorant",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:valorant:recommended"
+    },
+    {
+      "from": "game:valorant:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:valorant"
+    },
+    {
+      "from": "game:valorant:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i3-4150",
+      "operator": "any",
+      "alternative_group": "game:valorant:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:valorant:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-3-1200",
+      "operator": "any",
+      "alternative_group": "game:valorant:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:valorant:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gt-730",
+      "operator": "any",
+      "alternative_group": "game:valorant:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:valorant:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-r7-240",
+      "operator": "any",
+      "alternative_group": "game:valorant:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:valorant",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:valorant:high_end"
+    },
+    {
+      "from": "game:valorant:high_end",
+      "relation": "SUPPORTED_BY",
+      "to": "source:valorant"
+    },
+    {
+      "from": "game:valorant:high_end",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-9400f",
+      "operator": "any",
+      "alternative_group": "game:valorant:high_end:REQUIRES_CPU"
+    },
+    {
+      "from": "game:valorant:high_end",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-2600x",
+      "operator": "any",
+      "alternative_group": "game:valorant:high_end:REQUIRES_CPU"
+    },
+    {
+      "from": "game:valorant:high_end",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1050-ti",
+      "operator": "any",
+      "alternative_group": "game:valorant:high_end:REQUIRES_GPU"
+    },
+    {
+      "from": "game:valorant:high_end",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-r7-370",
+      "operator": "any",
+      "alternative_group": "game:valorant:high_end:REQUIRES_GPU"
+    },
+    {
+      "from": "game:valorant:high_end",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-arc-a310",
+      "operator": "any",
+      "alternative_group": "game:valorant:high_end:REQUIRES_GPU"
+    },
+    {
+      "from": "game:league_of_legends",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:league_of_legends:minimum"
+    },
+    {
+      "from": "game:league_of_legends:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:league_of_legends"
+    },
+    {
+      "from": "game:league_of_legends:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i3-530",
+      "operator": "any",
+      "alternative_group": "game:league_of_legends:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:league_of_legends:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-fx-4100",
+      "operator": "any",
+      "alternative_group": "game:league_of_legends:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:league_of_legends:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-400-series",
+      "operator": "any",
+      "alternative_group": "game:league_of_legends:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:league_of_legends:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-hd-6570",
+      "operator": "any",
+      "alternative_group": "game:league_of_legends:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:league_of_legends:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-hd-4600",
+      "operator": "any",
+      "alternative_group": "game:league_of_legends:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:league_of_legends",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:league_of_legends:recommended"
+    },
+    {
+      "from": "game:league_of_legends:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:league_of_legends"
+    },
+    {
+      "from": "game:league_of_legends:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-8250",
+      "operator": "any",
+      "alternative_group": "game:league_of_legends:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:league_of_legends:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-3-1200",
+      "operator": "any",
+      "alternative_group": "game:league_of_legends:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:league_of_legends:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-560",
+      "operator": "any",
+      "alternative_group": "game:league_of_legends:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:league_of_legends:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-hd-6950",
+      "operator": "any",
+      "alternative_group": "game:league_of_legends:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:league_of_legends:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-uhd-630",
+      "operator": "any",
+      "alternative_group": "game:league_of_legends:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:pubg",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:pubg:minimum"
+    },
+    {
+      "from": "game:pubg:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:pubg"
+    },
+    {
+      "from": "game:pubg:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-4430",
+      "operator": "any",
+      "alternative_group": "game:pubg:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:pubg:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-fx-6300",
+      "operator": "any",
+      "alternative_group": "game:pubg:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:pubg:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-960:vram2",
+      "operator": "any",
+      "alternative_group": "game:pubg:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:pubg:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-r7-370:vram2",
+      "operator": "any",
+      "alternative_group": "game:pubg:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:pubg",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:pubg:recommended"
+    },
+    {
+      "from": "game:pubg:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:pubg"
+    },
+    {
+      "from": "game:pubg:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-6600k",
+      "operator": "any",
+      "alternative_group": "game:pubg:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:pubg:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-1600",
+      "operator": "any",
+      "alternative_group": "game:pubg:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:pubg:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1060:vram3",
+      "operator": "any",
+      "alternative_group": "game:pubg:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:pubg:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-580:vram4",
+      "operator": "any",
+      "alternative_group": "game:pubg:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:counter_strike_2",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:counter_strike_2:minimum"
+    },
+    {
+      "from": "game:counter_strike_2:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:counter_strike_2"
+    },
+    {
+      "from": "game:counter_strike_2:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-750",
+      "operator": "any",
+      "alternative_group": "game:counter_strike_2:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:fortnite",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:fortnite:minimum"
+    },
+    {
+      "from": "game:fortnite:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:fortnite"
+    },
+    {
+      "from": "game:fortnite:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i3-3225",
+      "operator": "any",
+      "alternative_group": "game:fortnite:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:fortnite:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-hd-4000",
+      "operator": "any",
+      "alternative_group": "game:fortnite:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:fortnite:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-vega-8",
+      "operator": "any",
+      "alternative_group": "game:fortnite:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:fortnite",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:fortnite:recommended"
+    },
+    {
+      "from": "game:fortnite:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:fortnite"
+    },
+    {
+      "from": "game:fortnite:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-7300u",
+      "operator": "any",
+      "alternative_group": "game:fortnite:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:fortnite:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-3-3300u",
+      "operator": "any",
+      "alternative_group": "game:fortnite:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:fortnite:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-960",
+      "operator": "any",
+      "alternative_group": "game:fortnite:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:fortnite:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-r9-280",
+      "operator": "any",
+      "alternative_group": "game:fortnite:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:fortnite",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:fortnite:epic_quality"
+    },
+    {
+      "from": "game:fortnite:epic_quality",
+      "relation": "SUPPORTED_BY",
+      "to": "source:fortnite"
+    },
+    {
+      "from": "game:fortnite:epic_quality",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i7-8700",
+      "operator": "any",
+      "alternative_group": "game:fortnite:epic_quality:REQUIRES_CPU"
+    },
+    {
+      "from": "game:fortnite:epic_quality",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-7-3700x",
+      "operator": "any",
+      "alternative_group": "game:fortnite:epic_quality:REQUIRES_CPU"
+    },
+    {
+      "from": "game:fortnite:epic_quality",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-rtx-3070",
+      "operator": "any",
+      "alternative_group": "game:fortnite:epic_quality:REQUIRES_GPU"
+    },
+    {
+      "from": "game:fortnite:epic_quality",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-6700-xt",
+      "operator": "any",
+      "alternative_group": "game:fortnite:epic_quality:REQUIRES_GPU"
+    },
+    {
+      "from": "game:apex_legends",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:apex_legends:minimum"
+    },
+    {
+      "from": "game:apex_legends:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:apex_legends"
+    },
+    {
+      "from": "game:apex_legends:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-fx-4350",
+      "operator": "any",
+      "alternative_group": "game:apex_legends:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:apex_legends:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i3-6300",
+      "operator": "any",
+      "alternative_group": "game:apex_legends:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:apex_legends:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-hd-7790:vram2",
+      "operator": "any",
+      "alternative_group": "game:apex_legends:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:apex_legends:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-950",
+      "operator": "any",
+      "alternative_group": "game:apex_legends:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:apex_legends",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:apex_legends:recommended"
+    },
+    {
+      "from": "game:apex_legends:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:apex_legends"
+    },
+    {
+      "from": "game:apex_legends:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5",
+      "operator": "any",
+      "alternative_group": "game:apex_legends:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:apex_legends:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-r9-290",
+      "operator": "any",
+      "alternative_group": "game:apex_legends:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:apex_legends:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-970",
+      "operator": "any",
+      "alternative_group": "game:apex_legends:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:cyberpunk_2077",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:cyberpunk_2077:minimum"
+    },
+    {
+      "from": "game:cyberpunk_2077:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:cyberpunk_2077"
+    },
+    {
+      "from": "game:cyberpunk_2077:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i7-6700",
+      "operator": "any",
+      "alternative_group": "game:cyberpunk_2077:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:cyberpunk_2077:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-1600",
+      "operator": "any",
+      "alternative_group": "game:cyberpunk_2077:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:cyberpunk_2077:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1060:vram6",
+      "operator": "any",
+      "alternative_group": "game:cyberpunk_2077:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:cyberpunk_2077:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-580:vram8",
+      "operator": "any",
+      "alternative_group": "game:cyberpunk_2077:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:cyberpunk_2077:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-arc-a380",
+      "operator": "any",
+      "alternative_group": "game:cyberpunk_2077:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:cyberpunk_2077",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:cyberpunk_2077:recommended"
+    },
+    {
+      "from": "game:cyberpunk_2077:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:cyberpunk_2077"
+    },
+    {
+      "from": "game:cyberpunk_2077:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i7-12700",
+      "operator": "any",
+      "alternative_group": "game:cyberpunk_2077:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:cyberpunk_2077:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-7-7800x3d",
+      "operator": "any",
+      "alternative_group": "game:cyberpunk_2077:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:cyberpunk_2077:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-rtx-2060-super",
+      "operator": "any",
+      "alternative_group": "game:cyberpunk_2077:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:cyberpunk_2077:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-5700-xt",
+      "operator": "any",
+      "alternative_group": "game:cyberpunk_2077:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:cyberpunk_2077:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-arc-a770",
+      "operator": "any",
+      "alternative_group": "game:cyberpunk_2077:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:overwatch",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20260430-ow2-rtx4060"
+    },
+    {
+      "from": "measurement:cb-20260430-ow2-rtx4060",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-generation-comparison-2026-04-30"
+    },
+    {
+      "from": "measurement:cb-20260430-ow2-rtx4060",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-4060:vram8"
+    },
+    {
+      "from": "measurement:cb-20260430-ow2-rtx4060",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-7-9800x3d"
+    },
+    {
+      "from": "game:overwatch",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20260430-ow2-rtx5060"
+    },
+    {
+      "from": "measurement:cb-20260430-ow2-rtx5060",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-generation-comparison-2026-04-30"
+    },
+    {
+      "from": "measurement:cb-20260430-ow2-rtx5060",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-5060:vram8"
+    },
+    {
+      "from": "measurement:cb-20260430-ow2-rtx5060",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-7-9800x3d"
+    },
+    {
+      "from": "game:cyberpunk_2077",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20260430-cp2077-rtx4060"
+    },
+    {
+      "from": "measurement:cb-20260430-cp2077-rtx4060",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-generation-comparison-2026-04-30"
+    },
+    {
+      "from": "measurement:cb-20260430-cp2077-rtx4060",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-4060:vram8"
+    },
+    {
+      "from": "measurement:cb-20260430-cp2077-rtx4060",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-7-9800x3d"
+    },
+    {
+      "from": "game:cyberpunk_2077",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20260430-cp2077-rtx5060"
+    },
+    {
+      "from": "measurement:cb-20260430-cp2077-rtx5060",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-generation-comparison-2026-04-30"
+    },
+    {
+      "from": "measurement:cb-20260430-cp2077-rtx5060",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-5060:vram8"
+    },
+    {
+      "from": "measurement:cb-20260430-cp2077-rtx5060",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-7-9800x3d"
+    }
+  ]
+}

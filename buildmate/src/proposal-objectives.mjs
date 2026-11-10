@@ -1,13 +1,20 @@
 import {isAmdX3d} from './gaming-cpu-policy.mjs';
 import {compareBuildPopularity,popularitySummary} from './popularity.mjs';
-import {budgetLimit,hasBudget} from './budget-policy.mjs';
+import {budgetLimit,hasBudget,maximumPerformanceRequested} from './budget-policy.mjs';
 import {categories} from './catalog.mjs';
 export const proposalObjectives={balanced:'높은 성능 구간에서 비용 최소화',enhanced:'주요 사양을 낮추지 않는 개선안 중 성능 최대화',saving:'균형안보다 저렴하고 예산 90% 이하에서 성능/가격 최대화'};
-export function selectProposals(combos,req,{bounded=false,...search}={}){
+export function selectProposals(combos,req,{bounded=false,gpuReferenceScore=null,...search}={}){
  const cap=Math.floor(budgetLimit(req));
  const used=new Set();
  // Compare known CPU/GPU performance separately so capacity alone never masks a downgrade.
  const chipScore=p=>p.dataMode==='live'?p.benchmark?.normalizedScore:p.score;
+ const purposeFit=!hasBudget(req)&&!maximumPerformanceRequested(req.text);
+ if(purposeFit&&combos.length){
+  const scores=combos.map(c=>chipScore(c.parts.gpu)).filter(s=>Number.isFinite(s)&&s>0);
+  if(scores.length){const limit=(gpuReferenceScore>0?gpuReferenceScore:scores.reduce((min,score)=>Math.min(min,score),Infinity))*1.5;combos=combos.filter(c=>c.parts.gpu.virtual||chipScore(c.parts.gpu)<=limit);}
+  if(combos.length){const limit=combos.reduce((min,c)=>Math.min(min,c.total),Infinity)*1.5;combos=combos.filter(c=>c.total<=limit);}
+ }
+
  const x3dPreference=(next,base)=>req.profile==='gaming'&&req.performanceMode!=='measured'&&!isAmdX3d(base.parts.cpu)&&isAmdX3d(next.parts.cpu);
  const noChipDowngrade=(next,base)=>next.id===base.id||(Number.isFinite(chipScore(next))&&Number.isFinite(chipScore(base))&&chipScore(next)>=chipScore(base));
  const upgrades=(next,base)=>{
@@ -43,7 +50,7 @@ export function selectProposals(combos,req,{bounded=false,...search}={}){
   options.sort((a,b)=>{
    if(mode==='enhanced'&&req.profile==='gaming'){const preference=Number(isAmdX3d(b.parts.cpu))-Number(isAmdX3d(a.parts.cpu));if(preference)return preference;}
    const popularity=compareBuildPopularity(a,b);
-   if(mode==='balanced'&&!hasBudget(req)&&req.profile==='gaming'&&req.resolution==='4K'&&req.performanceMode!=='measured'){return (chipScore(b.parts.gpu)??0)-(chipScore(a.parts.gpu)??0)||(chipScore(b.parts.cpu)??0)-(chipScore(a.parts.cpu)??0)||popularity||a.total-b.total;}
+   if(mode==='balanced'&&!hasBudget(req)&&!purposeFit&&req.profile==='gaming'&&req.resolution==='4K'&&req.performanceMode!=='measured'){return (chipScore(b.parts.gpu)??0)-(chipScore(a.parts.gpu)??0)||(chipScore(b.parts.cpu)??0)-(chipScore(a.parts.cpu)??0)||popularity||a.total-b.total;}
    if(mode==='balanced')return hasBudget(req)?popularity||a.total-b.total||(b.performance??0)-(a.performance??0):(b.performance??0)-(a.performance??0)||popularity||a.total-b.total;
    const score=c=>mode==='saving'?(c.performance??0)/(c.total/1000000):(c.performance??0);
    return score(b)-score(a)||popularity||(mode==='enhanced'?(b.parts.ram.capacity-a.parts.ram.capacity||b.parts.ssd.capacity-a.parts.ssd.capacity||(b.parts.ssd.readMBs??0)-(a.parts.ssd.readMBs??0)||(b.parts.ssd.writeMBs??0)-(a.parts.ssd.writeMBs??0)):0)||a.total-b.total;
@@ -74,5 +81,5 @@ export function selectProposals(combos,req,{bounded=false,...search}={}){
    balanced=original.balanced;enhanced=original.enhanced;saving=original.saving;reset();
   }
  }
- return [balanced,enhanced,saving].map((x,i)=>x?{...x,selection:{...search,jointlySelected,popularity:popularitySummary(x.parts),gamingCpuPreference:req.profile==='gaming'?'amd-x3d-if-valid':'none',rankingPolicy:'performance-first-popularity-within-tier',performanceRetention:jointlySelected?null:hasBudget(req)?.95:1,budgetMode:hasBudget(req)?'limited':'unlimited',objective:jointlySelected&&i===0?'강화안·절약안이 함께 성립하도록 고른 성능 상위 구성':popularitySummary(x.parts).known>0?(i===0?'성능 상위 구간 내 인기·가격 비교':i===1?'CPU·GPU 등 용도 성능 향상 우선, 동급은 인기·가격 비교':'성능 대비 가격 우선, 동급은 인기 비교'):!hasBudget(req)&&i===0?(req.profile==='gaming'&&req.resolution==='4K'&&req.performanceMode!=='measured'?'4K 게임: GPU 지수 우선, CPU 지수 다음, 동일 성능 비용 최소화':'예산 상한 없이 성능 최대화 후 비용 최소화'):proposalObjectives[['balanced','enhanced','saving'][i]],performanceKind:x.performanceBasis?.kind||'unknown',candidateCount:combos.length},id:['balanced','enhanced','saving'][i],targetMet:i===0?true:i===2&&hasBudget(req)?x.total>=req.budget*.8&&x.total<=req.budget*.9:true}:null);
+ return [balanced,enhanced,saving].map((x,i)=>x?{...x,selection:{...search,jointlySelected,popularity:popularitySummary(x.parts),gamingCpuPreference:req.profile==='gaming'?'amd-x3d-if-valid':'none',rankingPolicy:purposeFit?'purpose-fit-before-performance':'performance-first-popularity-within-tier',performanceRetention:jointlySelected?null:hasBudget(req)?.95:1,budgetMode:hasBudget(req)?'limited':'unlimited',objective:purposeFit?'용도·요청 조건을 충족한 적정 사양에서 성능·가격 비교':jointlySelected&&i===0?'강화안·절약안이 함께 성립하도록 고른 성능 상위 구성':popularitySummary(x.parts).known>0?(i===0?'성능 상위 구간 내 인기·가격 비교':i===1?'CPU·GPU 등 용도 성능 향상 우선, 동급은 인기·가격 비교':'성능 대비 가격 우선, 동급은 인기 비교'):!hasBudget(req)&&i===0?(req.profile==='gaming'&&req.resolution==='4K'&&req.performanceMode!=='measured'?'4K 게임: GPU 지수 우선, CPU 지수 다음, 동일 성능 비용 최소화':'예산 상한 없이 성능 최대화 후 비용 최소화'):proposalObjectives[['balanced','enhanced','saving'][i]],performanceKind:x.performanceBasis?.kind||'unknown',candidateCount:combos.length},id:['balanced','enhanced','saving'][i],targetMet:i===0?true:i===2&&hasBudget(req)?x.total>=req.budget*.8&&x.total<=req.budget*.9:true}:null);
 }

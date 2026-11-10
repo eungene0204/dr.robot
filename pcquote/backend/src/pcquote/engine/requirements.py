@@ -6,6 +6,7 @@ import re
 from dataclasses import dataclass, field, replace
 
 from ..catalog import Catalog
+from ..knowledge import graph
 
 USES = ("gaming", "editing", "office", "ai")
 USE_LABELS = {"gaming": "고사양 게임", "editing": "영상편집·3D", "office": "사무·학습", "ai": "AI·개발"}
@@ -32,6 +33,18 @@ POOL_FLOOR = 0.55  # 예산의 55% 미만 조합은 후보에서 제외
 # 세 안의 가격 간격: 성능 우선형은 균형형보다 12% 이상 비싸고, 가성비형은 15% 이상 싸다
 STRONG_GAP = 1.12
 CHEAP_GAP = 0.85
+
+
+# These are selection headroom policies, not a customer budget or measured game FPS targets.
+FIT_GPU_HEADROOM = 1.5
+FIT_COST_HEADROOM = 1.5
+_MAXIMUM = re.compile(r"최고\s*(?:성능|사양)|최상급|최상위|하이엔드|플래그십|끝판왕|성능\s*우선|maximum\s+performance", re.I)
+_REJECT_MAXIMUM = re.compile(r"^[^,.\n]{0,15}(?:필요\s*없|말고|아니|원치|싫|적당|가성비)")
+
+
+def maximum_performance_requested(text: str) -> bool:
+    matches = list(_MAXIMUM.finditer(text))
+    return bool(matches and not _REJECT_MAXIMUM.search(text[matches[-1].end():]))
 
 
 @dataclass(frozen=True)
@@ -61,6 +74,10 @@ class Request:
             raise ValueError("해상도는 FHD, QHD, 4K 중 하나입니다.")
         if self.budget is not None and not 300_000 <= self.budget <= 20_000_000:
             raise ValueError("예산은 30만~2,000만 원 사이로 입력하세요.")
+
+    @property
+    def maximize_performance(self) -> bool:
+        return maximum_performance_requested(self.memo)
 
     @property
     def parts_budget(self) -> int | float:
@@ -116,6 +133,7 @@ class MinSpecs:
     gpu_reference: str | None = None
     gpu_vram_gb: int = 0
     notes: tuple[str, ...] = field(default_factory=tuple)
+    game_gpu_models: tuple[str, ...] = ()
 
 
 def allocation(req: Request) -> dict[str, int]:
@@ -171,8 +189,18 @@ def min_specs(req: Request, catalog: Catalog) -> MinSpecs:
     if req.needs_gpu and req.min_vram_gb > vram:
         vram = req.min_vram_gb
         notes.append(f"고객 요청: 그래픽카드 VRAM {size(vram)} 이상")
+    evidence = graph().resolve(req.memo, req.resolution) if req.uses == ("gaming",) else None
+    game_models = ()
+    if evidence and evidence["games"]:
+        ram = max(ram, evidence["ramGb"])
+        ssd = max(ssd, evidence["storageGb"])
+        notes.append(evidence["selectionNote"])
+        if evidence["restrictGpu"] and not (req.gpu_models or req.maximize_performance
+                or req.min_vram_gb > 8 or req.gpu_brand not in (None, "nvidia")):
+            game_models = tuple(evidence["gpuModels"])
+            gpu_ref = None  # Original game measurements replace the generic Blender floor.
     gpu_bench = (catalog.benchmark_of("gpu", gpu_ref) or 0.0) if gpu_ref else 0.0
-    return MinSpecs(ram, ssd, gpu_bench, gpu_ref, vram, tuple(notes))
+    return MinSpecs(ram, ssd, gpu_bench, gpu_ref, vram, tuple(notes), game_models)
 
 
 LOWER_RESOLUTION = {"4K": "QHD", "QHD": "FHD"}
@@ -189,6 +217,8 @@ def relaxed_specs(req: Request, specs: MinSpecs, catalog: Catalog) -> list[tuple
     for office, memory and SSD below the normal floor. Each entry is (specs, changes so far).
     AI VRAM and customer-stated minimums are never lowered.
     """
+    if specs.game_gpu_models:
+        return []
     out: list[tuple[MinSpecs, tuple[str, ...]]] = []
     changes: list[str] = []
     current = specs

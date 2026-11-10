@@ -25,7 +25,7 @@ from datetime import datetime
 from pathlib import Path
 
 from pcquote import importer, llm, screen
-from pcquote.consult import budget_change, detect_profile, explicit_budget, model_key, parse_requirement, unlimited_budget_requested
+from pcquote.consult import _resolution_of, budget_change, detect_profile, explicit_budget, model_key, parse_requirement, unlimited_budget_requested
 from pcquote.engine.requirements import POOL_FLOOR, min_specs
 from pcquote.policy import price_state
 from pcquote.service import CatalogService
@@ -42,7 +42,7 @@ def screen_requirement(turns: list[str], interpret) -> dict:
     interpretation_steps = []
     for prompt in turns:
         own = parse_requirement(prompt)
-        fresh = req is None or bool(detect_profile(prompt) and detect_profile(prompt) != req["profile"])
+        fresh = req is None or (not req.get("needsPurpose") and bool(detect_profile(prompt) and detect_profile(prompt) != req["profile"]))
         context = prompt if fresh else f"{req['text']}\n추가 요청: {prompt}"
         interpreted = interpret(context)
         interpretation_steps.append({"method": interpreted.get("method"), "fallback": interpreted.get("fallback")})
@@ -50,7 +50,11 @@ def screen_requirement(turns: list[str], interpret) -> dict:
             ui = {"white": own["white"], "wifi": own["wifi"], "os": own["os"]}
         else:  # applyText sets the UI state from the local parse of the combined context
             p = parse_requirement(context)
-            ui = {k: p[k] for k in ("profile", "white", "wifi", "os", "resolution")}
+            ui = {k: p[k] for k in ("white", "wifi", "os")}
+            if any(detect_profile(v) for v in context.split("\n추가 요청:")):
+                ui["profile"] = p["profile"]
+            if any(_resolution_of(v) for v in context.split("\n추가 요청:")):
+                ui["resolution"] = p["resolution"]
         stated, change = explicit_budget(prompt), budget_change(prompt)
         if unlimited_budget_requested(prompt):
             budget = None
@@ -59,6 +63,8 @@ def screen_requirement(turns: list[str], interpret) -> dict:
         else:
             budget = stated if stated is not None else (None if fresh else req.get("budget"))
         req = parse_requirement(context, {**interpreted, **ui, "budget": budget, "allowOver": False})
+        if interpreted.get("needsPurpose"):
+            req.update(profile=None, needsPurpose=True)
     req["interpretationSteps"] = interpretation_steps
     return req
 
@@ -250,6 +256,15 @@ def run_case(case: dict, state_service: CatalogService, interpret) -> dict:
         v.add("FAIL", "해석 오류", str(e))
         return {"id": case["id"], "group": case["group"], "turns": case["turns"], "verdicts": v.items,
                 "ms": round((time.perf_counter() - started) * 1000)}
+    if req.get("needsPurpose"):
+        # A declined interpretation is a distinct, safe outcome; never run the engine with a guessed use.
+        if req.get("profile") is not None or not req.get("questions"):
+            v.add("FAIL", "용도 확인", "미확인 용도를 가정했거나 확인 질문이 없음")
+        v.add("INFO" if expect.get("clarificationOnFallback") else "FAIL", "용도 확인 필요",
+              "용도가 확인되지 않아 견적을 생성하지 않고 추가 답변을 요청함")
+        return {"id": case["id"], "group": case["group"], "turns": case["turns"],
+                "requirement": req, "needsPurpose": True, "message": llm.USE_QUESTION,
+                "plans": [], "verdicts": v.items, "ms": round((time.perf_counter() - started) * 1000)}
     check_interpretation(v, req, expect)
     out, plans = {"plans": [], "notes": [], "message": None, "notice": None}, {}
     try:

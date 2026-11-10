@@ -209,3 +209,16 @@ test('주변기기 포함 금액은 총액 언급 순서와 무관하게 차감�
     ['모니터 40만원 빼고 본체 250만원', 2500000],
   ]) assert.equal(explicitBudget(text), budget, text);
 });
+
+test('명확한 용도와 예산만 빠른 해석 경로를 사용한다',async()=>{
+ const {canInterpretLocally}=await import('../src/engine.mjs');
+ for(const text of ['게임용 150만원','사무용 100만원','게임용 예산 제한 없이','게임용 예산은 제한 없이','게임용 150만원\n추가 요청: 10만원 더 올려줘'])assert.equal(canInterpretLocally(text),true,text);
+ for(const text of ['LaTeX로 논문 작성할 본체 150만원','사무용 PC 견적','본체 150만원'])assert.equal(canInterpretLocally(text),false,text);
+ assert.equal(canInterpretLocally('원하는 본체 150만원',{profile:'office'}),true);
+ assert.equal(canInterpretLocally('사무용 PC',{budget:1500000}),true);
+ assert.equal(canInterpretLocally('원하는 본체',{budget:1500000}),false);
+});
+
+test('오버워치 이름만으로 게임 용도를 판별한다',()=>{
+ assert.equal(detectProfile('오버워치용 견적'),'gaming');assert.equal(detectProfile('Overwatch 2 PC'),'gaming');
+});

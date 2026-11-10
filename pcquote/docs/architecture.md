@@ -156,3 +156,14 @@ buildmate Node 수집 파이프라인(`pipeline/`)을 옮긴 것이다. 수집 �
 LLM 호출은 기존 `main` startup의 무료 primary/fallback 모델 설정을 기본으로 유지한다. `llm.interpret`가 2회 실패하면 method=local과 fallback 사유를 반환한다. 시나리오 평가 도구는 `--local` 없이 실행해야 실제 호출하며, 각 결과의 `requirement.interpretationSteps`에 각 턴의 실제 method/fallback을 보존한다.
 
 - 2026-11-11: Dr.Robot 루트 Git 저장소 하나로 통합. 루트 아래 buildmate/와 pcquote/를 함께 추적하고 기존 형제 경로를 유지한다. 루트 npm setup/dev/server/build/test/test:backend 명령 제공.
+
+- 2026-11-11(EXAONE 오류 대체 수정): GET /api/health가 requirementsTimeoutMs를 안내하고 화면이 요구 해석 fetch에 사용한다(현재 160,000ms). EXAONE은 읽기 60초, 연결·쓰기·풀 각각 5초, 요구 해석 최대 2회 + 응답 여유에 맞춘 정책이다. /api/requirements는 용도 미확정 시 profile=null·needsPurpose=true·확인 질문을 반환한다. 화면은 이를 req에 보관하고 견적 생성을 멈추며 후속 답변을 기존 요청에 이어 붙인다. /api/recommend/fresh 검증 및 screen.to_request에서도 미확인 요청을 차단한다. 화면 자동 입력은 판별된 용도·해상도만 설정해 정상 모델 해석을 보존한다. quote-eval도 용도 미확정은 추천 엔진 호출 없이 별도 기록한다.
+
+- 2026-11-11(선택적 EXAONE): llm.can_interpret_locally(text)가 판별 가능한 용도와 명시 금액/무제한을 확인하면 interpret가 _local로 즉시 반환한다. 화면의 engine.canInterpretLocally는 같은 텍스트 기준과 명시 UI 용도/금액을 사용해 명확한 요청의 /api/requirements 자체를 생략한다. 최종 requestBudget을 분기와 추천 입력이 공유하며, 확인이 필요한 요청에만 기존 EXAONE 대기 정책을 적용한다. 연출용 600ms 대기도 제거했다. method=local 표시, 기존 추천 API·가격 확인·검증 경로를 사용한다.
+
+- 2026-11-11(선택 질문 제거): 화면의 questions 상태·상담 저장 필드·clarify 패널 및 전용 스타일 제거. 이전 상담의 questions 필드는 표시하지 않는다. 용도 미확정은 기존 needsPurpose로 차단하고 대화 메시지와 입력창 안내에서 용도를 직접 묻는다. LLM 요구 해석 프롬프트는 질문 생성을 금지하고 스키마 questions maxItems=0, 정상 interpret 응답도 questions=[]로 정리한다. 용도 미확정의 서버 확인 정보와 안전한 재개는 유지한다.
+
+- 2026-11-11(목적 적합 추천): Request.maximize_performance가 memo의 명시 최대 성능 요청을 판별한다(직후의 거절 표현 제외). budget=None 기본 경로는 최고 후보 강제 선택 대신 purpose_fit_builds → 기존 세 안 점수/순서 선택을 사용한다. GPU 후보는 해상도/용도 최소 참조 지수의 1.5배 이내, 참조가 없거나 GPU 모델/VRAM을 직접 요구하면 실제 조건 충족 후보를 출발점으로 한다. 해당 범위의 최저 유효 구성 가격 대비 1.5배 이내를 적정 여유 후보로 삼는다. 이 두 배율은 서비스의 후보 선택 정책으로 고객 예산·게임 FPS 목표가 아니다. budgetCap=None 유지, 인기 가중치는 적정 범위 안에서 적용. 가격 갱신으로 중급 후보가 사라져도 참조 지수를 유지해 플래그십 승급을 막는다. JS proposal-objectives와 budget-policy에도 같은 기본/명시 최고 성능 분기·상대 범위 정책 적용, engine이 참조 GPU 지수를 전달한다. 화면의 무예산 가격 안내는 기본 모드에서 “용도에 맞춘 적정 사양·가격 비교”로 표시한다. 오버워치/Overwatch 이름은 규칙의 gaming 용도로 판별한다.
+
+### 2026-11-11 게임 지식 그래프
+`backend/src/pcquote/knowledge/`의 버전 JSON을 로드하고 관계 인덱스로 공식 사양·측정·하드웨어·출처를 순회한다. 엔진 `min_specs/base_pools`에 실측 GPU 후보와 공식 용량 하한을 전달하고, `screen`은 해상도 기본값을 정규화하여 `requirement/gameEvidence`를 응답한다. `/api/health`는 게임 별칭을, `/api/knowledge/graph`와 `/api/knowledge/resolve`는 읽기 조회를 제공한다. 외부 DB·견적 시 웹 조회는 필요 없다. [구조·범위·갱신 절차](knowledge/game-graph.md).

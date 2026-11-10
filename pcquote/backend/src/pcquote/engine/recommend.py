@@ -15,12 +15,15 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass, field
 
+from ..knowledge import graph
 from ..catalog import CATEGORIES, CATEGORY_LABELS, Catalog, Part
 from . import compatibility as compat
 from ..consult import model_tokens
 from .chipset import board_chipset, cpu_generation
 from .requirements import (
     BUDGET_CEILING,
+    FIT_GPU_HEADROOM,
+    FIT_COST_HEADROOM,
     CHEAP_GAP,
     POOL_FLOOR,
     relaxed_specs,
@@ -154,8 +157,18 @@ class Result:
     relaxed: tuple[str, ...] = ()  # minimum specs lowered to fit the budget, e.g. "메모리 32GB → 16GB"
     dropped: str | None = None  # customer preferences given up, with the reason (shown to the customer)
 
+    def game_evidence(self):
+        if self.request.uses != ("gaming",):
+            return None
+        evidence = graph().resolve(self.request.memo, self.request.resolution)
+        evidence["selectionApplied"] = bool(self.min_specs.game_gpu_models)
+        if evidence["restrictGpu"] and not evidence["selectionApplied"]:
+            evidence["selectionNote"] = "사용자 GPU 모델·브랜드·VRAM 또는 최고 성능 요청을 우선했습니다. 실측 후보 제한은 적용하지 않았습니다."
+        return evidence
+
     def as_dict(self, catalog: Catalog) -> dict:
         return {
+            "gameEvidence": self.game_evidence(),
             "allocation": self.allocation,
             "minSpecs": {
                 "ramGb": self.min_specs.ram_gb,
@@ -231,6 +244,8 @@ def base_pools(catalog: Catalog, req: Request, specs: MinSpecs) -> dict[str, lis
             p for p in pools["gpu"]
             if p.benchmark >= specs.gpu_benchmark and p.spec("vram", 0) >= specs.gpu_vram_gb
         ]
+    if specs.game_gpu_models:
+        pools["gpu"] = [p for p in pools["gpu"] if part_model(p) in specs.game_gpu_models and p.spec("vram", 0) == 8]
     if req.needs_gpu:
         # A discrete GPU needs a certified PSU: unrated bulk units (16,000원 "600W") are not sold with one.
         pools["psu"] = [p for p in pools["psu"] if p.spec("efficiency")]
@@ -531,6 +546,10 @@ def _explain(catalog: Catalog, req: Request, specs: MinSpecs, alloc: dict[str, i
         reasons["cpu"] = f"예산 제한 없이 탐색한 CPU 성능 지수 {catalog.norm(cpu):.0f}/100{rt('cpu')}"
         if p.get("gpu"):
             reasons["gpu"] = f"예산 제한 없이 탐색한 GPU 성능 지수 {catalog.norm(p['gpu']):.0f}/100{rt('gpu')}"
+        if not req.maximize_performance:
+            reasons["cpu"] = f"용도 충족 후보의 성능·가격 비교 · CPU 지수 {catalog.norm(cpu):.0f}/100{rt('cpu')}"
+            if p.get("gpu"):
+                reasons["gpu"] = f"{specs.gpu_reference or '요청 사양'} 기준 충족 후보의 적정 여유·가격 비교 · GPU 지수 {catalog.norm(p['gpu']):.0f}/100{rt('gpu')}"
     b = p["board"]
     reasons["board"] = f"{board_chipset(b) or ''} {b.spec('socket')}·{b.spec('form')}·DDR{b.spec('ddr')} 호환{rt('board')}".strip()
     r = p["ram"]
@@ -637,6 +656,10 @@ def _collect(catalog: Catalog, req: Request, specs: MinSpecs, alloc: dict[str, i
 
     Returns (builds, notes, builds of the widest search).
     """
+    if specs.game_gpu_models:
+        builds = [b for b in _search(catalog, req, specs, alloc, None, []) if b.total <= req.budget]
+        builds = purpose_fit_builds(req, specs, builds)
+        return builds, ["게임 실측 후보 안에서 예산 상한과 적정 가격을 비교했습니다."], builds
     lo, hi = req.budget * POOL_FLOOR, req.budget * BUDGET_CEILING
     # Every allocation range up to BASE_TOLERANCE is searched, so a popular part
     # priced above the narrow range still competes. Wider ranges are tried only
@@ -680,6 +703,26 @@ def recommend(catalog: Catalog, req: Request) -> Result:
     return fallback
 
 
+def purpose_fit_builds(req: Request, specs: MinSpecs, builds: list[Build]) -> list[Build]:
+    """Bound optional upgrades around the least costly build meeting actual hard requirements.
+
+    GPU model / VRAM / resolution requirements have already filtered the pool. A
+    high-end part can therefore still be the baseline when the customer needs it.
+    Popularity never expands this suitable tier into an unrelated flagship tier.
+    """
+    suitable = builds
+    if req.needs_gpu:
+        scores = [b.parts["gpu"].benchmark for b in suitable if b.parts.get("gpu") and b.parts["gpu"].benchmark]
+        if scores:
+            baseline = specs.gpu_benchmark if specs.gpu_benchmark and not (req.gpu_models or req.min_vram_gb) else min(scores)
+            ceiling = baseline * FIT_GPU_HEADROOM
+            suitable = [b for b in suitable if b.parts["gpu"].benchmark <= ceiling]
+    if suitable:
+        ceiling = min(b.total for b in suitable) * FIT_COST_HEADROOM
+        suitable = [b for b in suitable if b.total <= ceiling]
+    return suitable
+
+
 def _recommend(catalog: Catalog, req: Request) -> Result:
     specs = min_specs(req, catalog)
     alloc = allocation(req)
@@ -688,7 +731,20 @@ def _recommend(catalog: Catalog, req: Request) -> Result:
         builds = _search(catalog, req, specs, alloc, None, [])
         notes = ["예산 제한 없이 호환 후보를 탐색했습니다. 성능은 Blender 대체 지수이며 전역 최적 성능을 보장하지 않습니다."]
         picks = {}
-        if builds:
+        if not req.maximize_performance:
+            builds = purpose_fit_builds(req, specs, builds)
+            notes = ["예산 미지정은 최고 사양 요청으로 간주하지 않습니다. 용도·해상도와 요청 사양을 충족하는 후보 안에서 가격과 적정 여유를 비교했습니다. 게임 FPS 보장은 아닙니다."]
+            fit_notes = []
+            picks = _pick_plans(builds, fit_notes)
+            if len(picks) < len(PLAN_TYPES):
+                relaxed_notes = []
+                relaxed = _pick_plans(builds, relaxed_notes, 1.0, 0.999)
+                if len(relaxed) > len(picks):
+                    picks, fit_notes = relaxed, relaxed_notes
+                    if len(picks) == len(PLAN_TYPES):
+                        notes.append("적정 사양 범위 안에서 가격 간격을 줄여 세 안을 제시했습니다.")
+            notes.extend(fit_notes)
+        elif builds:
             best = max(builds, key=lambda b: (b.performance, -b.total))
             lower = [b for b in builds if b.key != best.key and b.total < best.total and b.performance < best.performance]
             base = max(lower, key=lambda b: (b.performance, -b.total)) if lower else best
@@ -703,7 +759,7 @@ def _recommend(catalog: Catalog, req: Request) -> Result:
                       [c.detail for c in picks[t.key].checks if c.status == "warn"])
                  for i, t in enumerate(PLAN_TYPES) if t.key in picks]
         if not plans:
-            notes.append("조건에 맞는 호환 조합을 찾지 못함")
+            notes.append("용도에 맞는 적정 사양의 유효 조합을 확보하지 못했습니다. 가격·재고를 확인해 주세요." if not req.maximize_performance else "조건에 맞는 호환 조합을 찾지 못함")
         return Result(req, alloc, specs, plans, notes, len(builds), builds)
     hi = req.budget * BUDGET_CEILING
     # A level whose cheapest build is over the budget is skipped without the full search.

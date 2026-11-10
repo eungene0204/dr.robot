@@ -12,6 +12,7 @@ import math
 from collections.abc import Callable
 from datetime import datetime
 
+from .knowledge import graph
 from .consult import customer_preferences
 from .engine.recommend import alternatives, evaluate, recommend
 from .engine.requirements import Request
@@ -48,6 +49,8 @@ def os_part(req: dict, parts: dict[str, dict]) -> dict | None:
 
 def to_request(req: dict, settings: dict, parts: dict[str, dict], exclude_parts: list[str] = ()) -> Request:
     """OS is not an engine category, so its price comes off the budget."""
+    if req.get("needsPurpose") or req.get("profile") not in PROFILES:
+        raise ScreenError("주로 어떤 용도로 쓰실 예정인가요? (게임, 영상 편집, 사무, AI 등)")
     os_price = (os_part(req, parts) or {}).get("price") or 0
     budget = int(req["budget"]) - os_price if has_budget(req) else None
     if budget is not None and budget < MIN_BUDGET:
@@ -127,7 +130,8 @@ def map_result(result: dict, state: State, req: dict, settings: dict) -> dict:
     notices = [f"예산에 맞추기 위해 최소 사양을 낮췄어요: {', '.join(relaxed)}." if relaxed else None,
                f"{result['dropped']}." if result.get("dropped") else None]
     notice = " ".join(n for n in notices if n) if any(plans) and any(notices) else None
-    return {"plans": plans, "message": message, "notes": notes, "notice": notice}
+    return {"plans": plans, "message": message, "notes": notes, "notice": notice,
+            "requirement": req, "gameEvidence": result.get("gameEvidence")}
 
 
 def recommend_fresh(service: CatalogService, req: dict, settings: dict, collect: Callable[[dict], dict] | None,
@@ -137,6 +141,10 @@ def recommend_fresh(service: CatalogService, req: dict, settings: dict, collect:
     ``collect(record)`` returns a Danawa price observation. Parts whose refresh fails
     are excluded from the next round.
     """
+    req = dict(req)
+    if req.get("profile") == "gaming" and graph().match(str(req.get("text") or "")) and req.get("resolutionExplicit") is False:
+        req["resolution"] = "FHD"
+        req["resolutionBasis"] = "service_default"  # A policy default, not a publisher claim.
     failed: list[str] = []
     attempted: set[str] = set()
     errors: list[dict] = []

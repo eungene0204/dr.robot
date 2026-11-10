@@ -61,18 +61,24 @@ const resolutionOf=value=>{const found=Object.entries(resolutionPatterns).flatMa
 // White is also cancelled by a later "블랙으로 바꿔주세요" ("화이트 앤 블랙 투톤", "블랙 포인트로" keep it).
 const black=/(?:블랙|검정\s*색?|검은\s*색|black)\s*(?:으로|로)(?![가-힣]*\s*포인트)/i;
 export const optionRequested=(name,text)=>{const last=[...text.matchAll(optionPatterns[name])].at(-1);if(!last)return false;const rest=text.slice(last.index+last[0].length);return !refusal.test(rest)&&!(name==='white'&&black.test(rest));};
-export const detectProfile=value=>/편집|프리미어|다빈치|렌더|(?<![a-z0-9])3D|어도비|adobe|premiere|포토샵|photoshop|라이트룸|lightroom|일러스트레이터|illustrator|애프터\s*이펙트|after\s*effects|블렌더|blender|캐드|(?<![a-z])(?:auto)?cad(?![a-z])|스케치업|sketchup|솔리드웍스|solidworks|마야|maya|라이노|rhino|그래스\s*호퍼|grasshopper|레빗|revit|클립\s*스튜디오|clip\s*studio|웹툰|3ds\s*max|시네마\s*4d|c4d|지브러시|zbrush|캡컷|capcut|브이레이|v-?ray|루미온|lumion|키샷|keyshot|후디니|houdini|퓨전\s*360|fusion\s*360|카티아|catia|인벤터|inventor/i.test(value)?'editing':/로컬|딥러닝|머신\s*러닝|LLM|(?<!웹\s?|앱\s?)개발|AI|스테이블\s*디퓨전|stable\s*diffusion|파이토치|pytorch|sdxl|로라\s*학습|lora|comfy\s*ui|컴피\s*ui|ollama|올라마|파인\s*튜닝|fine-?tun|whisper|cuda|쿠다|llama|vllm|허깅\s*페이스|hugging\s*face|텐서\s*플로|tensorflow|케라스|keras|(?<![a-z])(?:rag|yolo|tts)(?![a-z])|강화\s*학습|음성\s*합성|객체\s*인식/i.test(value)?'ai':/게임|게이밍|배그|(?<![컨트스크])롤(?![러백])|gaming/i.test(value)?'gaming':/사무|회계|엑셀|학습|POS|키오스크|kiosk|cctv|녹화|감시|웹\s*개발|앱\s*개발|코딩|프로그래밍|주식|hts|차트/i.test(value)?'office':/인터넷|웹\s*서핑|웹\s*브라우|문서|인강|온라인\s*강의|유튜브|동영상\s*시청|줌\s*(?:수업|회의|강의)|zoom|화상\s*(?:수업|회의|강의)|(?:온라인|원격|비대면)\s*수업/i.test(value)?'office':null;
+export const detectProfile=value=>/편집|프리미어|다빈치|렌더|(?<![a-z0-9])3D|어도비|adobe|premiere|포토샵|photoshop|라이트룸|lightroom|일러스트레이터|illustrator|애프터\s*이펙트|after\s*effects|블렌더|blender|캐드|(?<![a-z])(?:auto)?cad(?![a-z])|스케치업|sketchup|솔리드웍스|solidworks|마야|maya|라이노|rhino|그래스\s*호퍼|grasshopper|레빗|revit|클립\s*스튜디오|clip\s*studio|웹툰|3ds\s*max|시네마\s*4d|c4d|지브러시|zbrush|캡컷|capcut|브이레이|v-?ray|루미온|lumion|키샷|keyshot|후디니|houdini|퓨전\s*360|fusion\s*360|카티아|catia|인벤터|inventor/i.test(value)?'editing':/로컬|딥러닝|머신\s*러닝|LLM|(?<!웹\s?|앱\s?)개발|AI|스테이블\s*디퓨전|stable\s*diffusion|파이토치|pytorch|sdxl|로라\s*학습|lora|comfy\s*ui|컴피\s*ui|ollama|올라마|파인\s*튜닝|fine-?tun|whisper|cuda|쿠다|llama|vllm|허깅\s*페이스|hugging\s*face|텐서\s*플로|tensorflow|케라스|keras|(?<![a-z])(?:rag|yolo|tts)(?![a-z])|강화\s*학습|음성\s*합성|객체\s*인식/i.test(value)?'ai':/게임|게이밍|배그|오버\s*워치|overwatch|(?<![컨트스크])롤(?![러백])|gaming/i.test(value)?'gaming':/사무|회계|엑셀|학습|POS|키오스크|kiosk|cctv|녹화|감시|웹\s*개발|앱\s*개발|코딩|프로그래밍|주식|hts|차트/i.test(value)?'office':/인터넷|웹\s*서핑|웹\s*브라우|문서|인강|온라인\s*강의|유튜브|동영상\s*시청|줌\s*(?:수업|회의|강의)|zoom|화상\s*(?:수업|회의|강의)|(?:온라인|원격|비대면)\s*수업/i.test(value)?'office':null;
+export const detectResolution=text=>text.split(/\n추가 요청:\s*/).map(resolutionOf).filter(Boolean).at(-1)??null;
+export function canInterpretLocally(text,{profile,budget}={}){
+ const knownProfile=['gaming','editing','office','ai'].includes(profile)||text.split(/\n추가 요청:\s*/).some(value=>detectProfile(value));
+ return Boolean(knownProfile&&(explicitBudget(text)!==null||unlimitedBudgetRequested(text)||(typeof budget==='number'&&Number.isFinite(budget))));
+}
 export function parseRequirement(text,options={}) {
  const statedBudget=explicitBudget(text);
  const requests=text.split(/\n추가 요청:\s*/);
  const profile=requests.map(detectProfile).filter(Boolean).at(-1)??'gaming';
- const resolution=requests.map(resolutionOf).filter(Boolean).at(-1)??'QHD';
+ const resolution=detectResolution(text)??'QHD';
  return {text,profile,budget:statedBudget,resolution,models:modelTokens(text),white:optionRequested('white',text),wifi:optionRequested('wifi',text),os:optionRequested('os',text),allowOver:false,...options,...(unlimitedBudgetRequested(text)?{budget:null,allowOver:false}:{}),budgetSource:unlimitedBudgetRequested(text)?'unlimited':options.budget!=null?(statedBudget!==null?'text':'manual'):statedBudget!==null?'text':'unspecified'};
 }
 // Text the customer stated wins over an LLM reading; the LLM only names a purpose the rules cannot detect and adds follow-up questions (never a budget prompt).
 export function mergeInterpretation(text,llm){
  const local=parseRequirement(text);const stated=text.split(/\n추가 요청:\s*/).some(value=>detectProfile(value));
- return {...local,profile:stated?local.profile:llm.profile,questions:(llm.questions||[]).filter(q=>!/예산/.test(q))};
+ const profile=stated?local.profile:llm.profile;if(profile==='office'&&!detectResolution(text))local.resolution='FHD';
+ return {...local,profile,questions:(llm.questions||[]).filter(q=>!/예산/.test(q))};
 }
 export function validateBuild(parts,req){
  const checks=validate(parts);if(checks.some(c=>c.label==='필수 부품'))return checks;
@@ -101,6 +107,11 @@ export function assembleBuild(parts,req,settings={}){
 }
 export function recommend(req,settings={},items=catalog){
  if(!validBudget(req))throw new Error('예산은 20만~2,000만 원 사이로 입력해 주세요.');
+ const gpuReference=req.profile==='gaming'?{FHD:'4060',QHD:'5060ti','4K':'5070ti'}[req.resolution]:req.profile==='editing'?'4060':null;
+ const fixedGpu=(req.models||[]).some(token=>items.some(p=>p.category==='gpu'&&modelKey(p)===token));
+ const referencePart=!fixedGpu&&gpuReference?items.find(p=>p.category==='gpu'&&modelKey(p)===gpuReference):null;
+ const gpuReferenceScore=referencePart?(referencePart.dataMode==='live'?referencePart.benchmark?.normalizedScore:referencePart.score):null;
+
  if(req.performanceMode==='measured'){
   const byId=new Map(items.map(p=>[p.id,p]));const unique=new Map();
   for(const cpu of items.filter(p=>p.category==='cpu'))for(const measurement of cpu.workloadMeasurements||[]){
@@ -108,7 +119,7 @@ export function recommend(req,settings={},items=catalog){
    if(categories.some(c=>!parts[c]||parts[c].category!==c||!usablePart(parts[c])||settings.excludedBrands?.includes(parts[c].brand)))continue;
    const build=assembleBuild(parts,req,settings);if(build&&build.total<=budgetLimit(req))unique.set(categories.map(c=>parts[c].id).join('|'),build);
   }
-  return selectProposals([...unique.values()],req,{method:'measured-configurations',guarantee:'matching-measurements-only',catalogCount:items.length});
+  return selectProposals([...unique.values()],req,{gpuReferenceScore,method:'measured-configurations',guarantee:'matching-measurements-only',catalogCount:items.length});
  }
  const pools=categories.map(c=>items.filter(p=>p.category===c&&usablePart(p)&&!settings.excludedBrands?.includes(p.brand)));
  pools[0]=pools[0].filter(p=>req.profile!=='office'||p.igpu);
@@ -185,7 +196,7 @@ export function recommend(req,settings={},items=catalog){
   }
   combos=frontier.map(state=>assembleBuild(state.parts,req,settings)).filter(Boolean);
  }
- return selectProposals(combos,req,{bounded:items.length>1000,method:items.length>1000?'bounded-search':'enumeration',guarantee:'validated-candidates-only',catalogCount:items.length});
+ return selectProposals(combos,req,{gpuReferenceScore,bounded:items.length>1000,method:items.length>1000?'bounded-search':'enumeration',guarantee:'validated-candidates-only',catalogCount:items.length});
 }
 export const planNames=['최적 균형안','성능 강화안','절약안'];
 export function explain(plan,req,index){
