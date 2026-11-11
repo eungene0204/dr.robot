@@ -1,5 +1,5 @@
 {
-  "version": "2026-11-11.1",
+  "version": "2026-11-11.2",
   "nodes": [
     {
       "name": "Overwatch",
@@ -9,6 +9,12 @@
         "오버워치 2",
         "Overwatch 2",
         "OW2"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "CPU families and GPU series have no exact model specified.",
+        "No resolution, preset, FPS, VRAM or disk type stated.",
+        "Windows 10 64-bit; DirectX 11."
       ],
       "id": "game:overwatch",
       "kind": "game"
@@ -133,6 +139,12 @@
         "발로란트",
         "발로",
         "Valorant"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "FPS values are official tier labels, not independently measured benchmarks.",
+        "Resolution, preset and storage capacity are not specified.",
+        "SSE4.2 or AVX; DirectX11; Windows11 requires TPM2.0 and UEFI Secure Boot."
       ],
       "id": "game:valorant",
       "kind": "game"
@@ -289,6 +301,12 @@
         "롤",
         "LoL"
       ],
+      "platform": "windows_pc",
+      "notes": [
+        "FPS is not specified.",
+        "Source spells recommended NVIDIA card GeForce 560; normalized GTX560 is a naming interpretation, not a separate performance measurement.",
+        "SSE4.2 and DirectX11 feature level11_0 required; excludes macOS table."
+      ],
       "id": "game:league_of_legends",
       "kind": "game"
     },
@@ -400,6 +418,12 @@
         "PUBG",
         "Battlegrounds"
       ],
+      "platform": "windows_pc",
+      "notes": [
+        "Per-GPU VRAM is specified; do not replace GTX1060 3GB with6GB silently.",
+        "Resolution, preset, FPS and disk type not specified.",
+        "Windows10 64-bit; DirectX11."
+      ],
       "id": "game:pubg",
       "kind": "game"
     },
@@ -509,6 +533,12 @@
         "CS2",
         "Counter Strike 2"
       ],
+      "platform": "windows_pc",
+      "notes": [
+        "Only minimum published; no recommended tier or named Windows GPU model.",
+        "Do not invent recommended GPU or infer FPS from generic minimum.",
+        "Resolution, preset and FPS not specified; Windows10."
+      ],
       "id": "game:counter_strike_2",
       "kind": "game"
     },
@@ -553,6 +583,12 @@
       "aliases": [
         "포트나이트",
         "포나"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Epic Quality is a distinct preset profile; do not use it for unspecified competitive/Performance Mode requests.",
+        "No FPS, resolution or free storage capacity published in this support table.",
+        "Recommended CPUs include mobile U-series parts; no invented desktop conversion."
       ],
       "id": "game:fortnite",
       "kind": "game"
@@ -685,6 +721,13 @@
         "에펙",
         "Apex"
       ],
+      "platform": "windows_pc",
+      "notes": [
+        "Recommended CPU is family-only, no exact SKU.",
+        "Current listing DirectX12; older DX11/GT640 sources are not imported.",
+        "Only HD7790 VRAM2GB explicitly stated; GTX950 VRAM unknown in source.",
+        "FPS, resolution, preset and disk type unspecified; localized language adds about3.8GB."
+      ],
       "id": "game:apex_legends",
       "kind": "game"
     },
@@ -776,6 +819,13 @@
         "사펑",
         "Cyberpunk"
       ],
+      "platform": "windows_pc",
+      "notes": [
+        "Current Windows listing only; excludes macOS and old pre2.0 requirements.",
+        "FPS, resolution, preset, ray tracing and upscaling are unspecified in this listing.",
+        "GTX1060 minimum6GB and RX580 minimum8GB are explicit; other GPU VRAM unspecified.",
+        "DirectX12; SSD required."
+      ],
       "id": "game:cyberpunk_2077",
       "kind": "game"
     },
@@ -865,7 +915,11 @@
       "label": "NVIDIA GeForce RTX 2060 SUPER",
       "source_kind": "model",
       "id": "hardware:nvidia-geforce-rtx-2060-super",
-      "kind": "hardware"
+      "kind": "hardware",
+      "labels": [
+        "NVIDIA GeForce RTX 2060 SUPER",
+        "NVIDIA GeForce RTX 2060 Super"
+      ]
     },
     {
       "category": "gpu",
@@ -875,12 +929,1947 @@
       "kind": "hardware"
     },
     {
+      "name": "Dota 2",
+      "aliases": [
+        "도타 2",
+        "도타2",
+        "도타",
+        "DOTA2"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Windows minimum only; no recommended tier, exact CPU SKU, VRAM, FPS, resolution or preset published.",
+        "Listing still names Windows 7, while the same page says Steam client requires Windows 10 or later since 2024-01-01.",
+        "GeForce 8600 and Radeon HD2600/3600 are source family labels; do not invent exact variant equivalences."
+      ],
+      "id": "game:dota_2",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/570/",
+      "publisher": "Valve",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:dota_2",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 4,
+      "vram_gb": null,
+      "storage_gb": 60,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:dota_2:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel or AMD dual-core 2.8 GHz",
+      "source_kind": "family",
+      "id": "hardware:intel-or-amd-dual-core-2-8-ghz",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce 8600",
+      "source_kind": "family",
+      "id": "hardware:nvidia-geforce-8600",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce 9600 GT",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-9600-gt",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "ATI AMD Radeon HD 2600",
+      "source_kind": "family",
+      "id": "hardware:ati-amd-radeon-hd-2600",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "ATI AMD Radeon HD 3600",
+      "source_kind": "family",
+      "id": "hardware:ati-amd-radeon-hd-3600",
+      "kind": "hardware"
+    },
+    {
+      "name": "Rust",
+      "aliases": [
+        "러스트"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Windows 11 64-bit; minimum SSD highly recommended but not explicitly required, recommended SSD required.",
+        "Source does not specify GPU VRAM, FPS, resolution or preset."
+      ],
+      "id": "game:rust",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/252490/",
+      "publisher": "Facepunch Studios",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:rust",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 12,
+      "vram_gb": null,
+      "storage_gb": 45,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:rust:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 5 1400",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-5-1400",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-6600",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-6600",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 470",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-470",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "Intel Arc A580",
+      "source_kind": "model",
+      "id": "hardware:intel-arc-a580",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 16,
+      "vram_gb": null,
+      "storage_gb": 45,
+      "storage_type": "SSD",
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:rust:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i7-6700K",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i7-6700k",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 6600 XT",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-6600-xt",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce RTX 3060",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-rtx-3060",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "Intel Arc B580",
+      "source_kind": "model",
+      "id": "hardware:intel-arc-b580",
+      "kind": "hardware"
+    },
+    {
+      "name": "Grand Theft Auto V Enhanced",
+      "aliases": [
+        "GTA V Enhanced",
+        "GTA5 Enhanced",
+        "GTA 5 Enhanced",
+        "GTA5 인핸스드",
+        "GTA 5 인핸스드",
+        "GTA V 인핸스드",
+        "그랜드 테프트 오토 V 인핸스드"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Enhanced edition only; not the Legacy edition. Unqualified GTA5/GTA V aliases intentionally excluded here because edition is ambiguous.",
+        "Minimum Windows10, recommended Windows11. Recommended SSD must support DirectStorage.",
+        "Source explicitly specifies RTX3060 8GB, not the 12GB variant. No FPS, resolution or preset in requirements."
+      ],
+      "excluded_aliases": [
+        "legacy",
+        "레거시",
+        "일반판"
+      ],
+      "id": "game:gta_v_enhanced",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/3240220/",
+      "publisher": "Rockstar Games",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:gta_v_enhanced",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 8,
+      "vram_gb": 4,
+      "storage_gb": 105,
+      "storage_type": "SSD",
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:gta_v_enhanced:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i7-4770",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i7-4770",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD FX-9590",
+      "source_kind": "model",
+      "id": "hardware:amd-fx-9590",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 1630",
+      "vram_gb": 4,
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-1630:vram4",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 6400",
+      "vram_gb": 4,
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-6400:vram4",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 16,
+      "vram_gb": 8,
+      "storage_gb": 105,
+      "storage_type": "SSD",
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "storage_features": [
+        "DirectStorage-compatible"
+      ],
+      "id": "game:gta_v_enhanced:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-9600K",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-9600k",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 5 3600",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-5-3600",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce RTX 3060",
+      "vram_gb": 8,
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-rtx-3060:vram8",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 6600 XT",
+      "vram_gb": 8,
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-6600-xt:vram8",
+      "kind": "hardware"
+    },
+    {
+      "name": "Red Dead Redemption 2",
+      "aliases": [
+        "레드 데드 리뎀션 2",
+        "레드데드리뎀션2",
+        "레데리2",
+        "레데리 2",
+        "RDR2",
+        "RDR 2"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Windows10 64-bit. Source does not require SSD or specify FPS, resolution or preset.",
+        "Steam product page is age-gated in research browser; source is the same publisher-managed Steam appdetails PC requirement payload."
+      ],
+      "id": "game:red_dead_redemption_2",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/api/appdetails?appids=1174180&l=english&cc=us",
+      "publisher": "Rockstar Games",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_appdetails",
+      "id": "source:red_dead_redemption_2",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 8,
+      "vram_gb": null,
+      "storage_gb": 150,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:red_dead_redemption_2:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-2500K",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-2500k",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 770",
+      "vram_gb": 2,
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-770:vram2",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon R9 280",
+      "vram_gb": 3,
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-r9-280:vram3",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 12,
+      "vram_gb": null,
+      "storage_gb": 150,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:red_dead_redemption_2:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i7-4770K",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i7-4770k",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 5 1500X",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-5-1500x",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 480",
+      "vram_gb": 4,
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-480:vram4",
+      "kind": "hardware"
+    },
+    {
+      "name": "ELDEN RING",
+      "aliases": [
+        "엘든 링",
+        "엘든링"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Original ELDEN RING base-game Windows requirements, not ELDEN RING NIGHTREIGN.",
+        "DirectX12; no SSD, FPS, resolution or preset specified."
+      ],
+      "id": "game:elden_ring",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/1245620/",
+      "publisher": "FromSoftware, Inc. / Bandai Namco Entertainment",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:elden_ring",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 12,
+      "vram_gb": null,
+      "storage_gb": 60,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:elden_ring:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-8400",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-8400",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 3 3300X",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-3-3300x",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 16,
+      "vram_gb": 8,
+      "storage_gb": 60,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:elden_ring:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i7-8700K",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i7-8700k",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 5 3600X",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-5-3600x",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 1070",
+      "vram_gb": 8,
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-1070:vram8",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX Vega 56",
+      "vram_gb": 8,
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-vega-56:vram8",
+      "kind": "hardware"
+    },
+    {
+      "name": "Baldur's Gate 3",
+      "aliases": [
+        "발더스 게이트 3",
+        "발더스게이트3",
+        "발더스3",
+        "발더스 3",
+        "BG3",
+        "Baldurs Gate 3"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Current Windows PC payload explicitly lists Snapdragon X Elite/Adreno X1 among minimum alternatives; preserve these mobile/ARM labels without desktop equivalence.",
+        "GPU groups specify 4GB+ and 8GB+ VRAM. Those are profile floors; do not invent per-model VRAM variants.",
+        "DirectX11; no FPS, resolution or preset stated. Publisher-managed Steam appdetails used because product page is age-gated."
+      ],
+      "id": "game:baldurs_gate_3",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/api/appdetails?appids=1086940&l=english&cc=us",
+      "publisher": "Larian Studios",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_appdetails",
+      "id": "source:baldurs_gate_3",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 8,
+      "vram_gb": 4,
+      "storage_gb": 150,
+      "storage_type": "SSD",
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:baldurs_gate_3:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-4690",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-4690",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD FX-8350",
+      "source_kind": "model",
+      "id": "hardware:amd-fx-8350",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "Qualcomm Snapdragon X Elite",
+      "source_kind": "model",
+      "id": "hardware:qualcomm-snapdragon-x-elite",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 480",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-480",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "Qualcomm Adreno X1",
+      "source_kind": "model",
+      "id": "hardware:qualcomm-adreno-x1",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 16,
+      "vram_gb": 8,
+      "storage_gb": 150,
+      "storage_type": "SSD",
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:baldurs_gate_3:recommended",
+      "kind": "requirement"
+    },
+    {
+      "name": "Black Myth: Wukong",
+      "aliases": [
+        "검은 신화 오공",
+        "검은신화오공",
+        "검은 신화: 오공",
+        "오공",
+        "Black Myth Wukong"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Both published profiles were tested with DLSS/FSR/XeSS enabled; they do not establish native-rendering performance.",
+        "Minimum permits HDD and recommends SSD; recommended requires SSD.",
+        "No FPS, resolution, preset or frame-generation state specified; recommended GPU VRAM is not stated."
+      ],
+      "id": "game:black_myth_wukong",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/2358720/",
+      "publisher": "Game Science",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:black_myth_wukong",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 16,
+      "vram_gb": null,
+      "storage_gb": 130,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "upscaling": true,
+      "id": "game:black_myth_wukong:minimum",
+      "kind": "requirement"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 16,
+      "vram_gb": null,
+      "storage_gb": 130,
+      "storage_type": "SSD",
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "upscaling": true,
+      "id": "game:black_myth_wukong:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i7-9700",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i7-9700",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 5 5500",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-5-5500",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce RTX 2060",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-rtx-2060",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "Intel Arc A750",
+      "source_kind": "model",
+      "id": "hardware:intel-arc-a750",
+      "kind": "hardware"
+    },
+    {
+      "name": "Monster Hunter Wilds",
+      "aliases": [
+        "몬스터 헌터 와일즈",
+        "몬스터헌터와일즈",
+        "몬헌 와일즈",
+        "몬헌와일즈",
+        "몬헌 와일드",
+        "MHWs"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Publisher expected performance labels, not independent measurements: minimum 1080p30 is upscaled from native720p at Lowest; recommended1080p60 is Medium WITH Frame Generation enabled.",
+        "Do not interpret recommended60fps as native rendered60fps or use it to guarantee stable/no-FG60.",
+        "Current Steam requirements specify75GB storage and16GB RAM, not older launch120/140GB figures."
+      ],
+      "id": "game:monster_hunter_wilds",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/2246340/",
+      "publisher": "CAPCOM Co., Ltd.",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:monster_hunter_wilds",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 16,
+      "vram_gb": null,
+      "storage_gb": 75,
+      "storage_type": "SSD",
+      "resolution": "1920x1080",
+      "preset": "Lowest",
+      "target_fps": 30,
+      "evidence_kind": "official_requirements",
+      "upscaling": true,
+      "native_resolution": "1280x720",
+      "frame_generation": null,
+      "storage_features": [
+        "DirectStorage-supported"
+      ],
+      "id": "game:monster_hunter_wilds:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-10400",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-10400",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i3-12100",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i3-12100",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 1660",
+      "vram_gb": 6,
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-1660:vram6",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 5500 XT",
+      "vram_gb": 8,
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-5500-xt:vram8",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 16,
+      "vram_gb": 8,
+      "storage_gb": 75,
+      "storage_type": "SSD",
+      "resolution": "1920x1080",
+      "preset": "Medium",
+      "target_fps": 60,
+      "evidence_kind": "official_requirements",
+      "frame_generation": true,
+      "upscaling": null,
+      "storage_features": [
+        "DirectStorage-supported"
+      ],
+      "id": "game:monster_hunter_wilds:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce RTX 2060 Super",
+      "vram_gb": 8,
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-rtx-2060-super:vram8",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 6600",
+      "vram_gb": 8,
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-6600:vram8",
+      "kind": "hardware"
+    },
+    {
+      "name": "HELLDIVERS 2",
+      "aliases": [
+        "헬다이버즈 2",
+        "헬다이버즈2",
+        "헬다이버2",
+        "헬다이버 2",
+        "Helldivers II"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Current official Steam appdetails payload inconsistently specifies135GB minimum and40GB recommended; values are preserved rather than silently harmonized. Storage coverage needs recheck before promising installation space.",
+        "Recommended SSD is advisory (SSD Recommended), not a requirement in this payload.",
+        "No VRAM, resolution, preset or FPS stated. Steam product page age-gated; publisher-managed appdetails opened directly."
+      ],
+      "id": "game:helldivers_2",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/api/appdetails?appids=553850&l=english&cc=us",
+      "publisher": "PlayStation Publishing LLC",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_appdetails",
+      "id": "source:helldivers_2",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 8,
+      "vram_gb": null,
+      "storage_gb": 135,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:helldivers_2:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i7-4790K",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i7-4790k",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 16,
+      "vram_gb": null,
+      "storage_gb": 40,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:helldivers_2:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i7-9700K",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i7-9700k",
+      "kind": "hardware"
+    },
+    {
+      "name": "Palworld",
+      "aliases": [
+        "팔월드",
+        "팰월드",
+        "팰 월드",
+        "팔 월드"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Current PC listing uses minimumGTX1660 and recommended32GB RAM; do not reuse outdated Early Access GTX1050 figures.",
+        "SSD required for both tiers. Publisher warns performance depends on active Pals. No VRAM, resolution, preset or FPS stated.",
+        "Client requirements only; no dedicated-server sizing inference."
+      ],
+      "id": "game:palworld",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/1623730/",
+      "publisher": "Pocketpair",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:palworld",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 16,
+      "vram_gb": null,
+      "storage_gb": 40,
+      "storage_type": "SSD",
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:palworld:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 1660",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-1660",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 32,
+      "vram_gb": null,
+      "storage_gb": 40,
+      "storage_type": "SSD",
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:palworld:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-12400",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-12400",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 5 5600X",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-5-5600x",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce RTX 3060 Ti",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-rtx-3060-ti",
+      "kind": "hardware"
+    },
+    {
+      "name": "Destiny 2",
+      "aliases": [
+        "데스티니2",
+        "데스티니 2",
+        "데스티니 가디언즈",
+        "Destiny 2"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Windows 10 64-bit. No resolution, preset or FPS target is published in this table.",
+        "105GB is the publisher Steam table value; its footer dates that storage baseline to November 10, 2020 and warns that storage requirements increase. It is not a verified current full installation size. The linked Bungie current storage page was inaccessible during this check."
+      ],
+      "id": "game:destiny_2",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/1085660/Destiny_2/",
+      "publisher": "Bungie",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:destiny_2",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 6,
+      "vram_gb": null,
+      "storage_gb": 105,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:destiny_2:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i3-3250",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i3-3250",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Pentium G4560",
+      "source_kind": "model",
+      "id": "hardware:intel-pentium-g4560",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 660",
+      "vram_gb": 2,
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-660:vram2",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 1050",
+      "vram_gb": 2,
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-1050:vram2",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon HD 7850",
+      "vram_gb": 2,
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-hd-7850:vram2",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 8,
+      "vram_gb": null,
+      "storage_gb": 105,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:destiny_2:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-2400",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-2400",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-7400",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-7400",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 5 1600X",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-5-1600x",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 970",
+      "vram_gb": 4,
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-970:vram4",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon R9 390",
+      "vram_gb": 8,
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-r9-390:vram8",
+      "kind": "hardware"
+    },
+    {
+      "name": "Warframe",
+      "aliases": [
+        "워프레임",
+        "Warframe"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Publisher Steam listing publishes minimum only; no named GPU model, VRAM, recommended tier, resolution, preset or FPS target.",
+        "The listing still prints Windows7 64-bit but separately states that the Steam client requires Windows10 or later. DX12 requires Windows10 20H2 or Windows11. Do not present Windows7 as a current deployable Steam recommendation.",
+        "Official Warframe support minimum-spec page returned an access challenge; the publisher-maintained Steam table is the source used here."
+      ],
+      "id": "game:warframe",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/230410/Warframe/",
+      "publisher": "Digital Extremes",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:warframe",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 4,
+      "vram_gb": null,
+      "storage_gb": 75,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "gpu_requirement": "DirectX 11+ capable graphics card",
+      "cpu_instruction_requirement": "SSE4.2",
+      "id": "game:warframe:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i7-860",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i7-860",
+      "kind": "hardware"
+    },
+    {
+      "name": "Tom Clancy's Rainbow Six Siege (Siege X PC requirements)",
+      "aliases": [
+        "레인보우 식스 시즈",
+        "레인보우식스시즈",
+        "레식",
+        "시즈 X",
+        "Siege X",
+        "Rainbow Six Siege",
+        "Rainbow Six Siege X"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Current app359550 publisher table after Siege X; the currently displayed store title is Rainbow Six Siege. This is not the older GTX460/GTX670 original-launch table.",
+        "Minimum Windows10/11; recommended Windows11; DX12. No resolution, preset or FPS target is stated in the textual table. This does not establish Dual Front mode performance."
+      ],
+      "edition": "siege_x_current",
+      "id": "game:rainbow_six_siege_x",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/359550/Tom_Clancys_Rainbow_Six_Siege_X/",
+      "publisher": "Ubisoft",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:rainbow_six_siege_x",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 8,
+      "vram_gb": null,
+      "storage_gb": 65,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:rainbow_six_siege_x:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 3 3100",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-3-3100",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i3-8100",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i3-8100",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 1650",
+      "vram_gb": 4,
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-1650:vram4",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 5500 XT",
+      "vram_gb": 4,
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-5500-xt:vram4",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "Intel Arc A380",
+      "vram_gb": 6,
+      "source_kind": "model",
+      "id": "hardware:intel-arc-a380:vram6",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 8,
+      "vram_gb": null,
+      "storage_gb": 65,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:rainbow_six_siege_x:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce RTX 2060",
+      "vram_gb": 6,
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-rtx-2060:vram6",
+      "kind": "hardware"
+    },
+    {
+      "name": "Dead by Daylight",
+      "aliases": [
+        "데드 바이 데이라이트",
+        "데드바이데이라이트",
+        "데바데",
+        "Dead by Daylight"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Windows10 64-bit, DX11. Minimum notes recommend Low settings, but no resolution or FPS is stated.",
+        "Recommended graphics line spells GeForce760 and HD8800 or higher with4GB of RAM. Preserve that source wording and GPU-memory context; do not reinterpret it as the separate system-memory requirement (8GB)."
+      ],
+      "id": "game:dead_by_daylight",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/381210/Dead_by_Daylight/",
+      "publisher": "Behaviour Interactive",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:dead_by_daylight",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 8,
+      "vram_gb": null,
+      "storage_gb": 50,
+      "storage_type": null,
+      "resolution": null,
+      "preset": "low",
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:dead_by_daylight:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i3-4170",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i3-4170",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD FX-8120",
+      "source_kind": "model",
+      "id": "hardware:amd-fx-8120",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 460",
+      "vram_gb": 1,
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-460:vram1",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon HD 6850",
+      "vram_gb": 1,
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-hd-6850:vram1",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 8,
+      "vram_gb": 4,
+      "storage_gb": 50,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:dead_by_daylight:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD FX-8300",
+      "source_kind": "model",
+      "id": "hardware:amd-fx-8300",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce 760 (source spelling)",
+      "vram_gb": 4,
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-760:vram4",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon HD 8800",
+      "vram_gb": 4,
+      "source_kind": "family",
+      "id": "hardware:amd-radeon-hd-8800:vram4",
+      "kind": "hardware"
+    },
+    {
+      "name": "Path of Exile 2",
+      "aliases": [
+        "패스 오브 엑자일2",
+        "패스 오브 엑자일 2",
+        "패스오브엑자일2",
+        "POE2",
+        "POE 2",
+        "Path of Exile 2"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Path of Exile2 only, not PoE1. Windows10, DX12; source still labels the game Early Access.",
+        "The original table says Ryzen5 3700X and GTX960(3GB). These unusual spellings/configurations are recorded verbatim as source facts, not silently corrected to Ryzen7 or a known2GB/4GB GTX960 variant.",
+        "Minimum additional notes specify at least3GB VRAM for any GPU. Recommended notes recommend SSD. No resolution, preset or FPS target."
+      ],
+      "id": "game:path_of_exile_2",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/2694490/Path_of_Exile_2/",
+      "publisher": "Grinding Gear Games",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:path_of_exile_2",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 8,
+      "vram_gb": 3,
+      "storage_gb": 100,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "id": "game:path_of_exile_2:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i7-7700",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i7-7700",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 5 2500X",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-5-2500x",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 960",
+      "vram_gb": 3,
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-960:vram3",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 16,
+      "vram_gb": null,
+      "storage_gb": 100,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "storage_recommendation": "SSD",
+      "id": "game:path_of_exile_2:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-10500",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-10500",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 5 3700X (source spelling)",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-5-3700x",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 5600 XT",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-5600-xt",
+      "kind": "hardware"
+    },
+    {
+      "name": "Diablo IV",
+      "aliases": [
+        "디아블로4",
+        "디아블로 4",
+        "디아4",
+        "Diablo 4",
+        "Diablo IV"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Windows10 64-bit1909+, DX12. Both tiers require SSD.",
+        "Minimum source context is1080p display/native resolution with720p render resolution, Low30FPS; do not describe this as native-rendered1080p30.",
+        "Recommended source context is1080p Medium60FPS. These are publisher requirements/targets, not benchmark measurements or a guarantee for another PC. The table spells AMD Ryzen1300X without a family number; model is identifiable as1300X."
+      ],
+      "id": "game:diablo_iv",
+      "kind": "game"
+    },
+    {
+      "url": "https://store.steampowered.com/app/2344520/Diablo_IV/",
+      "publisher": "Blizzard Entertainment",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "publisher_steam_listing",
+      "id": "source:diablo_iv",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 8,
+      "vram_gb": null,
+      "storage_gb": 90,
+      "storage_type": "SSD",
+      "resolution": "1920x1080",
+      "preset": "low",
+      "target_fps": 30,
+      "evidence_kind": "official_requirements",
+      "render_resolution": "1280x720",
+      "id": "game:diablo_iv:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 660",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-660",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 16,
+      "vram_gb": null,
+      "storage_gb": 90,
+      "storage_type": "SSD",
+      "resolution": "1920x1080",
+      "preset": "medium",
+      "target_fps": 60,
+      "evidence_kind": "official_requirements",
+      "id": "game:diablo_iv:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-4670K",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-4670k",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 3 1300X",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-1300x",
+      "kind": "hardware"
+    },
+    {
+      "name": "Genshin Impact",
+      "aliases": [
+        "원신",
+        "Genshin Impact"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Official help article updated November11,2025; current page checked November11,2026. Windows10 64-bit minimum, Windows10/11 recommended, DX11.",
+        "Minimum allows either discrete GTX1050 or integrated IrisXe/equivalent. CPU families have no exact model. SSD is recommended, not stated mandatory. Storage can grow with future updates.",
+        "No resolution, preset or FPS target is published; this is the normal PC client, not the separate Miliastra Sandbox editor requirements."
+      ],
+      "id": "game:genshin_impact",
+      "kind": "game"
+    },
+    {
+      "url": "https://support.hoyoverse.com/hc/en-us/articles/52089402685593-What-are-the-system-requirements-to-play-Genshin-Impact",
+      "publisher": "HoYoverse",
+      "accessed_at": "2026-11-11",
+      "updated_at": "2025-11-11",
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "official_support",
+      "id": "source:genshin_impact",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 8,
+      "vram_gb": null,
+      "storage_gb": 110,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "storage_recommendation": "SSD",
+      "id": "game:genshin_impact:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5 6th generation",
+      "source_kind": "family",
+      "id": "hardware:intel-core-i5-6th-generation",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen series",
+      "source_kind": "family",
+      "id": "hardware:amd-ryzen-series",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 1050",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-1050",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "Intel Iris Xe",
+      "source_kind": "family",
+      "id": "hardware:intel-iris-xe",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 16,
+      "vram_gb": null,
+      "storage_gb": 110,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "storage_recommendation": "SSD",
+      "id": "game:genshin_impact:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i7 7th generation",
+      "source_kind": "family",
+      "id": "hardware:intel-core-i7-7th-generation",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 5000 series",
+      "source_kind": "family",
+      "id": "hardware:amd-ryzen-5000-series",
+      "kind": "hardware"
+    },
+    {
+      "name": "Minecraft: Java Edition",
+      "aliases": [
+        "마인크래프트",
+        "마크",
+        "마인크래프트 자바",
+        "마크 자바",
+        "Minecraft Java",
+        "Minecraft Java Edition",
+        "Minecraft: Java Edition"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Java Edition Windows scope only. Common aliases Minecraft/마인크래프트/마크 are ambiguous; this record explicitly defaults to Java, not Bedrock, and must be presented as such. No Bedrock GPU/RAM table is merged here.",
+        "Official Java requirements changed July21,2026: FHD30 Fast minimum and FHD60 Fancy recommended. Source article: https://www.minecraft.net/en-us/article/minecraft-java-edition-system-requirements . Old2GB/4GB RAM Java figures are obsolete.",
+        "Minimum8GB with discrete GPU versus12GB with integrated graphics; recommended16GB. Apple alternatives are excluded from Windows scope. Qualcomm Windows ARM remains explicit. Vulkan1.3 required; modpacks, shaders, ray tracing and dedicated server hosting are outside these baseline targets.",
+        "Minimum Windows10 64-bit, recommended Windows11. Storage2GB minimum/4GB recommended comes from the same product-page FAQ, not world/mod size predictions."
+      ],
+      "edition": "java",
+      "excluded_aliases": [
+        "bedrock",
+        "베드락"
+      ],
+      "id": "game:minecraft_java",
+      "kind": "game"
+    },
+    {
+      "url": "https://www.minecraft.net/en-us/store/minecraft-java-bedrock-edition-pc",
+      "publisher": "Mojang Studios / Microsoft",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "official_product_requirements",
+      "id": "source:minecraft_java",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 8,
+      "vram_gb": 2,
+      "storage_gb": 2,
+      "storage_type": null,
+      "resolution": "1920x1080",
+      "preset": "fast",
+      "target_fps": 30,
+      "evidence_kind": "official_requirements",
+      "gpu_mode": "discrete",
+      "graphics_api": "Vulkan 1.3",
+      "cpu_cores_min": 4,
+      "id": "game:minecraft_java:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i3-10100",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i3-10100",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "Qualcomm Snapdragon X",
+      "source_kind": "family",
+      "id": "hardware:qualcomm-snapdragon-x",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 460",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-460",
+      "kind": "hardware"
+    },
+    {
+      "tier": "minimum_integrated",
+      "ram_gb": 12,
+      "vram_gb": 2,
+      "storage_gb": 2,
+      "storage_type": null,
+      "resolution": "1920x1080",
+      "preset": "fast",
+      "target_fps": 30,
+      "evidence_kind": "official_requirements",
+      "gpu_mode": "integrated",
+      "graphics_api": "Vulkan 1.3",
+      "cpu_cores_min": 4,
+      "id": "game:minecraft_java:minimum_integrated",
+      "kind": "requirement"
+    },
+    {
+      "category": "gpu",
+      "label": "Intel Core i5-6400 integrated graphics or newer",
+      "source_kind": "family",
+      "id": "hardware:intel-core-i5-6400-integrated-graphics",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "Qualcomm Snapdragon X integrated graphics",
+      "source_kind": "family",
+      "id": "hardware:qualcomm-snapdragon-x-integrated-graphics",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 16,
+      "vram_gb": 6,
+      "storage_gb": 4,
+      "storage_type": null,
+      "resolution": "1920x1080",
+      "preset": "fancy",
+      "target_fps": 60,
+      "evidence_kind": "official_requirements",
+      "graphics_api": "Vulkan 1.3",
+      "id": "game:minecraft_java:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 5 5600",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-5-5600",
+      "kind": "hardware"
+    },
+    {
+      "name": "Lost Ark (Korea)",
+      "aliases": [
+        "로스트아크",
+        "로아",
+        "Lost Ark"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Korean Smilegate service, not the separate Amazon regional Steam table. Official columns are FHD minimum/recommended, QHD recommended and UHD recommended.",
+        "All columns are stated for60Hz refresh rate; target_fps is unknown and remains null. No preset or per-GPU VRAM is stated. Do not turn60Hz into a measured or guaranteed60FPS.",
+        "Windows10 64-bit (Windows11 recommended), DX11+. Minimum disk column says HDD110GB with SSD recommended; recommended columns require SSD110GB. Introductory installer note also advises110GB SSD free space."
+      ],
+      "region": "KR",
+      "id": "game:lost_ark",
+      "kind": "game"
+    },
+    {
+      "url": "https://lostark.game.onstove.com/Download",
+      "publisher": "Smilegate",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "official_download_requirements",
+      "id": "source:lost_ark",
+      "kind": "source"
+    },
+    {
+      "tier": "minimum",
+      "ram_gb": 16,
+      "vram_gb": null,
+      "storage_gb": 110,
+      "storage_type": "HDD",
+      "resolution": "1920x1080",
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "refresh_rate_hz": 60,
+      "storage_recommendation": "SSD",
+      "id": "game:lost_ark:minimum",
+      "kind": "requirement"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 560",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-560",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 16,
+      "vram_gb": null,
+      "storage_gb": 110,
+      "storage_type": "SSD",
+      "resolution": "1920x1080",
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "refresh_rate_hz": 60,
+      "id": "game:lost_ark:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-9400",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-9400",
+      "kind": "hardware"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 5 2600",
+      "source_kind": "model",
+      "id": "hardware:amd-ryzen-5-2600",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GTX 1660 SUPER",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gtx-1660-super",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 6600",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-6600",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended_qhd",
+      "ram_gb": 16,
+      "vram_gb": null,
+      "storage_gb": 110,
+      "storage_type": "SSD",
+      "resolution": "2560x1440",
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "refresh_rate_hz": 60,
+      "id": "game:lost_ark:recommended_qhd",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Core i5-11400",
+      "source_kind": "model",
+      "id": "hardware:intel-core-i5-11400",
+      "kind": "hardware"
+    },
+    {
+      "tier": "recommended_uhd",
+      "ram_gb": 32,
+      "vram_gb": null,
+      "storage_gb": 110,
+      "storage_type": "SSD",
+      "resolution": "3840x2160",
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "refresh_rate_hz": 60,
+      "id": "game:lost_ark:recommended_uhd",
+      "kind": "requirement"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce RTX 3080",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-rtx-3080",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon RX 6800 XT",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-rx-6800-xt",
+      "kind": "hardware"
+    },
+    {
+      "name": "MapleStory (Korea)",
+      "aliases": [
+        "메이플스토리",
+        "메이플",
+        "MapleStory"
+      ],
+      "platform": "windows_pc",
+      "notes": [
+        "Korean mainline MapleStory current official download page; not MapleStory Worlds, Classic World, MapleStory M or MapleStory Idle.",
+        "Current page publishes recommended only: Windows10 64-bit+, Pentium Dual Core-class CPU,8GB RAM,35GB disk, GT430/HD5670-class graphics with Shader3.0+, DirectX11. No exact CPU model, VRAM, disk type, resolution, preset or FPS target. Do not invent a minimum tier from2012/2014 archived notices."
+      ],
+      "region": "KR",
+      "excluded_aliases": [
+        "메이플스토리 월드",
+        "메이플스토리월드",
+        "maplestory worlds"
+      ],
+      "id": "game:maplestory",
+      "kind": "game"
+    },
+    {
+      "url": "https://maplestory.nexon.com/Common/PDS/Download",
+      "publisher": "Nexon",
+      "accessed_at": "2026-11-11",
+      "updated_at": null,
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "source_kind": "official_download_requirements",
+      "id": "source:maplestory",
+      "kind": "source"
+    },
+    {
+      "tier": "recommended",
+      "ram_gb": 8,
+      "vram_gb": null,
+      "storage_gb": 35,
+      "storage_type": null,
+      "resolution": null,
+      "preset": null,
+      "target_fps": null,
+      "evidence_kind": "official_requirements",
+      "gpu_shader_model": "3.0",
+      "graphics_api": "DirectX 11",
+      "id": "game:maplestory:recommended",
+      "kind": "requirement"
+    },
+    {
+      "category": "cpu",
+      "label": "Intel Pentium Dual Core",
+      "source_kind": "family",
+      "id": "hardware:intel-pentium-dual-core",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "NVIDIA GeForce GT 430",
+      "source_kind": "model",
+      "id": "hardware:nvidia-geforce-gt-430",
+      "kind": "hardware"
+    },
+    {
+      "category": "gpu",
+      "label": "AMD Radeon HD 5670",
+      "source_kind": "model",
+      "id": "hardware:amd-radeon-hd-5670",
+      "kind": "hardware"
+    },
+    {
       "url": "https://www.computerbase.de/artikel/grafikkarten/grafikkarten-vergleich-radeon-rx-7600-xt-rx-9060-xt-geforce-rtx-4060-rtx-5060-intel-xe-arc-a580-b580-duell.93230/",
       "publisher": "ComputerBase / DevPandi",
       "accessed_at": "2026-11-11",
       "reviewed": true,
       "review_after": "2027-02-11",
       "published_at": "2026-04-30",
+      "source_kind": "original_reviewer_measurement",
       "id": "source:computerbase-generation-comparison-2026-04-30",
       "kind": "source"
     },
@@ -929,6 +2918,7 @@
       "category": "gpu",
       "label": "GeForce RTX 4060",
       "model": "4060",
+      "brand": "nvidia",
       "vram_gb": 8,
       "id": "hardware:geforce-rtx-4060:vram8",
       "kind": "hardware"
@@ -984,6 +2974,7 @@
       "category": "gpu",
       "label": "GeForce RTX 5060",
       "model": "5060",
+      "brand": "nvidia",
       "vram_gb": 8,
       "id": "hardware:geforce-rtx-5060:vram8",
       "kind": "hardware"
@@ -1062,6 +3053,817 @@
         "measurement_date": null
       },
       "id": "measurement:cb-20260430-cp2077-rtx5060",
+      "kind": "measurement"
+    },
+    {
+      "url": "https://www.computerbase.de/artikel/gaming/baldurs-gate-3-benchmark-test.85071/seite-3",
+      "publisher": "ComputerBase / Wolfgang Andermahr",
+      "accessed_at": "2026-11-11",
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "published_at": "2023-08-09",
+      "source_kind": "original_reviewer_measurement",
+      "id": "source:computerbase-bg3-2023-08-09",
+      "kind": "source"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 70.0,
+      "context": {
+        "game": "baldurs_gate_3",
+        "results_url": "https://www.computerbase.de/artikel/gaming/baldurs-gate-3-benchmark-test.85071/seite-3",
+        "resolution": [
+          1920,
+          1080
+        ],
+        "preset": "ultra",
+        "api": "Vulkan",
+        "upscaling": null,
+        "frame_generation": false,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": "15-second route at Trielta Crags outside the first act main map",
+        "selection_eligible": false,
+        "quality_degraded": false,
+        "unknown_fields": [
+          "game_build",
+          "measurement_date",
+          "upscaling_disabled_not_explicit_in_table"
+        ]
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 9 7950X3D",
+        "motherboard": "ASUS ROG Crosshair X670E Hero",
+        "memory_gb": 32,
+        "memory": "DDR5-6000 CL30-38-38-96",
+        "os": "Windows 11 22H2",
+        "runs": null,
+        "aggregation": null,
+        "driver_version": "GeForce 536.67",
+        "measurement_date": null
+      },
+      "id": "measurement:cb-20230809-bg3-4060-fhd",
+      "kind": "measurement"
+    },
+    {
+      "category": "cpu",
+      "label": "AMD Ryzen 9 7950X3D",
+      "id": "hardware:amd-ryzen-9-7950x3d",
+      "kind": "hardware"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 52.8,
+      "context": {
+        "game": "baldurs_gate_3",
+        "results_url": "https://www.computerbase.de/artikel/gaming/baldurs-gate-3-benchmark-test.85071/seite-3",
+        "resolution": [
+          2560,
+          1440
+        ],
+        "preset": "ultra",
+        "api": "Vulkan",
+        "upscaling": null,
+        "frame_generation": false,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": "15-second route at Trielta Crags outside the first act main map",
+        "selection_eligible": false,
+        "quality_degraded": false,
+        "unknown_fields": [
+          "game_build",
+          "measurement_date",
+          "upscaling_disabled_not_explicit_in_table"
+        ]
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 9 7950X3D",
+        "motherboard": "ASUS ROG Crosshair X670E Hero",
+        "memory_gb": 32,
+        "memory": "DDR5-6000 CL30-38-38-96",
+        "os": "Windows 11 22H2",
+        "runs": null,
+        "aggregation": null,
+        "driver_version": "GeForce 536.67",
+        "measurement_date": null
+      },
+      "id": "measurement:cb-20230809-bg3-4060-qhd",
+      "kind": "measurement"
+    },
+    {
+      "url": "https://www.computerbase.de/artikel/gaming/helldivers-2-benchmark-test.87973/",
+      "publisher": "ComputerBase / Wolfgang Andermahr",
+      "accessed_at": "2026-11-11",
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "published_at": "2024-05-03",
+      "source_kind": "original_reviewer_measurement",
+      "id": "source:computerbase-hd2-2024-05-03",
+      "kind": "source"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 78.9,
+      "context": {
+        "game": "helldivers_2",
+        "results_url": "https://www.computerbase.de/artikel/gaming/helldivers-2-benchmark-test.87973/",
+        "resolution": [
+          1920,
+          1080
+        ],
+        "preset": "ultra",
+        "api": null,
+        "upscaling": false,
+        "frame_generation": null,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": "Hand-authored training mission; actual generated missions may be 10-15% slower per reviewer",
+        "selection_eligible": true,
+        "quality_degraded": false,
+        "unknown_fields": [
+          "game_build",
+          "measurement_date",
+          "frame_generation",
+          "exact_route",
+          "api"
+        ],
+        "async_compute": false
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 9 7950X3D",
+        "motherboard": "ASUS ROG Crosshair X670E Hero",
+        "memory_gb": 48,
+        "memory": "DDR5-6000 CL36-36-36-72",
+        "os": "Windows 11 23H2",
+        "runs": null,
+        "aggregation": null,
+        "driver_version": "GeForce 552.22",
+        "measurement_date": null
+      },
+      "id": "measurement:cb-20240503-hd2-4060-fhd",
+      "kind": "measurement"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 94.5,
+      "context": {
+        "game": "helldivers_2",
+        "results_url": "https://www.computerbase.de/artikel/gaming/helldivers-2-benchmark-test.87973/",
+        "resolution": [
+          1920,
+          1080
+        ],
+        "preset": "ultra",
+        "api": null,
+        "upscaling": false,
+        "frame_generation": null,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": "Hand-authored training mission; actual generated missions may be 10-15% slower per reviewer",
+        "selection_eligible": true,
+        "quality_degraded": false,
+        "unknown_fields": [
+          "game_build",
+          "measurement_date",
+          "frame_generation",
+          "exact_route",
+          "api"
+        ],
+        "async_compute": false
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 9 7950X3D",
+        "motherboard": "ASUS ROG Crosshair X670E Hero",
+        "memory_gb": 48,
+        "memory": "DDR5-6000 CL36-36-36-72",
+        "os": "Windows 11 23H2",
+        "runs": null,
+        "aggregation": null,
+        "driver_version": "GeForce 552.22",
+        "measurement_date": null
+      },
+      "id": "measurement:cb-20240503-hd2-4060ti8-fhd",
+      "kind": "measurement"
+    },
+    {
+      "category": "gpu",
+      "label": "GeForce RTX 4060 Ti",
+      "model": "4060ti",
+      "brand": "nvidia",
+      "vram_gb": 8,
+      "id": "hardware:geforce-rtx-4060-ti:vram8",
+      "kind": "hardware"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 55.9,
+      "context": {
+        "game": "helldivers_2",
+        "results_url": "https://www.computerbase.de/artikel/gaming/helldivers-2-benchmark-test.87973/",
+        "resolution": [
+          2560,
+          1440
+        ],
+        "preset": "ultra",
+        "api": null,
+        "upscaling": false,
+        "frame_generation": null,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": "Hand-authored training mission; actual generated missions may be 10-15% slower per reviewer",
+        "selection_eligible": true,
+        "quality_degraded": false,
+        "unknown_fields": [
+          "game_build",
+          "measurement_date",
+          "frame_generation",
+          "exact_route",
+          "api"
+        ],
+        "async_compute": false
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 9 7950X3D",
+        "motherboard": "ASUS ROG Crosshair X670E Hero",
+        "memory_gb": 48,
+        "memory": "DDR5-6000 CL36-36-36-72",
+        "os": "Windows 11 23H2",
+        "runs": null,
+        "aggregation": null,
+        "driver_version": "GeForce 552.22",
+        "measurement_date": null
+      },
+      "id": "measurement:cb-20240503-hd2-4060-qhd",
+      "kind": "measurement"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 69.0,
+      "context": {
+        "game": "helldivers_2",
+        "results_url": "https://www.computerbase.de/artikel/gaming/helldivers-2-benchmark-test.87973/",
+        "resolution": [
+          2560,
+          1440
+        ],
+        "preset": "ultra",
+        "api": null,
+        "upscaling": false,
+        "frame_generation": null,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": "Hand-authored training mission; actual generated missions may be 10-15% slower per reviewer",
+        "selection_eligible": true,
+        "quality_degraded": false,
+        "unknown_fields": [
+          "game_build",
+          "measurement_date",
+          "frame_generation",
+          "exact_route",
+          "api"
+        ],
+        "async_compute": false
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 9 7950X3D",
+        "motherboard": "ASUS ROG Crosshair X670E Hero",
+        "memory_gb": 48,
+        "memory": "DDR5-6000 CL36-36-36-72",
+        "os": "Windows 11 23H2",
+        "runs": null,
+        "aggregation": null,
+        "driver_version": "GeForce 552.22",
+        "measurement_date": null
+      },
+      "id": "measurement:cb-20240503-hd2-4060ti8-qhd",
+      "kind": "measurement"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 113.1,
+      "context": {
+        "game": "helldivers_2",
+        "results_url": "https://www.computerbase.de/artikel/gaming/helldivers-2-benchmark-test.87973/",
+        "resolution": [
+          1920,
+          1080
+        ],
+        "preset": "high",
+        "api": null,
+        "upscaling": true,
+        "frame_generation": null,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": "Training mission",
+        "selection_eligible": false,
+        "quality_degraded": false,
+        "unknown_fields": [
+          "game_build",
+          "measurement_date",
+          "frame_generation",
+          "exact_route",
+          "api",
+          "internal_render_resolution"
+        ],
+        "upscaler": "game_spatial_upscaler",
+        "upscaling_mode": "ultra_quality",
+        "async_compute": false
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 9 7950X3D",
+        "motherboard": "ASUS ROG Crosshair X670E Hero",
+        "memory_gb": 48,
+        "memory": "DDR5-6000 CL36-36-36-72",
+        "os": "Windows 11 23H2",
+        "runs": null,
+        "aggregation": null,
+        "driver_version": "GeForce 552.22",
+        "measurement_date": null
+      },
+      "id": "measurement:cb-20240503-hd2-4060-fhd-high-upscaled",
+      "kind": "measurement"
+    },
+    {
+      "url": "https://www.computerbase.de/artikel/gaming/palworld-early-access-benchmark-test.88052/",
+      "publisher": "ComputerBase / Wolfgang Andermahr",
+      "accessed_at": "2026-11-11",
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "published_at": "2024-05-13",
+      "source_kind": "original_reviewer_measurement",
+      "id": "source:computerbase-palworld-2024-05-13",
+      "kind": "source"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 81.6,
+      "context": {
+        "game": "palworld",
+        "results_url": "https://www.computerbase.de/artikel/gaming/palworld-early-access-benchmark-test.88052/",
+        "resolution": [
+          1920,
+          1080
+        ],
+        "preset": "maximum",
+        "api": "DirectX 11",
+        "upscaling": true,
+        "frame_generation": null,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": "Outdoor open-world area near the beginning, long view distance and substantial vegetation",
+        "selection_eligible": false,
+        "quality_degraded": false,
+        "unknown_fields": [
+          "game_build",
+          "measurement_date",
+          "frame_generation",
+          "internal_render_resolution"
+        ],
+        "upscaler": "TSR",
+        "upscaling_mode": null
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 9 7950X3D",
+        "motherboard": "ASUS ROG Crosshair X670E Hero",
+        "memory_gb": 48,
+        "memory": "DDR5-6000 CL36-36-36-72",
+        "os": "Windows 11 23H2",
+        "runs": null,
+        "aggregation": null,
+        "driver_version": "GeForce 552.22",
+        "measurement_date": null
+      },
+      "id": "measurement:cb-20240513-palworld-4060-fhd-max-tsr",
+      "kind": "measurement"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 101.3,
+      "context": {
+        "game": "palworld",
+        "results_url": "https://www.computerbase.de/artikel/gaming/palworld-early-access-benchmark-test.88052/",
+        "resolution": [
+          1920,
+          1080
+        ],
+        "preset": "maximum",
+        "api": "DirectX 11",
+        "upscaling": true,
+        "frame_generation": null,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": "Outdoor open-world area near the beginning, long view distance and substantial vegetation",
+        "selection_eligible": false,
+        "quality_degraded": false,
+        "unknown_fields": [
+          "game_build",
+          "measurement_date",
+          "frame_generation",
+          "internal_render_resolution"
+        ],
+        "upscaler": "TSR",
+        "upscaling_mode": null
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 9 7950X3D",
+        "motherboard": "ASUS ROG Crosshair X670E Hero",
+        "memory_gb": 48,
+        "memory": "DDR5-6000 CL36-36-36-72",
+        "os": "Windows 11 23H2",
+        "runs": null,
+        "aggregation": null,
+        "driver_version": "GeForce 552.22",
+        "measurement_date": null
+      },
+      "id": "measurement:cb-20240513-palworld-4060ti8-fhd-max-tsr",
+      "kind": "measurement"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 118.1,
+      "context": {
+        "game": "palworld",
+        "results_url": "https://www.computerbase.de/artikel/gaming/palworld-early-access-benchmark-test.88052/",
+        "resolution": [
+          1920,
+          1080
+        ],
+        "preset": "medium",
+        "api": "DirectX 11",
+        "upscaling": true,
+        "frame_generation": null,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": "Outdoor open-world area near the beginning, long view distance and substantial vegetation",
+        "selection_eligible": false,
+        "quality_degraded": false,
+        "unknown_fields": [
+          "game_build",
+          "measurement_date",
+          "frame_generation",
+          "internal_render_resolution"
+        ],
+        "upscaler": "TSR",
+        "upscaling_mode": null
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 9 7950X3D",
+        "motherboard": "ASUS ROG Crosshair X670E Hero",
+        "memory_gb": 48,
+        "memory": "DDR5-6000 CL36-36-36-72",
+        "os": "Windows 11 23H2",
+        "runs": null,
+        "aggregation": null,
+        "driver_version": "GeForce 552.22",
+        "measurement_date": null
+      },
+      "id": "measurement:cb-20240513-palworld-4060-fhd-medium-tsr",
+      "kind": "measurement"
+    },
+    {
+      "url": "https://www.computerbase.de/artikel/gaming/diablo-4-vessel-of-hatred-benchmark-test.89926/seite-2",
+      "publisher": "ComputerBase / Wolfgang Andermahr",
+      "accessed_at": "2026-11-11",
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "published_at": "2024-10-12",
+      "source_kind": "original_reviewer_measurement",
+      "id": "source:computerbase-diablo4-voh-2024-10-12",
+      "kind": "source"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 89.6,
+      "context": {
+        "game": "diablo_iv",
+        "results_url": "https://www.computerbase.de/artikel/gaming/diablo-4-vessel-of-hatred-benchmark-test.89926/seite-2",
+        "resolution": [
+          1920,
+          1080
+        ],
+        "preset": "ultra_with_automatic_reduced_texture_quality",
+        "api": "DirectX 12",
+        "upscaling": false,
+        "frame_generation": null,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": "20-second walk in new jungle near the beginning of Vessel of Hatred, quest Ein blutiger Pfad",
+        "selection_eligible": false,
+        "quality_degraded": true,
+        "unknown_fields": [
+          "game_build",
+          "measurement_date",
+          "frame_generation",
+          "actual_texture_level_after_fallback"
+        ],
+        "anti_aliasing": "DLAA",
+        "edition": "Vessel of Hatred campaign",
+        "quality_warning": "Original RTX 4060 chart explicitly reports reduced texture quality; not equivalent to full Ultra texture fidelity"
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 9 7950X3D",
+        "motherboard": "ASUS ROG Crosshair X670E Hero",
+        "memory_gb": 48,
+        "memory": "DDR5-6000 CL36-36-36-72",
+        "os": "Windows 11 23H2",
+        "runs": null,
+        "aggregation": null,
+        "driver_version": "GeForce 565.90",
+        "measurement_date": null
+      },
+      "id": "measurement:cb-20241012-diablo4-4060-fhd-dlaa-reduced-texture",
+      "kind": "measurement"
+    },
+    {
+      "url": "https://www.computerbase.de/artikel/grafikkarten/nvidia-geforce-rtx-5060-test.92811/",
+      "publisher": "ComputerBase / Wolfgang Andermahr",
+      "accessed_at": "2026-11-11",
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "published_at": "2025-06-02",
+      "source_kind": "original_reviewer_measurement",
+      "id": "source:computerbase-rtx5060-review-2025-06-02",
+      "kind": "source"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 26.5,
+      "context": {
+        "game": "black_myth_wukong",
+        "results_url": "https://www.computerbase.de/artikel/grafikkarten/nvidia-geforce-rtx-5060-test.92811/seite-3",
+        "resolution": [
+          1920,
+          1080
+        ],
+        "preset": "cinematic",
+        "api": null,
+        "upscaling": true,
+        "frame_generation": false,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": null,
+        "selection_eligible": false,
+        "quality_degraded": false,
+        "unknown_fields": [
+          "game_build",
+          "measurement_date",
+          "exact_scene",
+          "api",
+          "memory_clock_conflict"
+        ],
+        "upscaler": "DLSS",
+        "upscaling_mode": "quality"
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 7 9800X3D",
+        "motherboard": "ASUS ROG Crosshair X670E Hero",
+        "memory_gb": 48,
+        "memory": "DDR5 CL30-38-38-96; prose says 6200 MT/s, table says 6000 MT/s",
+        "os": "Windows 11 24H2",
+        "runs": null,
+        "aggregation": null,
+        "driver_version": null,
+        "measurement_date": null,
+        "driver_versions_by_gpu": {
+          "GeForce RTX 4060": "GeForce 566.14 baseline, some games retested if changed",
+          "GeForce RTX 5060": "GeForce 576.52",
+          "GeForce RTX 5060 Ti": "GeForce 575.94"
+        }
+      },
+      "id": "measurement:cb-20250602-wukong-4060-fhd-dlssq",
+      "kind": "measurement"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 31.7,
+      "context": {
+        "game": "black_myth_wukong",
+        "results_url": "https://www.computerbase.de/artikel/grafikkarten/nvidia-geforce-rtx-5060-test.92811/seite-3",
+        "resolution": [
+          1920,
+          1080
+        ],
+        "preset": "cinematic",
+        "api": null,
+        "upscaling": true,
+        "frame_generation": false,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": null,
+        "selection_eligible": false,
+        "quality_degraded": false,
+        "unknown_fields": [
+          "game_build",
+          "measurement_date",
+          "exact_scene",
+          "api",
+          "memory_clock_conflict"
+        ],
+        "upscaler": "DLSS",
+        "upscaling_mode": "quality"
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 7 9800X3D",
+        "motherboard": "ASUS ROG Crosshair X670E Hero",
+        "memory_gb": 48,
+        "memory": "DDR5 CL30-38-38-96; prose says 6200 MT/s, table says 6000 MT/s",
+        "os": "Windows 11 24H2",
+        "runs": null,
+        "aggregation": null,
+        "driver_version": null,
+        "measurement_date": null,
+        "driver_versions_by_gpu": {
+          "GeForce RTX 4060": "GeForce 566.14 baseline, some games retested if changed",
+          "GeForce RTX 5060": "GeForce 576.52",
+          "GeForce RTX 5060 Ti": "GeForce 575.94"
+        }
+      },
+      "id": "measurement:cb-20250602-wukong-5060-fhd-dlssq",
+      "kind": "measurement"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 37.2,
+      "context": {
+        "game": "black_myth_wukong",
+        "results_url": "https://www.computerbase.de/artikel/grafikkarten/nvidia-geforce-rtx-5060-test.92811/seite-3",
+        "resolution": [
+          1920,
+          1080
+        ],
+        "preset": "cinematic",
+        "api": null,
+        "upscaling": true,
+        "frame_generation": false,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": null,
+        "selection_eligible": false,
+        "quality_degraded": false,
+        "unknown_fields": [
+          "game_build",
+          "measurement_date",
+          "exact_scene",
+          "api",
+          "memory_clock_conflict"
+        ],
+        "upscaler": "DLSS",
+        "upscaling_mode": "quality"
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 7 9800X3D",
+        "motherboard": "ASUS ROG Crosshair X670E Hero",
+        "memory_gb": 48,
+        "memory": "DDR5 CL30-38-38-96; prose says 6200 MT/s, table says 6000 MT/s",
+        "os": "Windows 11 24H2",
+        "runs": null,
+        "aggregation": null,
+        "driver_version": null,
+        "measurement_date": null,
+        "driver_versions_by_gpu": {
+          "GeForce RTX 4060": "GeForce 566.14 baseline, some games retested if changed",
+          "GeForce RTX 5060": "GeForce 576.52",
+          "GeForce RTX 5060 Ti": "GeForce 575.94"
+        }
+      },
+      "id": "measurement:cb-20250602-wukong-5060ti8-fhd-dlssq",
+      "kind": "measurement"
+    },
+    {
+      "category": "gpu",
+      "label": "GeForce RTX 5060 Ti",
+      "model": "5060ti",
+      "brand": "nvidia",
+      "vram_gb": 8,
+      "id": "hardware:geforce-rtx-5060-ti:vram8",
+      "kind": "hardware"
+    },
+    {
+      "vram_gb": 16,
+      "metric": "average_fps",
+      "value": 38.7,
+      "context": {
+        "game": "black_myth_wukong",
+        "results_url": "https://www.computerbase.de/artikel/grafikkarten/nvidia-geforce-rtx-5060-test.92811/seite-3",
+        "resolution": [
+          1920,
+          1080
+        ],
+        "preset": "cinematic",
+        "api": null,
+        "upscaling": true,
+        "frame_generation": false,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": null,
+        "selection_eligible": false,
+        "quality_degraded": false,
+        "unknown_fields": [
+          "game_build",
+          "measurement_date",
+          "exact_scene",
+          "api",
+          "memory_clock_conflict"
+        ],
+        "upscaler": "DLSS",
+        "upscaling_mode": "quality"
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 7 9800X3D",
+        "motherboard": "ASUS ROG Crosshair X670E Hero",
+        "memory_gb": 48,
+        "memory": "DDR5 CL30-38-38-96; prose says 6200 MT/s, table says 6000 MT/s",
+        "os": "Windows 11 24H2",
+        "runs": null,
+        "aggregation": null,
+        "driver_version": null,
+        "measurement_date": null,
+        "driver_versions_by_gpu": {
+          "GeForce RTX 4060": "GeForce 566.14 baseline, some games retested if changed",
+          "GeForce RTX 5060": "GeForce 576.52",
+          "GeForce RTX 5060 Ti": "GeForce 575.94"
+        }
+      },
+      "id": "measurement:cb-20250602-wukong-5060ti16-fhd-dlssq",
+      "kind": "measurement"
+    },
+    {
+      "category": "gpu",
+      "label": "GeForce RTX 5060 Ti",
+      "model": "5060ti",
+      "brand": "nvidia",
+      "vram_gb": 16,
+      "id": "hardware:geforce-rtx-5060-ti:vram16",
+      "kind": "hardware"
+    },
+    {
+      "url": "https://www.computerbase.de/artikel/gaming/monster-hunter-wilds-benchmark-test.91864/seite-2",
+      "publisher": "ComputerBase / Wolfgang Andermahr",
+      "accessed_at": "2026-11-11",
+      "reviewed": true,
+      "review_after": "2027-02-11",
+      "published_at": "2025-03-31",
+      "source_kind": "original_reviewer_measurement",
+      "id": "source:computerbase-mhwilds-2025-03-31",
+      "kind": "source"
+    },
+    {
+      "vram_gb": 8,
+      "metric": "average_fps",
+      "value": 35.8,
+      "context": {
+        "game": "monster_hunter_wilds",
+        "results_url": "https://www.computerbase.de/artikel/gaming/monster-hunter-wilds-benchmark-test.91864/seite-2",
+        "resolution": [
+          2560,
+          1440
+        ],
+        "preset": "ultra",
+        "api": "DirectX 12",
+        "upscaling": true,
+        "frame_generation": null,
+        "ray_tracing": false,
+        "path_tracing": false,
+        "scene": "20-second forest route near the tent, vegetation and water",
+        "selection_eligible": false,
+        "quality_degraded": false,
+        "unknown_fields": [
+          "game_build",
+          "measurement_date",
+          "frame_generation",
+          "texture_dlc_enabled_in_individual_run"
+        ],
+        "upscaler": "DLSS",
+        "upscaling_mode": "quality",
+        "texture_dlc": null,
+        "quality_warning": "Reviewer warns 8GB can overflow at highest textures with the texture DLC"
+      },
+      "platform": {
+        "cpu": "AMD Ryzen 7 9800X3D",
+        "motherboard": "ASUS ROG Crosshair X670E Hero",
+        "memory_gb": 48,
+        "memory": "DDR5-6000 CL30-38-38-96",
+        "os": "Windows 11 24H2",
+        "runs": null,
+        "aggregation": null,
+        "driver_version": "GeForce 572.83",
+        "measurement_date": null
+      },
+      "id": "measurement:cb-20250331-mhw-4060-qhd-dlssq",
       "kind": "measurement"
     }
   ],
@@ -1734,6 +4536,1652 @@
       "alternative_group": "game:cyberpunk_2077:recommended:REQUIRES_GPU"
     },
     {
+      "from": "game:dota_2",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:dota_2:minimum"
+    },
+    {
+      "from": "game:dota_2:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:dota_2"
+    },
+    {
+      "from": "game:dota_2:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-or-amd-dual-core-2-8-ghz",
+      "operator": "any",
+      "alternative_group": "game:dota_2:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:dota_2:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-8600",
+      "operator": "any",
+      "alternative_group": "game:dota_2:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:dota_2:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-9600-gt",
+      "operator": "any",
+      "alternative_group": "game:dota_2:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:dota_2:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:ati-amd-radeon-hd-2600",
+      "operator": "any",
+      "alternative_group": "game:dota_2:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:dota_2:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:ati-amd-radeon-hd-3600",
+      "operator": "any",
+      "alternative_group": "game:dota_2:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:rust",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:rust:minimum"
+    },
+    {
+      "from": "game:rust:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:rust"
+    },
+    {
+      "from": "game:rust:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-1400",
+      "operator": "any",
+      "alternative_group": "game:rust:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:rust:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-6600",
+      "operator": "any",
+      "alternative_group": "game:rust:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:rust:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-470",
+      "operator": "any",
+      "alternative_group": "game:rust:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:rust:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1060",
+      "operator": "any",
+      "alternative_group": "game:rust:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:rust:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-arc-a580",
+      "operator": "any",
+      "alternative_group": "game:rust:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:rust",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:rust:recommended"
+    },
+    {
+      "from": "game:rust:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:rust"
+    },
+    {
+      "from": "game:rust:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-7-3700x",
+      "operator": "any",
+      "alternative_group": "game:rust:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:rust:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i7-6700k",
+      "operator": "any",
+      "alternative_group": "game:rust:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:rust:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-6600-xt",
+      "operator": "any",
+      "alternative_group": "game:rust:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:rust:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-rtx-3060",
+      "operator": "any",
+      "alternative_group": "game:rust:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:rust:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-arc-b580",
+      "operator": "any",
+      "alternative_group": "game:rust:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:gta_v_enhanced",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:gta_v_enhanced:minimum"
+    },
+    {
+      "from": "game:gta_v_enhanced:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:gta_v_enhanced"
+    },
+    {
+      "from": "game:gta_v_enhanced:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i7-4770",
+      "operator": "any",
+      "alternative_group": "game:gta_v_enhanced:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:gta_v_enhanced:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-fx-9590",
+      "operator": "any",
+      "alternative_group": "game:gta_v_enhanced:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:gta_v_enhanced:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1630:vram4",
+      "operator": "any",
+      "alternative_group": "game:gta_v_enhanced:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:gta_v_enhanced:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-6400:vram4",
+      "operator": "any",
+      "alternative_group": "game:gta_v_enhanced:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:gta_v_enhanced",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:gta_v_enhanced:recommended"
+    },
+    {
+      "from": "game:gta_v_enhanced:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:gta_v_enhanced"
+    },
+    {
+      "from": "game:gta_v_enhanced:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-9600k",
+      "operator": "any",
+      "alternative_group": "game:gta_v_enhanced:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:gta_v_enhanced:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-3600",
+      "operator": "any",
+      "alternative_group": "game:gta_v_enhanced:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:gta_v_enhanced:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-rtx-3060:vram8",
+      "operator": "any",
+      "alternative_group": "game:gta_v_enhanced:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:gta_v_enhanced:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-6600-xt:vram8",
+      "operator": "any",
+      "alternative_group": "game:gta_v_enhanced:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:red_dead_redemption_2",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:red_dead_redemption_2:minimum"
+    },
+    {
+      "from": "game:red_dead_redemption_2:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:red_dead_redemption_2"
+    },
+    {
+      "from": "game:red_dead_redemption_2:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-2500k",
+      "operator": "any",
+      "alternative_group": "game:red_dead_redemption_2:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:red_dead_redemption_2:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-fx-6300",
+      "operator": "any",
+      "alternative_group": "game:red_dead_redemption_2:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:red_dead_redemption_2:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-770:vram2",
+      "operator": "any",
+      "alternative_group": "game:red_dead_redemption_2:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:red_dead_redemption_2:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-r9-280:vram3",
+      "operator": "any",
+      "alternative_group": "game:red_dead_redemption_2:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:red_dead_redemption_2",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:red_dead_redemption_2:recommended"
+    },
+    {
+      "from": "game:red_dead_redemption_2:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:red_dead_redemption_2"
+    },
+    {
+      "from": "game:red_dead_redemption_2:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i7-4770k",
+      "operator": "any",
+      "alternative_group": "game:red_dead_redemption_2:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:red_dead_redemption_2:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-1500x",
+      "operator": "any",
+      "alternative_group": "game:red_dead_redemption_2:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:red_dead_redemption_2:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1060:vram6",
+      "operator": "any",
+      "alternative_group": "game:red_dead_redemption_2:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:red_dead_redemption_2:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-480:vram4",
+      "operator": "any",
+      "alternative_group": "game:red_dead_redemption_2:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:elden_ring",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:elden_ring:minimum"
+    },
+    {
+      "from": "game:elden_ring:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:elden_ring"
+    },
+    {
+      "from": "game:elden_ring:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-8400",
+      "operator": "any",
+      "alternative_group": "game:elden_ring:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:elden_ring:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-3-3300x",
+      "operator": "any",
+      "alternative_group": "game:elden_ring:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:elden_ring:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1060:vram3",
+      "operator": "any",
+      "alternative_group": "game:elden_ring:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:elden_ring:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-580:vram4",
+      "operator": "any",
+      "alternative_group": "game:elden_ring:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:elden_ring",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:elden_ring:recommended"
+    },
+    {
+      "from": "game:elden_ring:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:elden_ring"
+    },
+    {
+      "from": "game:elden_ring:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i7-8700k",
+      "operator": "any",
+      "alternative_group": "game:elden_ring:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:elden_ring:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-3600x",
+      "operator": "any",
+      "alternative_group": "game:elden_ring:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:elden_ring:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1070:vram8",
+      "operator": "any",
+      "alternative_group": "game:elden_ring:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:elden_ring:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-vega-56:vram8",
+      "operator": "any",
+      "alternative_group": "game:elden_ring:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:baldurs_gate_3",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:baldurs_gate_3:minimum"
+    },
+    {
+      "from": "game:baldurs_gate_3:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:baldurs_gate_3"
+    },
+    {
+      "from": "game:baldurs_gate_3:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-4690",
+      "operator": "any",
+      "alternative_group": "game:baldurs_gate_3:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:baldurs_gate_3:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-fx-8350",
+      "operator": "any",
+      "alternative_group": "game:baldurs_gate_3:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:baldurs_gate_3:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:qualcomm-snapdragon-x-elite",
+      "operator": "any",
+      "alternative_group": "game:baldurs_gate_3:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:baldurs_gate_3:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-970",
+      "operator": "any",
+      "alternative_group": "game:baldurs_gate_3:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:baldurs_gate_3:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-480",
+      "operator": "any",
+      "alternative_group": "game:baldurs_gate_3:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:baldurs_gate_3:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-arc-a380",
+      "operator": "any",
+      "alternative_group": "game:baldurs_gate_3:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:baldurs_gate_3:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:qualcomm-adreno-x1",
+      "operator": "any",
+      "alternative_group": "game:baldurs_gate_3:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:baldurs_gate_3",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:baldurs_gate_3:recommended"
+    },
+    {
+      "from": "game:baldurs_gate_3:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:baldurs_gate_3"
+    },
+    {
+      "from": "game:baldurs_gate_3:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i7-8700k",
+      "operator": "any",
+      "alternative_group": "game:baldurs_gate_3:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:baldurs_gate_3:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-3600",
+      "operator": "any",
+      "alternative_group": "game:baldurs_gate_3:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:baldurs_gate_3:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-rtx-2060-super",
+      "operator": "any",
+      "alternative_group": "game:baldurs_gate_3:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:baldurs_gate_3:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-5700-xt",
+      "operator": "any",
+      "alternative_group": "game:baldurs_gate_3:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:baldurs_gate_3:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-arc-a580",
+      "operator": "any",
+      "alternative_group": "game:baldurs_gate_3:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:black_myth_wukong",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:black_myth_wukong:minimum"
+    },
+    {
+      "from": "game:black_myth_wukong:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:black_myth_wukong"
+    },
+    {
+      "from": "game:black_myth_wukong:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-8400",
+      "operator": "any",
+      "alternative_group": "game:black_myth_wukong:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:black_myth_wukong:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-1600",
+      "operator": "any",
+      "alternative_group": "game:black_myth_wukong:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:black_myth_wukong:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1060:vram6",
+      "operator": "any",
+      "alternative_group": "game:black_myth_wukong:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:black_myth_wukong:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-580:vram8",
+      "operator": "any",
+      "alternative_group": "game:black_myth_wukong:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:black_myth_wukong",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:black_myth_wukong:recommended"
+    },
+    {
+      "from": "game:black_myth_wukong:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:black_myth_wukong"
+    },
+    {
+      "from": "game:black_myth_wukong:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i7-9700",
+      "operator": "any",
+      "alternative_group": "game:black_myth_wukong:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:black_myth_wukong:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-5500",
+      "operator": "any",
+      "alternative_group": "game:black_myth_wukong:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:black_myth_wukong:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-rtx-2060",
+      "operator": "any",
+      "alternative_group": "game:black_myth_wukong:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:black_myth_wukong:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-5700-xt",
+      "operator": "any",
+      "alternative_group": "game:black_myth_wukong:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:black_myth_wukong:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-arc-a750",
+      "operator": "any",
+      "alternative_group": "game:black_myth_wukong:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:monster_hunter_wilds",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:monster_hunter_wilds:minimum"
+    },
+    {
+      "from": "game:monster_hunter_wilds:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:monster_hunter_wilds"
+    },
+    {
+      "from": "game:monster_hunter_wilds:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-10400",
+      "operator": "any",
+      "alternative_group": "game:monster_hunter_wilds:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:monster_hunter_wilds:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i3-12100",
+      "operator": "any",
+      "alternative_group": "game:monster_hunter_wilds:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:monster_hunter_wilds:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-3600",
+      "operator": "any",
+      "alternative_group": "game:monster_hunter_wilds:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:monster_hunter_wilds:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1660:vram6",
+      "operator": "any",
+      "alternative_group": "game:monster_hunter_wilds:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:monster_hunter_wilds:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-5500-xt:vram8",
+      "operator": "any",
+      "alternative_group": "game:monster_hunter_wilds:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:monster_hunter_wilds",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:monster_hunter_wilds:recommended"
+    },
+    {
+      "from": "game:monster_hunter_wilds:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:monster_hunter_wilds"
+    },
+    {
+      "from": "game:monster_hunter_wilds:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-10400",
+      "operator": "any",
+      "alternative_group": "game:monster_hunter_wilds:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:monster_hunter_wilds:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i3-12100",
+      "operator": "any",
+      "alternative_group": "game:monster_hunter_wilds:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:monster_hunter_wilds:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-3600",
+      "operator": "any",
+      "alternative_group": "game:monster_hunter_wilds:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:monster_hunter_wilds:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-rtx-2060-super:vram8",
+      "operator": "any",
+      "alternative_group": "game:monster_hunter_wilds:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:monster_hunter_wilds:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-6600:vram8",
+      "operator": "any",
+      "alternative_group": "game:monster_hunter_wilds:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:helldivers_2",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:helldivers_2:minimum"
+    },
+    {
+      "from": "game:helldivers_2:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:helldivers_2"
+    },
+    {
+      "from": "game:helldivers_2:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i7-4790k",
+      "operator": "any",
+      "alternative_group": "game:helldivers_2:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:helldivers_2:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-1500x",
+      "operator": "any",
+      "alternative_group": "game:helldivers_2:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:helldivers_2:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1050-ti",
+      "operator": "any",
+      "alternative_group": "game:helldivers_2:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:helldivers_2:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-470",
+      "operator": "any",
+      "alternative_group": "game:helldivers_2:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:helldivers_2",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:helldivers_2:recommended"
+    },
+    {
+      "from": "game:helldivers_2:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:helldivers_2"
+    },
+    {
+      "from": "game:helldivers_2:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i7-9700k",
+      "operator": "any",
+      "alternative_group": "game:helldivers_2:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:helldivers_2:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-7-3700x",
+      "operator": "any",
+      "alternative_group": "game:helldivers_2:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:helldivers_2:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-rtx-2060",
+      "operator": "any",
+      "alternative_group": "game:helldivers_2:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:helldivers_2:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-6600-xt",
+      "operator": "any",
+      "alternative_group": "game:helldivers_2:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:palworld",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:palworld:minimum"
+    },
+    {
+      "from": "game:palworld:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:palworld"
+    },
+    {
+      "from": "game:palworld:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-9400f",
+      "operator": "any",
+      "alternative_group": "game:palworld:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:palworld:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1660",
+      "operator": "any",
+      "alternative_group": "game:palworld:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:palworld",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:palworld:recommended"
+    },
+    {
+      "from": "game:palworld:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:palworld"
+    },
+    {
+      "from": "game:palworld:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-12400",
+      "operator": "any",
+      "alternative_group": "game:palworld:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:palworld:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-5600x",
+      "operator": "any",
+      "alternative_group": "game:palworld:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:palworld:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-rtx-3060-ti",
+      "operator": "any",
+      "alternative_group": "game:palworld:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:palworld:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-6700-xt",
+      "operator": "any",
+      "alternative_group": "game:palworld:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:destiny_2",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:destiny_2:minimum"
+    },
+    {
+      "from": "game:destiny_2:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:destiny_2"
+    },
+    {
+      "from": "game:destiny_2:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i3-3250",
+      "operator": "any",
+      "alternative_group": "game:destiny_2:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:destiny_2:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-pentium-g4560",
+      "operator": "any",
+      "alternative_group": "game:destiny_2:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:destiny_2:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-fx-4350",
+      "operator": "any",
+      "alternative_group": "game:destiny_2:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:destiny_2:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-660:vram2",
+      "operator": "any",
+      "alternative_group": "game:destiny_2:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:destiny_2:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1050:vram2",
+      "operator": "any",
+      "alternative_group": "game:destiny_2:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:destiny_2:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-hd-7850:vram2",
+      "operator": "any",
+      "alternative_group": "game:destiny_2:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:destiny_2",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:destiny_2:recommended"
+    },
+    {
+      "from": "game:destiny_2:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:destiny_2"
+    },
+    {
+      "from": "game:destiny_2:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-2400",
+      "operator": "any",
+      "alternative_group": "game:destiny_2:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:destiny_2:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-7400",
+      "operator": "any",
+      "alternative_group": "game:destiny_2:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:destiny_2:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-1600x",
+      "operator": "any",
+      "alternative_group": "game:destiny_2:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:destiny_2:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-970:vram4",
+      "operator": "any",
+      "alternative_group": "game:destiny_2:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:destiny_2:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1060:vram6",
+      "operator": "any",
+      "alternative_group": "game:destiny_2:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:destiny_2:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-r9-390:vram8",
+      "operator": "any",
+      "alternative_group": "game:destiny_2:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:warframe",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:warframe:minimum"
+    },
+    {
+      "from": "game:warframe:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:warframe"
+    },
+    {
+      "from": "game:warframe:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i7-860",
+      "operator": "any",
+      "alternative_group": "game:warframe:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:warframe:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-750",
+      "operator": "any",
+      "alternative_group": "game:warframe:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:warframe:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-fx-4100",
+      "operator": "any",
+      "alternative_group": "game:warframe:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:rainbow_six_siege_x",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:rainbow_six_siege_x:minimum"
+    },
+    {
+      "from": "game:rainbow_six_siege_x:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:rainbow_six_siege_x"
+    },
+    {
+      "from": "game:rainbow_six_siege_x:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-3-3100",
+      "operator": "any",
+      "alternative_group": "game:rainbow_six_siege_x:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:rainbow_six_siege_x:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i3-8100",
+      "operator": "any",
+      "alternative_group": "game:rainbow_six_siege_x:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:rainbow_six_siege_x:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1650:vram4",
+      "operator": "any",
+      "alternative_group": "game:rainbow_six_siege_x:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:rainbow_six_siege_x:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-5500-xt:vram4",
+      "operator": "any",
+      "alternative_group": "game:rainbow_six_siege_x:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:rainbow_six_siege_x:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-arc-a380:vram6",
+      "operator": "any",
+      "alternative_group": "game:rainbow_six_siege_x:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:rainbow_six_siege_x",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:rainbow_six_siege_x:recommended"
+    },
+    {
+      "from": "game:rainbow_six_siege_x:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:rainbow_six_siege_x"
+    },
+    {
+      "from": "game:rainbow_six_siege_x:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-3600",
+      "operator": "any",
+      "alternative_group": "game:rainbow_six_siege_x:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:rainbow_six_siege_x:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-10400",
+      "operator": "any",
+      "alternative_group": "game:rainbow_six_siege_x:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:rainbow_six_siege_x:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-rtx-2060:vram6",
+      "operator": "any",
+      "alternative_group": "game:rainbow_six_siege_x:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:rainbow_six_siege_x:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-6600:vram8",
+      "operator": "any",
+      "alternative_group": "game:rainbow_six_siege_x:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:dead_by_daylight",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:dead_by_daylight:minimum"
+    },
+    {
+      "from": "game:dead_by_daylight:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:dead_by_daylight"
+    },
+    {
+      "from": "game:dead_by_daylight:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i3-4170",
+      "operator": "any",
+      "alternative_group": "game:dead_by_daylight:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:dead_by_daylight:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-fx-8120",
+      "operator": "any",
+      "alternative_group": "game:dead_by_daylight:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:dead_by_daylight:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-460:vram1",
+      "operator": "any",
+      "alternative_group": "game:dead_by_daylight:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:dead_by_daylight:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-hd-6850:vram1",
+      "operator": "any",
+      "alternative_group": "game:dead_by_daylight:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:dead_by_daylight",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:dead_by_daylight:recommended"
+    },
+    {
+      "from": "game:dead_by_daylight:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:dead_by_daylight"
+    },
+    {
+      "from": "game:dead_by_daylight:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i3-4170",
+      "operator": "any",
+      "alternative_group": "game:dead_by_daylight:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:dead_by_daylight:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-fx-8300",
+      "operator": "any",
+      "alternative_group": "game:dead_by_daylight:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:dead_by_daylight:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-760:vram4",
+      "operator": "any",
+      "alternative_group": "game:dead_by_daylight:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:dead_by_daylight:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-hd-8800:vram4",
+      "operator": "any",
+      "alternative_group": "game:dead_by_daylight:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:path_of_exile_2",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:path_of_exile_2:minimum"
+    },
+    {
+      "from": "game:path_of_exile_2:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:path_of_exile_2"
+    },
+    {
+      "from": "game:path_of_exile_2:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i7-7700",
+      "operator": "any",
+      "alternative_group": "game:path_of_exile_2:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:path_of_exile_2:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-2500x",
+      "operator": "any",
+      "alternative_group": "game:path_of_exile_2:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:path_of_exile_2:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-960:vram3",
+      "operator": "any",
+      "alternative_group": "game:path_of_exile_2:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:path_of_exile_2:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-arc-a380",
+      "operator": "any",
+      "alternative_group": "game:path_of_exile_2:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:path_of_exile_2:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-470",
+      "operator": "any",
+      "alternative_group": "game:path_of_exile_2:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:path_of_exile_2",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:path_of_exile_2:recommended"
+    },
+    {
+      "from": "game:path_of_exile_2:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:path_of_exile_2"
+    },
+    {
+      "from": "game:path_of_exile_2:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-10500",
+      "operator": "any",
+      "alternative_group": "game:path_of_exile_2:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:path_of_exile_2:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-3700x",
+      "operator": "any",
+      "alternative_group": "game:path_of_exile_2:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:path_of_exile_2:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-rtx-2060",
+      "operator": "any",
+      "alternative_group": "game:path_of_exile_2:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:path_of_exile_2:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-arc-a770",
+      "operator": "any",
+      "alternative_group": "game:path_of_exile_2:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:path_of_exile_2:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-5600-xt",
+      "operator": "any",
+      "alternative_group": "game:path_of_exile_2:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:diablo_iv",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:diablo_iv:minimum"
+    },
+    {
+      "from": "game:diablo_iv:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:diablo_iv"
+    },
+    {
+      "from": "game:diablo_iv:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-2500k",
+      "operator": "any",
+      "alternative_group": "game:diablo_iv:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:diablo_iv:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-fx-8350",
+      "operator": "any",
+      "alternative_group": "game:diablo_iv:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:diablo_iv:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-660",
+      "operator": "any",
+      "alternative_group": "game:diablo_iv:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:diablo_iv:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-arc-a380",
+      "operator": "any",
+      "alternative_group": "game:diablo_iv:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:diablo_iv:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-r9-280",
+      "operator": "any",
+      "alternative_group": "game:diablo_iv:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:diablo_iv",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:diablo_iv:recommended"
+    },
+    {
+      "from": "game:diablo_iv:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:diablo_iv"
+    },
+    {
+      "from": "game:diablo_iv:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-4670k",
+      "operator": "any",
+      "alternative_group": "game:diablo_iv:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:diablo_iv:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-1300x",
+      "operator": "any",
+      "alternative_group": "game:diablo_iv:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:diablo_iv:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-970",
+      "operator": "any",
+      "alternative_group": "game:diablo_iv:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:diablo_iv:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-arc-a750",
+      "operator": "any",
+      "alternative_group": "game:diablo_iv:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:diablo_iv:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-470",
+      "operator": "any",
+      "alternative_group": "game:diablo_iv:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:genshin_impact",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:genshin_impact:minimum"
+    },
+    {
+      "from": "game:genshin_impact:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:genshin_impact"
+    },
+    {
+      "from": "game:genshin_impact:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-6th-generation",
+      "operator": "any",
+      "alternative_group": "game:genshin_impact:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:genshin_impact:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-series",
+      "operator": "any",
+      "alternative_group": "game:genshin_impact:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:genshin_impact:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1050",
+      "operator": "any",
+      "alternative_group": "game:genshin_impact:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:genshin_impact:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-iris-xe",
+      "operator": "any",
+      "alternative_group": "game:genshin_impact:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:genshin_impact",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:genshin_impact:recommended"
+    },
+    {
+      "from": "game:genshin_impact:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:genshin_impact"
+    },
+    {
+      "from": "game:genshin_impact:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i7-7th-generation",
+      "operator": "any",
+      "alternative_group": "game:genshin_impact:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:genshin_impact:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5000-series",
+      "operator": "any",
+      "alternative_group": "game:genshin_impact:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:genshin_impact:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1060:vram6",
+      "operator": "any",
+      "alternative_group": "game:genshin_impact:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:minecraft_java",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:minecraft_java:minimum"
+    },
+    {
+      "from": "game:minecraft_java:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:minecraft_java"
+    },
+    {
+      "from": "game:minecraft_java:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i3-10100",
+      "operator": "any",
+      "alternative_group": "game:minecraft_java:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:minecraft_java:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-3-3100",
+      "operator": "any",
+      "alternative_group": "game:minecraft_java:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:minecraft_java:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:qualcomm-snapdragon-x",
+      "operator": "any",
+      "alternative_group": "game:minecraft_java:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:minecraft_java:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-950",
+      "operator": "any",
+      "alternative_group": "game:minecraft_java:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:minecraft_java:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-460",
+      "operator": "any",
+      "alternative_group": "game:minecraft_java:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:minecraft_java:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-arc-a310",
+      "operator": "any",
+      "alternative_group": "game:minecraft_java:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:minecraft_java",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:minecraft_java:minimum_integrated"
+    },
+    {
+      "from": "game:minecraft_java:minimum_integrated",
+      "relation": "SUPPORTED_BY",
+      "to": "source:minecraft_java"
+    },
+    {
+      "from": "game:minecraft_java:minimum_integrated",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i3-10100",
+      "operator": "any",
+      "alternative_group": "game:minecraft_java:minimum_integrated:REQUIRES_CPU"
+    },
+    {
+      "from": "game:minecraft_java:minimum_integrated",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-3-3100",
+      "operator": "any",
+      "alternative_group": "game:minecraft_java:minimum_integrated:REQUIRES_CPU"
+    },
+    {
+      "from": "game:minecraft_java:minimum_integrated",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:qualcomm-snapdragon-x",
+      "operator": "any",
+      "alternative_group": "game:minecraft_java:minimum_integrated:REQUIRES_CPU"
+    },
+    {
+      "from": "game:minecraft_java:minimum_integrated",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-core-i5-6400-integrated-graphics",
+      "operator": "any",
+      "alternative_group": "game:minecraft_java:minimum_integrated:REQUIRES_GPU"
+    },
+    {
+      "from": "game:minecraft_java:minimum_integrated",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:qualcomm-snapdragon-x-integrated-graphics",
+      "operator": "any",
+      "alternative_group": "game:minecraft_java:minimum_integrated:REQUIRES_GPU"
+    },
+    {
+      "from": "game:minecraft_java",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:minecraft_java:recommended"
+    },
+    {
+      "from": "game:minecraft_java:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:minecraft_java"
+    },
+    {
+      "from": "game:minecraft_java:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-12400",
+      "operator": "any",
+      "alternative_group": "game:minecraft_java:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:minecraft_java:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-5600",
+      "operator": "any",
+      "alternative_group": "game:minecraft_java:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:minecraft_java:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-rtx-2060",
+      "operator": "any",
+      "alternative_group": "game:minecraft_java:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:minecraft_java:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-5600-xt",
+      "operator": "any",
+      "alternative_group": "game:minecraft_java:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:minecraft_java:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:intel-arc-a580",
+      "operator": "any",
+      "alternative_group": "game:minecraft_java:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:lost_ark",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:lost_ark:minimum"
+    },
+    {
+      "from": "game:lost_ark:minimum",
+      "relation": "SUPPORTED_BY",
+      "to": "source:lost_ark"
+    },
+    {
+      "from": "game:lost_ark:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i3-10100",
+      "operator": "any",
+      "alternative_group": "game:lost_ark:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:lost_ark:minimum",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-3-3100",
+      "operator": "any",
+      "alternative_group": "game:lost_ark:minimum:REQUIRES_CPU"
+    },
+    {
+      "from": "game:lost_ark:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1050-ti",
+      "operator": "any",
+      "alternative_group": "game:lost_ark:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:lost_ark:minimum",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-560",
+      "operator": "any",
+      "alternative_group": "game:lost_ark:minimum:REQUIRES_GPU"
+    },
+    {
+      "from": "game:lost_ark",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:lost_ark:recommended"
+    },
+    {
+      "from": "game:lost_ark:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:lost_ark"
+    },
+    {
+      "from": "game:lost_ark:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-9400",
+      "operator": "any",
+      "alternative_group": "game:lost_ark:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:lost_ark:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-2600",
+      "operator": "any",
+      "alternative_group": "game:lost_ark:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:lost_ark:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gtx-1660-super",
+      "operator": "any",
+      "alternative_group": "game:lost_ark:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:lost_ark:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-6600",
+      "operator": "any",
+      "alternative_group": "game:lost_ark:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:lost_ark",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:lost_ark:recommended_qhd"
+    },
+    {
+      "from": "game:lost_ark:recommended_qhd",
+      "relation": "SUPPORTED_BY",
+      "to": "source:lost_ark"
+    },
+    {
+      "from": "game:lost_ark:recommended_qhd",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-11400",
+      "operator": "any",
+      "alternative_group": "game:lost_ark:recommended_qhd:REQUIRES_CPU"
+    },
+    {
+      "from": "game:lost_ark:recommended_qhd",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-5600",
+      "operator": "any",
+      "alternative_group": "game:lost_ark:recommended_qhd:REQUIRES_CPU"
+    },
+    {
+      "from": "game:lost_ark:recommended_qhd",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-rtx-3060",
+      "operator": "any",
+      "alternative_group": "game:lost_ark:recommended_qhd:REQUIRES_GPU"
+    },
+    {
+      "from": "game:lost_ark:recommended_qhd",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-6600",
+      "operator": "any",
+      "alternative_group": "game:lost_ark:recommended_qhd:REQUIRES_GPU"
+    },
+    {
+      "from": "game:lost_ark",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:lost_ark:recommended_uhd"
+    },
+    {
+      "from": "game:lost_ark:recommended_uhd",
+      "relation": "SUPPORTED_BY",
+      "to": "source:lost_ark"
+    },
+    {
+      "from": "game:lost_ark:recommended_uhd",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-core-i5-12400",
+      "operator": "any",
+      "alternative_group": "game:lost_ark:recommended_uhd:REQUIRES_CPU"
+    },
+    {
+      "from": "game:lost_ark:recommended_uhd",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:amd-ryzen-5-5600x",
+      "operator": "any",
+      "alternative_group": "game:lost_ark:recommended_uhd:REQUIRES_CPU"
+    },
+    {
+      "from": "game:lost_ark:recommended_uhd",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-rtx-3080",
+      "operator": "any",
+      "alternative_group": "game:lost_ark:recommended_uhd:REQUIRES_GPU"
+    },
+    {
+      "from": "game:lost_ark:recommended_uhd",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-rx-6800-xt",
+      "operator": "any",
+      "alternative_group": "game:lost_ark:recommended_uhd:REQUIRES_GPU"
+    },
+    {
+      "from": "game:maplestory",
+      "relation": "HAS_REQUIREMENT",
+      "to": "game:maplestory:recommended"
+    },
+    {
+      "from": "game:maplestory:recommended",
+      "relation": "SUPPORTED_BY",
+      "to": "source:maplestory"
+    },
+    {
+      "from": "game:maplestory:recommended",
+      "relation": "REQUIRES_CPU",
+      "to": "hardware:intel-pentium-dual-core",
+      "operator": "any",
+      "alternative_group": "game:maplestory:recommended:REQUIRES_CPU"
+    },
+    {
+      "from": "game:maplestory:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:nvidia-geforce-gt-430",
+      "operator": "any",
+      "alternative_group": "game:maplestory:recommended:REQUIRES_GPU"
+    },
+    {
+      "from": "game:maplestory:recommended",
+      "relation": "REQUIRES_GPU",
+      "to": "hardware:amd-radeon-hd-5670",
+      "operator": "any",
+      "alternative_group": "game:maplestory:recommended:REQUIRES_GPU"
+    },
+    {
       "from": "game:overwatch",
       "relation": "HAS_MEASUREMENT",
       "to": "measurement:cb-20260430-ow2-rtx4060"
@@ -1810,6 +6258,326 @@
     },
     {
       "from": "measurement:cb-20260430-cp2077-rtx5060",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-7-9800x3d"
+    },
+    {
+      "from": "game:baldurs_gate_3",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20230809-bg3-4060-fhd"
+    },
+    {
+      "from": "measurement:cb-20230809-bg3-4060-fhd",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-bg3-2023-08-09"
+    },
+    {
+      "from": "measurement:cb-20230809-bg3-4060-fhd",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-4060:vram8"
+    },
+    {
+      "from": "measurement:cb-20230809-bg3-4060-fhd",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-9-7950x3d"
+    },
+    {
+      "from": "game:baldurs_gate_3",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20230809-bg3-4060-qhd"
+    },
+    {
+      "from": "measurement:cb-20230809-bg3-4060-qhd",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-bg3-2023-08-09"
+    },
+    {
+      "from": "measurement:cb-20230809-bg3-4060-qhd",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-4060:vram8"
+    },
+    {
+      "from": "measurement:cb-20230809-bg3-4060-qhd",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-9-7950x3d"
+    },
+    {
+      "from": "game:helldivers_2",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20240503-hd2-4060-fhd"
+    },
+    {
+      "from": "measurement:cb-20240503-hd2-4060-fhd",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-hd2-2024-05-03"
+    },
+    {
+      "from": "measurement:cb-20240503-hd2-4060-fhd",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-4060:vram8"
+    },
+    {
+      "from": "measurement:cb-20240503-hd2-4060-fhd",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-9-7950x3d"
+    },
+    {
+      "from": "game:helldivers_2",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20240503-hd2-4060ti8-fhd"
+    },
+    {
+      "from": "measurement:cb-20240503-hd2-4060ti8-fhd",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-hd2-2024-05-03"
+    },
+    {
+      "from": "measurement:cb-20240503-hd2-4060ti8-fhd",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-4060-ti:vram8"
+    },
+    {
+      "from": "measurement:cb-20240503-hd2-4060ti8-fhd",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-9-7950x3d"
+    },
+    {
+      "from": "game:helldivers_2",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20240503-hd2-4060-qhd"
+    },
+    {
+      "from": "measurement:cb-20240503-hd2-4060-qhd",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-hd2-2024-05-03"
+    },
+    {
+      "from": "measurement:cb-20240503-hd2-4060-qhd",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-4060:vram8"
+    },
+    {
+      "from": "measurement:cb-20240503-hd2-4060-qhd",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-9-7950x3d"
+    },
+    {
+      "from": "game:helldivers_2",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20240503-hd2-4060ti8-qhd"
+    },
+    {
+      "from": "measurement:cb-20240503-hd2-4060ti8-qhd",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-hd2-2024-05-03"
+    },
+    {
+      "from": "measurement:cb-20240503-hd2-4060ti8-qhd",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-4060-ti:vram8"
+    },
+    {
+      "from": "measurement:cb-20240503-hd2-4060ti8-qhd",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-9-7950x3d"
+    },
+    {
+      "from": "game:helldivers_2",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20240503-hd2-4060-fhd-high-upscaled"
+    },
+    {
+      "from": "measurement:cb-20240503-hd2-4060-fhd-high-upscaled",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-hd2-2024-05-03"
+    },
+    {
+      "from": "measurement:cb-20240503-hd2-4060-fhd-high-upscaled",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-4060:vram8"
+    },
+    {
+      "from": "measurement:cb-20240503-hd2-4060-fhd-high-upscaled",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-9-7950x3d"
+    },
+    {
+      "from": "game:palworld",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20240513-palworld-4060-fhd-max-tsr"
+    },
+    {
+      "from": "measurement:cb-20240513-palworld-4060-fhd-max-tsr",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-palworld-2024-05-13"
+    },
+    {
+      "from": "measurement:cb-20240513-palworld-4060-fhd-max-tsr",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-4060:vram8"
+    },
+    {
+      "from": "measurement:cb-20240513-palworld-4060-fhd-max-tsr",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-9-7950x3d"
+    },
+    {
+      "from": "game:palworld",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20240513-palworld-4060ti8-fhd-max-tsr"
+    },
+    {
+      "from": "measurement:cb-20240513-palworld-4060ti8-fhd-max-tsr",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-palworld-2024-05-13"
+    },
+    {
+      "from": "measurement:cb-20240513-palworld-4060ti8-fhd-max-tsr",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-4060-ti:vram8"
+    },
+    {
+      "from": "measurement:cb-20240513-palworld-4060ti8-fhd-max-tsr",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-9-7950x3d"
+    },
+    {
+      "from": "game:palworld",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20240513-palworld-4060-fhd-medium-tsr"
+    },
+    {
+      "from": "measurement:cb-20240513-palworld-4060-fhd-medium-tsr",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-palworld-2024-05-13"
+    },
+    {
+      "from": "measurement:cb-20240513-palworld-4060-fhd-medium-tsr",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-4060:vram8"
+    },
+    {
+      "from": "measurement:cb-20240513-palworld-4060-fhd-medium-tsr",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-9-7950x3d"
+    },
+    {
+      "from": "game:diablo_iv",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20241012-diablo4-4060-fhd-dlaa-reduced-texture"
+    },
+    {
+      "from": "measurement:cb-20241012-diablo4-4060-fhd-dlaa-reduced-texture",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-diablo4-voh-2024-10-12"
+    },
+    {
+      "from": "measurement:cb-20241012-diablo4-4060-fhd-dlaa-reduced-texture",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-4060:vram8"
+    },
+    {
+      "from": "measurement:cb-20241012-diablo4-4060-fhd-dlaa-reduced-texture",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-9-7950x3d"
+    },
+    {
+      "from": "game:black_myth_wukong",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20250602-wukong-4060-fhd-dlssq"
+    },
+    {
+      "from": "measurement:cb-20250602-wukong-4060-fhd-dlssq",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-rtx5060-review-2025-06-02"
+    },
+    {
+      "from": "measurement:cb-20250602-wukong-4060-fhd-dlssq",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-4060:vram8"
+    },
+    {
+      "from": "measurement:cb-20250602-wukong-4060-fhd-dlssq",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-7-9800x3d"
+    },
+    {
+      "from": "game:black_myth_wukong",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20250602-wukong-5060-fhd-dlssq"
+    },
+    {
+      "from": "measurement:cb-20250602-wukong-5060-fhd-dlssq",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-rtx5060-review-2025-06-02"
+    },
+    {
+      "from": "measurement:cb-20250602-wukong-5060-fhd-dlssq",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-5060:vram8"
+    },
+    {
+      "from": "measurement:cb-20250602-wukong-5060-fhd-dlssq",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-7-9800x3d"
+    },
+    {
+      "from": "game:black_myth_wukong",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20250602-wukong-5060ti8-fhd-dlssq"
+    },
+    {
+      "from": "measurement:cb-20250602-wukong-5060ti8-fhd-dlssq",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-rtx5060-review-2025-06-02"
+    },
+    {
+      "from": "measurement:cb-20250602-wukong-5060ti8-fhd-dlssq",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-5060-ti:vram8"
+    },
+    {
+      "from": "measurement:cb-20250602-wukong-5060ti8-fhd-dlssq",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-7-9800x3d"
+    },
+    {
+      "from": "game:black_myth_wukong",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20250602-wukong-5060ti16-fhd-dlssq"
+    },
+    {
+      "from": "measurement:cb-20250602-wukong-5060ti16-fhd-dlssq",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-rtx5060-review-2025-06-02"
+    },
+    {
+      "from": "measurement:cb-20250602-wukong-5060ti16-fhd-dlssq",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-5060-ti:vram16"
+    },
+    {
+      "from": "measurement:cb-20250602-wukong-5060ti16-fhd-dlssq",
+      "relation": "TESTED_CPU",
+      "to": "hardware:amd-ryzen-7-9800x3d"
+    },
+    {
+      "from": "game:monster_hunter_wilds",
+      "relation": "HAS_MEASUREMENT",
+      "to": "measurement:cb-20250331-mhw-4060-qhd-dlssq"
+    },
+    {
+      "from": "measurement:cb-20250331-mhw-4060-qhd-dlssq",
+      "relation": "SUPPORTED_BY",
+      "to": "source:computerbase-mhwilds-2025-03-31"
+    },
+    {
+      "from": "measurement:cb-20250331-mhw-4060-qhd-dlssq",
+      "relation": "TESTED_GPU",
+      "to": "hardware:geforce-rtx-4060:vram8"
+    },
+    {
+      "from": "measurement:cb-20250331-mhw-4060-qhd-dlssq",
       "relation": "TESTED_CPU",
       "to": "hardware:amd-ryzen-7-9800x3d"
     }

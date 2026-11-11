@@ -35,8 +35,8 @@ _EDITING = re.compile(r"편집|프리미어|다빈치|렌더|(?<![a-z0-9])3D|어
                       r"스케치업|sketchup|솔리드웍스|solidworks|마야|maya|라이노|rhino|그래스\s*호퍼|grasshopper|레빗|revit|"
                       r"클립\s*스튜디오|clip\s*studio|웹툰|3ds\s*max|시네마\s*4d|c4d|지브러시|zbrush|캡컷|capcut|브이레이|v-?ray|"
                       r"루미온|lumion|키샷|keyshot|후디니|houdini|퓨전\s*360|fusion\s*360|카티아|catia|인벤터|inventor", re.I)
-_AI = re.compile(r"로컬|딥러닝|머신\s*러닝|LLM|(?<!웹)(?<!웹 )(?<!앱)(?<!앱 )개발|AI|스테이블\s*디퓨전|stable\s*diffusion|파이토치|pytorch|sdxl|로라\s*학습|"
-                 r"lora|comfy\s*ui|컴피\s*ui|ollama|올라마|파인\s*튜닝|fine-?tun|whisper|cuda|쿠다|llama|vllm|허깅\s*페이스|hugging\s*face|텐서\s*플로|tensorflow|케라스|keras|"
+_AI = re.compile(r"로컬|딥러닝|머신\s*러닝|LLM|(?<!웹)(?<!웹 )(?<!앱)(?<!앱 )개발|(?<![a-z])AI(?![a-z])|스테이블\s*디퓨전|stable\s*diffusion|파이토치|pytorch|sdxl|로라\s*학습|"
+                 r"(?<![a-z])lora(?![a-z])|comfy\s*ui|컴피\s*ui|ollama|올라마|파인\s*튜닝|fine-?tun|whisper|cuda|쿠다|llama|vllm|허깅\s*페이스|hugging\s*face|텐서\s*플로|tensorflow|케라스|keras|"
                  r"(?<![a-z])(?:rag|yolo|tts)(?![a-z])|강화\s*학습|음성\s*합성|객체\s*인식", re.I)
 # Web development and coding classes need no graphics card ("웹 개발 공부용", "코딩 학원").
 _OFFICE = re.compile(r"사무|회계|엑셀|학습|POS|키오스크|kiosk|cctv|녹화|감시|웹\s*개발|앱\s*개발|코딩|프로그래밍|주식|hts|차트", re.I)

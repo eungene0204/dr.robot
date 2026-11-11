@@ -309,7 +309,7 @@ def test_unknown_purpose_timeout_then_clarification_keeps_budget(client):
 
 def test_game_graph_api_and_normalized_quote(client):
     graph_data=client.get('/api/knowledge/graph').json()
-    assert len([n for n in graph_data['nodes'] if n['kind']=='game'])==8
+    assert len([n for n in graph_data['nodes'] if n['kind']=='game'])==28
     resolved=client.get('/api/knowledge/resolve',params={'text':'오버워치 200fps'}).json()
     assert resolved['gpuModels']==['5060'] and not resolved['fpsGuaranteed']
     req={**REQ,'budget':None,'text':'오버워치용 견적','resolutionExplicit':False}

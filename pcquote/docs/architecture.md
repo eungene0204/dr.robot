@@ -167,3 +167,5 @@ LLM 호출은 기존 `main` startup의 무료 primary/fallback 모델 설정을 
 
 ### 2026-11-11 게임 지식 그래프
 `backend/src/pcquote/knowledge/`의 버전 JSON을 로드하고 관계 인덱스로 공식 사양·측정·하드웨어·출처를 순회한다. 엔진 `min_specs/base_pools`에 실측 GPU 후보와 공식 용량 하한을 전달하고, `screen`은 해상도 기본값을 정규화하여 `requirement/gameEvidence`를 응답한다. `/api/health`는 게임 별칭을, `/api/knowledge/graph`와 `/api/knowledge/resolve`는 읽기 조회를 제공한다. 외부 DB·견적 시 웹 조회는 필요 없다. [구조·범위·갱신 절차](knowledge/game-graph.md).
+
+- 2026-11-11(28게임 확대): 생성기 입력은 공식 조사3개·실측 조사2개. `knowledge/games.json` `.2`는28게임·57공식프로필·20측정·35출처·183하드웨어를 포함한다. `official_profile`이 요청 해상도에 맞는 프로필을 선택하고 설치 공간은 상충 프로필의 큰 값/복수 게임 합산을 사용한다. 실측은 실제 해상도와 렌더링·품질 조건으로 검사하고 `gpuVariants`(model/vramGb/brand)를 엔진의 typed tuple 필터로 전달한다. 저장 전 측정 GPU/VRAM 일치 검사, 에디션 제외 별칭, 원문별 platform/notes도 추가했다. [갱신 절차](knowledge/game-graph.md).

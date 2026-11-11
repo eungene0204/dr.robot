@@ -245,7 +245,7 @@ def base_pools(catalog: Catalog, req: Request, specs: MinSpecs) -> dict[str, lis
             if p.benchmark >= specs.gpu_benchmark and p.spec("vram", 0) >= specs.gpu_vram_gb
         ]
     if specs.game_gpu_models:
-        pools["gpu"] = [p for p in pools["gpu"] if part_model(p) in specs.game_gpu_models and p.spec("vram", 0) == 8]
+        pools["gpu"] = [p for p in pools["gpu"] if (part_model(p), p.spec("vram", 0)) in specs.game_gpu_variants]
     if req.needs_gpu:
         # A discrete GPU needs a certified PSU: unrated bulk units (16,000원 "600W") are not sold with one.
         pools["psu"] = [p for p in pools["psu"] if p.spec("efficiency")]

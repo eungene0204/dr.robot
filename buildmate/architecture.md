@@ -169,3 +169,5 @@ BIOS 버전 문자열의 대소 관계를 제조사 공통 규칙으로 추정�
 
 ### 2026-11-11 게임 지식 그래프 연동
 백엔드 `pcquote.knowledge`의 버전 property graph를 추천 엔진이 조회한다. UI `game-knowledge.mjs`는 health의 별칭으로 알려진 게임을 확인하여 모델 해석을 생략하고, 해상도 명시 여부를 전달한다. 견적 응답 `requirement`로 적용 해상도를 맞추고 `gameEvidence`로 출처·실측 적용 범위를 표시한다. 그래프는 Python 패키지 JSON으로 보관하며 읽기 API `/api/knowledge/graph`, `/api/knowledge/resolve`를 제공한다. [상세 설계와 갱신](../pcquote/docs/knowledge/game-graph.md).
+
+- 2026-11-11(게임 확대): 그래프 `.2`는 공식 조사3개와 실측 조사2개 파일을 생성기로 병합한다. 게임 notes/edition/region 및 excluded_aliases를 보존한다. resolver는 공식 해상도별 프로필, 실측의 실제 해상도·업스케일·FG/RT/PT·selection_eligible·품질저하를 검사하고 GPU model+VRAM+brand 변형의 교집합을 계산한다. 엔진은 MinSpecs.game_gpu_variants로 SKU 후보를 제한한다. UI는 서버에서 받은 에디션 제외 별칭도 동일하게 처리한다. 외부 DB/API 경로는 기존 구조를 유지한다.

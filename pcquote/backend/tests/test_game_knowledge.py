@@ -13,9 +13,9 @@ TODAY = date(2026, 11, 11)
 
 def test_graph_has_source_backed_official_profiles_and_measurements():
     g = graph()
-    assert len(g.games()) == 8
-    assert sum(n['kind'] == 'requirement' for n in g.nodes.values()) == 17
-    assert sum(n['kind'] == 'measurement' for n in g.nodes.values()) == 4
+    assert len(g.games()) == 28
+    assert sum(n['kind'] == 'requirement' for n in g.nodes.values()) == 57
+    assert sum(n['kind'] == 'measurement' for n in g.nodes.values()) == 20
     assert all(g.related(n, 'SUPPORTED_BY') for n in g.nodes.values() if n['kind'] in ('requirement','measurement'))
 
 
@@ -126,3 +126,102 @@ def test_explicit_vram_and_gpu_brand_are_not_dropped_by_measurement_coverage(cat
     assert not result.min_specs.game_gpu_models
     amd=min_specs(Request(budget=None,memo='오버워치 라데온',gpu_brand='amd'),catalog)
     assert not amd.game_gpu_models
+
+
+EXPANSION_IDS = (
+    'dota_2', 'rust', 'gta_v_enhanced', 'red_dead_redemption_2', 'elden_ring',
+    'baldurs_gate_3', 'black_myth_wukong', 'monster_hunter_wilds', 'helldivers_2', 'palworld',
+    'destiny_2', 'warframe', 'rainbow_six_siege_x', 'dead_by_daylight', 'path_of_exile_2',
+    'diablo_iv', 'genshin_impact', 'minecraft_java', 'lost_ark', 'maplestory',
+)
+
+
+@pytest.mark.parametrize('identifier', EXPANSION_IDS)
+def test_added_game_is_source_backed_locally_interpreted_and_recommendable(identifier,catalog):
+    game=graph().nodes['game:'+identifier]
+    def forbidden(**kwargs):raise AssertionError('Known game must not call the model')
+    reading=llm.interpret(game['name']+' PC 견적',forbidden)
+    assert reading['profile']=='gaming' and reading['method']=='local'
+    r=graph().resolve(game['name'],'FHD',today=TODAY)
+    assert len(r['games'])==1 and r['games'][0]['officialProfiles'] and r['games'][0]['sources']
+    result=recommend(catalog,Request(budget=2_000_000,memo=game['name']+' PC 견적',resolution='FHD'))
+    assert result.plans
+    assert all(p.build.total<=2_000_000 for p in result.plans)
+    assert all(c.status!='fail' for p in result.plans for c in p.build.checks)
+
+
+def test_official_resolution_profiles_and_special_contexts_are_preserved(catalog):
+    r=graph().resolve('로아','4K',today=TODAY)
+    assert r['games'][0]['officialProfileApplied']=='game:lost_ark:recommended_uhd'
+    assert r['ramGb']==32
+    assert graph().resolve('로아','FHD',today=TODAY)['games'][0]['officialProfileApplied']=='game:lost_ark:recommended'
+    assert min_specs(Request(budget=None,memo='팰월드'),catalog).ram_gb==32
+    wilds=graph().nodes['game:monster_hunter_wilds:recommended']
+    assert wilds['target_fps']==60 and wilds['frame_generation'] is True
+    assert not graph().resolve('몬헌 와일즈 60fps',today=TODAY)['restrictGpu']
+    assert graph().resolve('헬다이버즈2',today=TODAY)['storageGb']==135
+    # Korean source refresh rate is not transformed into an FPS claim.
+    assert all(p['target_fps'] is None for p in r['games'][0]['officialProfiles'])
+
+
+@pytest.mark.parametrize('text',['마인크래프트 베드락','Minecraft Bedrock','GTA V Legacy','GTA5 레거시','메이플스토리 월드'])
+def test_other_editions_do_not_use_default_edition_facts(text):
+    assert not graph().match(text)
+
+
+def test_unknown_upscaled_and_reduced_quality_records_are_visible_but_not_selected():
+    for text in ['발더스3','팔월드','디아4','오공','몬헌 와일즈']:
+        r=graph().resolve(text,today=TODAY)
+        assert r['games'][0]['measurements']
+        assert not r['games'][0]['applicableMeasurementIds'] and not r['restrictGpu']
+    fhd=graph().resolve('헬다이버즈2','FHD',today=TODAY)
+    qhd=graph().resolve('헬다이버즈2','QHD',today=TODAY)
+    assert fhd['gpuModels']==['4060','4060ti'] and qhd['gpuModels']==['4060ti']
+    assert all(m['context']['resolution']==[2560,1440] for m in qhd['games'][0]['measurements']
+               if m['id'] in qhd['games'][0]['applicableMeasurementIds'])
+    assert not fhd['fpsGuaranteed'] and not qhd['fpsGuaranteed']
+
+
+@pytest.mark.parametrize('field,value',[
+    ('resolution',[2560,1440]),('upscaling',True),('upscaling',None),('frame_generation',True),
+    ('ray_tracing',True),('path_tracing',True),('selection_eligible',False),('quality_degraded',True),
+])
+def test_measurement_context_is_checked_before_gpu_candidates(field,value):
+    data=deepcopy(graph().data)
+    for node in data['nodes']:
+        if node['kind']=='measurement':node['context'][field]=value
+    assert not GameGraph(data).resolve('오버워치','FHD',today=TODAY)['restrictGpu']
+
+
+def test_every_canonical_title_is_locally_read_as_gaming_without_substring_collisions():
+    def forbidden(**kwargs):raise AssertionError('Known title should not call model')
+    for game in graph().games():
+        reading=llm.interpret(game['name']+' PC 견적',forbidden)
+        assert reading['profile']=='gaming',game['name']
+
+
+def test_candidate_filter_uses_measured_vram_variant_instead_of_fixed_8gb(catalog,monkeypatch):
+    data=deepcopy(graph().data)
+    original=next(n for n in data['nodes'] if n['kind']=='measurement' and n['context']['game']=='overwatch-2')
+    measurement={**deepcopy(original),'id':'fixture-measurement','vram_gb':16}
+    gpu={'id':'fixture-gpu','kind':'hardware','category':'gpu','label':'RTX 5060 Ti 16GB',
+         'model':'5060ti','vram_gb':16,'brand':'nvidia'}
+    data['nodes'].extend([measurement,gpu])
+    data['edges'].extend([
+        {'from':'game:overwatch','relation':'HAS_MEASUREMENT','to':measurement['id']},
+        {'from':measurement['id'],'relation':'TESTED_GPU','to':gpu['id']},
+        *[{**edge,'from':measurement['id']} for edge in data['edges']
+          if edge['from']==original['id'] and edge['relation'] in ('TESTED_CPU','SUPPORTED_BY')],
+    ])
+    fixture=GameGraph(data)
+    monkeypatch.setattr('pcquote.engine.requirements.graph',lambda:fixture)
+    result=recommend(catalog,Request(budget=None,memo='오버워치 VRAM 16GB',min_vram_gb=16))
+    assert result.plans and result.dropped is None
+    assert result.min_specs.game_gpu_variants==( ('5060ti',16), )
+    assert all(p.build.parts['gpu'].id=='g-5060ti' for p in result.plans)
+
+
+def test_measurement_hardware_vram_mismatch_is_rejected():
+    data=deepcopy(graph().data)
+    next(n for n in data['nodes'] if n['kind']=='measurement')['vram_gb']=64
+    with pytest.raises(ValueError,match='VRAM'):GameGraph(data)

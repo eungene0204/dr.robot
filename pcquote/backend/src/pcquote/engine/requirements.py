@@ -134,6 +134,7 @@ class MinSpecs:
     gpu_vram_gb: int = 0
     notes: tuple[str, ...] = field(default_factory=tuple)
     game_gpu_models: tuple[str, ...] = ()
+    game_gpu_variants: tuple[tuple[str, int], ...] = ()
 
 
 def allocation(req: Request) -> dict[str, int]:
@@ -191,16 +192,21 @@ def min_specs(req: Request, catalog: Catalog) -> MinSpecs:
         notes.append(f"고객 요청: 그래픽카드 VRAM {size(vram)} 이상")
     evidence = graph().resolve(req.memo, req.resolution) if req.uses == ("gaming",) else None
     game_models = ()
+    game_variants = ()
     if evidence and evidence["games"]:
         ram = max(ram, evidence["ramGb"])
         ssd = max(ssd, evidence["storageGb"])
-        notes.append(evidence["selectionNote"])
-        if evidence["restrictGpu"] and not (req.gpu_models or req.maximize_performance
-                or req.min_vram_gb > 8 or req.gpu_brand not in (None, "nvidia")):
-            game_models = tuple(evidence["gpuModels"])
+        variants = tuple((item["model"], item["vramGb"]) for item in evidence["gpuVariants"]
+                         if item["vramGb"] >= req.min_vram_gb
+                         and (not req.gpu_brand or item["brand"] == req.gpu_brand))
+        if evidence["restrictGpu"] and variants and not (req.gpu_models or req.maximize_performance):
+            game_models = tuple(sorted({model for model, _ in variants}))
+            game_variants = variants
             gpu_ref = None  # Original game measurements replace the generic Blender floor.
+        notes.append(evidence["selectionNote"] if game_models or not evidence["restrictGpu"] else
+                     "사용자 GPU 조건을 우선해 실측 후보 제한을 적용하지 않았습니다.")
     gpu_bench = (catalog.benchmark_of("gpu", gpu_ref) or 0.0) if gpu_ref else 0.0
-    return MinSpecs(ram, ssd, gpu_bench, gpu_ref, vram, tuple(notes), game_models)
+    return MinSpecs(ram, ssd, gpu_bench, gpu_ref, vram, tuple(notes), game_models, game_variants)
 
 
 LOWER_RESOLUTION = {"4K": "QHD", "QHD": "FHD"}
