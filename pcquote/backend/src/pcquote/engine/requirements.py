@@ -59,6 +59,7 @@ class Request:
     assembly_fee: int = 0
     memo: str = ""
     # Customer-stated preferences: hard while a build fits, dropped with a note otherwise (recommend()).
+    game_evidence: dict | None = field(default=None, repr=False, compare=False)  # Server-fetched online listing only.
     min_ram_gb: int = 0
     min_ssd_gb: int = 0
     min_vram_gb: int = 0
@@ -190,7 +191,7 @@ def min_specs(req: Request, catalog: Catalog) -> MinSpecs:
     if req.needs_gpu and req.min_vram_gb > vram:
         vram = req.min_vram_gb
         notes.append(f"고객 요청: 그래픽카드 VRAM {size(vram)} 이상")
-    evidence = graph().resolve(req.memo, req.resolution) if req.uses == ("gaming",) else None
+    evidence = (req.game_evidence or graph().resolve(req.memo, req.resolution)) if req.uses == ("gaming",) else None
     game_models = ()
     game_variants = ()
     if evidence and evidence["games"]:
@@ -231,7 +232,7 @@ def relaxed_specs(req: Request, specs: MinSpecs, catalog: Catalog) -> list[tuple
 
     def lower_ram(floor: int):
         nonlocal current
-        floor = max(floor, req.min_ram_gb)
+        floor = max(floor, req.min_ram_gb, (req.game_evidence or {}).get("ramGb", 0))
         if current.ram_gb > floor:
             changes.append(f"메모리 {size(current.ram_gb)} → {size(floor)}")
             current = replace(current, ram_gb=floor)
@@ -239,7 +240,7 @@ def relaxed_specs(req: Request, specs: MinSpecs, catalog: Catalog) -> list[tuple
 
     def lower_ssd(floor: int):
         nonlocal current
-        floor = max(floor, req.min_ssd_gb)
+        floor = max(floor, req.min_ssd_gb, (req.game_evidence or {}).get("storageGb", 0))
         if current.ssd_gb > floor:
             changes.append(f"SSD {size(current.ssd_gb)} → {size(floor)}")
             current = replace(current, ssd_gb=floor)

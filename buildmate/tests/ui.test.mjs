@@ -12,7 +12,7 @@ const apiMock=(snapshot,mode='live',state={})=>async(url,options={})=>{
  else if(url==='/api/answer')value=state.answer(JSON.parse(options.body));
  else if(url==='/api/requirements')value=state.requirements?.(JSON.parse(options.body))??{};
  else if(String(url).includes('/catalog'))value=snapshot;
- else if(url==='/api/recommend/fresh'){const data=JSON.parse(options.body);value={plans:buildRecommendations(data.requirement,data.settings,snapshot.parts),catalogVersion:snapshot.catalogVersion};}
+ else if(url==='/api/agent/quote'){const data=JSON.parse(options.body);value={status:'completed',quote:{plans:buildRecommendations(data.requirement,{assembly:data.assembly},snapshot.parts),catalogVersion:snapshot.catalogVersion}};}
  else if(url==='/api/settings'){if(method==='PUT')state.settings=JSON.parse(options.body);value=state.settings||null;}
  else if(String(url).startsWith('/api/state/')){if(method==='PUT')state[url]=JSON.parse(options.body);value=state[url]||null;}
  else if(url==='/api/quotes'){state.quotes??=[];if(method==='POST'){value={...JSON.parse(options.body),id:crypto.randomUUID()};state.quotes.push(value)}else value=state.quotes;}
@@ -43,9 +43,9 @@ test('UI: 상담 → 3안 비교 → 호환성 재검증 → 견적서 발행',a
  assert.equal(w.document.querySelector('#budget').value,'');
  assert.equal(w.document.querySelector('.resolution select').value,'');
  assert.equal(w.document.querySelectorAll('.composer-options input:checked').length,0);
- button('영상·3D').click();await wait(30);
- assert.equal(button('영상·3D').getAttribute('aria-pressed'),'true');
- button('영상·3D').click();await wait(30);
+ button('영상·방송·3D').click();await wait(30);
+ assert.equal(button('영상·방송·3D').getAttribute('aria-pressed'),'true');
+ button('영상·방송·3D').click();await wait(30);
  assert.equal(w.document.querySelectorAll('.profile-options .chosen').length,0);
  assert.equal(w.document.querySelectorAll('.chat-message.user').length,0);
  button('조건 설정').click();await wait(30);
@@ -173,14 +173,14 @@ test('UI: 견적 뒤 질문은 기존 견적 아래에 답만 이어 붙이고, 
  w.fetch=apiMock(snapshot);w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await wait(120);
  const send=async value=>{const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,value);input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));};
  await send('200만원 이하 adobe용 견적');await waitFor(()=>w.document.querySelector('.plan-price'));
- assert.match(w.document.querySelector('.results-heading').textContent,/영상·3D/);
+ assert.match(w.document.querySelector('.results-heading').textContent,/영상·방송·3D/);
  const quoteSection=w.document.querySelector('.results');
  await send('5060ti로 4k 게임을 플레이 할 수 있나?');await waitFor(()=>w.document.querySelectorAll('.chat-messages.after-results .chat-message.assistant').length===1);
  const after=w.document.querySelector('.chat-messages.after-results');
  const answer=after.querySelector('.chat-message.assistant p').textContent;
  assert.match(answer,/RTX 5060 Ti/);assert.match(answer,/FPS 실측 자료가 없어/);assert.doesNotMatch(answer,/2,000,000원|견적/);
  assert.equal(w.document.querySelector('.results'),quoteSection,'질문은 기존 견적을 다시 그리지 않음');
- assert.match(quoteSection.textContent,/영상·3D/);assert.equal(w.document.querySelectorAll('.results').length,1);
+ assert.match(quoteSection.textContent,/영상·방송·3D/);assert.equal(w.document.querySelectorAll('.results').length,1);
  assert.ok(quoteSection.compareDocumentPosition(after)&w.Node.DOCUMENT_POSITION_FOLLOWING,'답변은 견적 아래에 표시');
  assert.equal(after.querySelectorAll('button').length,0,'질문 답변에는 견적 버튼이 없음');
  await send('5060ti 게임 4K 견적');await waitFor(()=>/게임 · 4K/.test(w.document.querySelector('.results-heading').textContent));
@@ -226,7 +226,7 @@ test('UI: pcquote 견적은 예산 +5% 안이면 발행할 수 있고, 부품 �
  const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
  try{
   w.fetch=async(url,options={})=>{
-   if(url==='/api/recommend/fresh'){const data=JSON.parse(options.body);return {ok:true,json:async()=>({plans:[serverPlan(data.requirement),null,null],catalogVersion:snapshot.catalogVersion,engine:'pcquote'})};}
+   if(url==='/api/agent/quote'){const data=JSON.parse(options.body);return {ok:true,json:async()=>({status:'completed',quote:{plans:[serverPlan(data.requirement),null,null],catalogVersion:snapshot.catalogVersion,engine:'pcquote'}})};}
    if(url==='/api/quotes/alternatives'){calls.push(['alternatives',JSON.parse(options.body)]);return {ok:true,json:async()=>({items:[{id:otherBoard.id}]})};}
    if(url==='/api/quotes/evaluate'){const body=JSON.parse(options.body);calls.push(['evaluate',body]);return {ok:true,json:async()=>({checks:[{label:'CPU 소켓',ok:true,detail:'pcquote'}],performance:41,popularity:0.4,warnings:[]})};}
    return mock(url,options);
@@ -246,6 +246,7 @@ test('UI: pcquote 견적은 예산 +5% 안이면 발행할 수 있고, 부품 �
   assert.ok(option,'pcquote가 호환으로 본 보드가 목록에 있다');assert.doesNotMatch(option.textContent,/조건 불충족/);
   option.click();await waitFor(()=>calls.some(c=>c[0]==='evaluate'));
   assert.equal(calls.find(c=>c[0]==='evaluate')[1].parts.board,otherBoard.id);
+  assert.equal(calls.find(c=>c[0]==='evaluate')[1].refreshPartId,otherBoard.id);
   await waitFor(()=>w.document.querySelector('.plan-card').textContent.includes(otherBoard.name));
   assert.doesNotMatch(w.document.body.textContent,/출고 전 확인: BIOS 업데이트 후 지원/);
  }finally{w.close();}
@@ -368,11 +369,11 @@ test('UI 게임 지식: 알려진 게임은 모델을 생략하고 서버가 정
  const fallback=apiMock(snapshot,'live',state);
  w.fetch=async(url,options={})=>{
   if(url==='/api/health')return {ok:true,json:async()=>({ok:true,mode:'live',llm:true,knowledgeGames:[{name:'Overwatch',aliases:['오버워치','OW2']}]})};
-  if(url==='/api/recommend/fresh'){
-   const {requirement:r,settings}=JSON.parse(options.body);assert.equal(r.resolutionExplicit,false);
+  if(url==='/api/agent/quote'){
+   const {requirement:r,assembly}=JSON.parse(options.body);const settings={assembly};assert.equal(r.resolutionExplicit,false);
    const requirement={...r,resolution:'FHD',resolutionBasis:'service_default'};
    const gameEvidence={selectionNote:'원문 실측 GPU 후보 적용',limitation:'현재 견적의 FPS를 보장하지 않습니다.',games:[{id:'game:overwatch',name:'Overwatch',status:'measured_gpu_advisory',sources:[{id:'test-source',publisher:'ComputerBase',url:'https://www.computerbase.de/',accessed_at:'2026-11-11'}]}]};
-   return {ok:true,json:async()=>({plans:buildRecommendations(requirement,settings,snapshot.parts),requirement,gameEvidence})};
+   return {ok:true,json:async()=>({status:'completed',quote:{plans:buildRecommendations(requirement,settings,snapshot.parts),requirement,gameEvidence}})};
   }
   return fallback(url,options);
  };
@@ -383,5 +384,90 @@ test('UI 게임 지식: 알려진 게임은 모델을 생략하고 서버가 정
  assert.match(w.document.querySelector('.game-evidence').textContent,/FPS를 보장하지/);
  assert.match(w.document.querySelector('.game-evidence').textContent,/FHD 기본값/);
  assert.equal(w.document.querySelector('.game-evidence a').href,'https://www.computerbase.de/');
+ }finally{w.close();}
+});
+
+test('UI: LLM 없이도 사이버 펑크 의문형 견적은 답변 API 대신 추천으로 간다',async()=>{
+ const {readFileSync}=await import('node:fs');const snapshot=JSON.parse(readFileSync('public/data/catalog.json'));
+ for(const p of snapshot.parts){if(p.priceEvidence)p.priceEvidence.observedAt=new Date().toISOString();if(p.benchmark)p.benchmark.observedAt=new Date().toISOString();}
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
+ try{
+ let quotes=0,answers=0;const mock=apiMock(snapshot);
+ w.fetch=async(url,options={})=>{
+  if(url==='/api/health')return {ok:true,json:async()=>({ok:true,mode:'live',llm:false,knowledgeGames:[{name:'Cyberpunk 2077',aliases:['사이버펑크']}]})};
+  if(url==='/api/answer'){answers++;throw Error('must not answer quote requests');}
+  if(url==='/api/agent/quote'){quotes++;assert.equal(JSON.parse(options.body).requirement.profile,'gaming');}
+  return mock(url,options);
+ };
+ w.eval(bundle.outputFiles[0].text);await wait(120);
+ const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,'사이버 펑크 견적은?');input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);
+ w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await waitFor(()=>w.document.querySelector('.plan-price'));
+ assert.equal(quotes,1);assert.equal(answers,0);assert.doesNotMatch(w.document.body.textContent,/제품 모델명/);
+ }finally{w.close();}
+});
+
+test('UI: LLM 없이 미등록 게임을 검색하고 사무 견적에서 새 게임 용도로 전환한다',async()=>{
+ const {readFileSync}=await import('node:fs');const snapshot=JSON.parse(readFileSync('public/data/catalog.json'));
+ for(const p of snapshot.parts){if(p.priceEvidence)p.priceEvidence.observedAt=new Date().toISOString();if(p.benchmark)p.benchmark.observedAt=new Date().toISOString();}
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
+ try{
+ const readings=[],quotes=[];const state={requirements:({text})=>{readings.push(text);return {profile:'gaming',resolution:'FHD',method:'local',gameLookup:{status:'found',method:'steam'}};}};
+ const mock=apiMock(snapshot,'live',state);w.fetch=async(url,options={})=>{if(url==='/api/agent/quote')quotes.push(JSON.parse(options.body));return mock(url,options)};
+ w.eval(bundle.outputFiles[0].text);await wait(120);
+ const send=async text=>{const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,text);input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));};
+ await send('사무용 100만원 견적');await waitFor(()=>w.document.querySelector('.plan-price'));
+ await send('Hades II 견적은?');await waitFor(()=>quotes.length===2&&/게임/.test(w.document.querySelector('.results-heading').textContent));
+ assert.deepEqual(readings,['Hades II 견적은?']);assert.equal(quotes[1].requirement.profile,'gaming');assert.equal(quotes[1].requirement.budget,null);
+ }finally{w.close();}
+});
+
+test('UI: LLM 없이 게임 질문을 API로 보내고 공식 출처·확인일 링크를 표시한다',async()=>{
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/?demo=1',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
+ try{
+ let count=0;const state={};const mock=apiMock(null,'demo',state);
+ w.fetch=async(url,options={})=>{if(url==='/api/answer'){count++;return {ok:true,json:async()=>({text:'Hades II 공식 권장 RAM 16GB. FPS 실측은 아닙니다.',sources:['web'],references:[{name:'Supergiant Games',url:'https://store.steampowered.com/app/1145350/',accessed_at:'2026-11-12'}]})};}return mock(url,options)};
+ w.eval(bundle.outputFiles[0].text);await wait(120);
+ const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,'Hades II 게임 권장 사양은?');input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);
+ w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await waitFor(()=>w.document.querySelector('.message-references a'));
+ assert.equal(count,1);assert.equal(w.document.querySelector('.message-references a').href,'https://store.steampowered.com/app/1145350/');assert.match(w.document.body.textContent,/Steam 공식 스토어|2026-11-12/);assert.equal(w.document.querySelector('.results'),null);
+ }finally{w.close();}
+});
+
+test('UI: 새 카탈로그 가격이 현재 부품 금액·합계에 반영되고 발행 재검증은 유지된다',async()=>{
+ const {readFileSync}=await import('node:fs');const snapshot=JSON.parse(readFileSync('public/data/catalog.json'));
+ for(const p of snapshot.parts){if(p.priceEvidence)p.priceEvidence.observedAt=new Date(Date.now()-60000).toISOString();if(p.benchmark)p.benchmark.observedAt=new Date().toISOString();}
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;
+ try{
+ let poll;const interval=w.setInterval.bind(w);w.setInterval=(fn,ms)=>{if(ms===60000){poll=fn;return 999;}return interval(fn,ms);};
+ w.fetch=apiMock(snapshot);w.eval(bundle.outputFiles[0].text);await wait(120);
+ const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,'게임용 200만원 견적');input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);
+ w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await waitFor(()=>w.document.querySelector('.plan-price'));
+ const card=()=>w.document.querySelector('.plan-card');
+ const row=()=>[...card().querySelectorAll('.plan-part-row')].find(el=>el.querySelector('.plan-part-category')?.textContent.includes('그래픽'));
+ const original=row().querySelector('.product-name-button').getAttribute('title');
+ const record=snapshot.parts.find(p=>p.name===original);assert.ok(record);
+ const oldPrice=record.price;const oldTotal=Number(card().querySelector('.plan-price').textContent.match(/[\d,]+/)[0].replaceAll(',',''));
+ record.price+=9850;record.priceEvidence={...record.priceEvidence,amount:record.price,observedAt:new Date().toISOString()};snapshot.catalogVersion='new-source-price';
+ await poll();await waitFor(()=>row().querySelector('.plan-part-price').textContent===new Intl.NumberFormat('ko-KR').format(oldPrice+9850)+'원');
+ assert.equal(row().querySelector('.plan-part-price').textContent,new Intl.NumberFormat('ko-KR').format(oldPrice+9850)+'원');
+ assert.equal(Number(card().querySelector('.plan-price').textContent.match(/[\d,]+/)[0].replaceAll(',','')),oldTotal+9850);
+ assert.ok(w.document.querySelector('.regenerate-notice'),'가격 변경 후 발행 전 재검증 안내 유지');
+ const issue=[...w.document.querySelectorAll('button')].find(b=>b.textContent.includes('선택안 견적서 발행'));assert.equal(issue.getAttribute('aria-disabled'),'true');
+ }finally{w.close();}
+});
+
+test('UI: 예산 없는 유튜브 방송 견적은 Steam·LLM 해석 없이 생성한다',async()=>{
+ const {readFileSync}=await import('node:fs');const snapshot=JSON.parse(readFileSync(new URL('../public/data/catalog.json',import.meta.url)));
+ for(const p of snapshot.parts){if(p.priceEvidence)p.priceEvidence.observedAt=new Date().toISOString();if(p.benchmark)p.benchmark.observedAt=new Date().toISOString();}
+ const dom=new JSDOM('<div id="root"></div>',{url:'http://localhost/',runScripts:'outside-only',pretendToBeVisual:true});const w=dom.window;let requests=0;
+ try{
+  const mock=apiMock(snapshot,'live',{answer:()=>({})});w.fetch=(url,options={})=>{
+   assert.notEqual(url,'/api/requirements');
+   if(url==='/api/agent/quote'){requests++;assert.equal(JSON.parse(options.body).requirement.profile,'editing');}
+   return mock(url,options);
+  };w.crypto.randomUUID=()=>crypto.randomUUID();w.eval(bundle.outputFiles[0].text);await wait(150);
+  const input=w.document.querySelector('#request');Object.getOwnPropertyDescriptor(w.HTMLTextAreaElement.prototype,'value').set.call(input,'유튜브 방송용 견적을 뽑아줘');input.dispatchEvent(new w.Event('input',{bubbles:true}));await wait(30);
+  w.document.querySelector('.chat-composer').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));await waitFor(()=>w.document.querySelector('.plan-card'));
+  assert.equal(requests,1);assert.match(w.document.querySelector('.results-heading').textContent,/방송/);
  }finally{w.close();}
 });

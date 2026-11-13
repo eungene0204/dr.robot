@@ -264,3 +264,6 @@ button.plan-part-row:hover,button.plan-part-row[aria-expanded=true]{background:v
 .results-note .interpretation{font-weight:600;color:var(--text)}
 
 .game-evidence{border:1px solid var(--line,#ddd);padding:18px 22px;margin:0 0 24px;border-radius:12px;font-size:13px;line-height:1.7}.game-evidence p{margin:6px 0;color:var(--muted,#666)}.game-evidence a{margin-left:14px;text-decoration:underline}.game-evidence div{margin-top:6px}
+
+.message-references{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;font-size:12px}
+.message-references a{color:var(--accent,#3862d9);text-decoration:underline}

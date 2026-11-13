@@ -145,9 +145,15 @@ def option_requested(pattern: re.Pattern, text: str) -> bool:
     return not (pattern is _WHITE and _BLACK.search(text, mentions[-1].end()))
 
 
+def broadcast_purpose(value: str) -> bool:
+    return bool(re.search(r'송출|\bOBS\b|스트림랩스|streamlabs', value, re.I) or
+                (re.search(r'방송|스트리밍|스트리머|streaming', value, re.I) and
+                 not re.search(r'시청|감상|보기|보는|볼\s*용', value)))
+
+
 def detect_profile(value: str) -> str | None:
     """Gaming beats office: "사무용인데 가끔 배그도 해요" needs a graphics card."""
-    if _EDITING.search(value):
+    if broadcast_purpose(value) or _EDITING.search(value):
         return "editing"
     if _AI.search(value):
         return "ai"

@@ -222,3 +222,14 @@ test('명확한 용도와 예산만 빠른 해석 경로를 사용한다',async(
 test('오버워치 이름만으로 게임 용도를 판별한다',()=>{
  assert.equal(detectProfile('오버워치용 견적'),'gaming');assert.equal(detectProfile('Overwatch 2 PC'),'gaming');
 });
+
+test('의문형 견적 요청은 추천으로 보내며 기존 구성 성능 질문은 답변으로 보낸다',async()=>{
+ const {isQuestion}=await import('../src/question-answer.mjs');
+ for(const text of ['사이버 펑크 견적은?','Hades II 견적은?','사이버펑크 견적도?'])assert.equal(isQuestion(text),false,text);
+ for(const text of ['이 견적으로 배그 되나?','Hades II 권장 사양은?','5060ti로 4k 게임 되나?'])assert.equal(isQuestion(text),true,text);
+});
+
+test('방송 제작과 시청을 구분한다',()=>{
+ for(const text of ['유튜브 방송용 견적을 뽑아줘','OBS 송출용 PC','치지직 스트리밍용 견적'])assert.equal(parseRequirement(text).profile,'editing');
+ assert.equal(parseRequirement('유튜브 방송 시청용 PC').profile,'office');
+});

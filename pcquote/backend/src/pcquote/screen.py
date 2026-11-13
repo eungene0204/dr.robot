@@ -9,14 +9,15 @@ quotes whose parts are full catalog records, including OS and the virtual
 from __future__ import annotations
 
 import math
+import re
 from collections.abc import Callable
 from datetime import datetime
 
 from .knowledge import graph
-from .consult import customer_preferences
+from .game_search import steam_games
+from .consult import customer_preferences, broadcast_purpose
 from .engine.recommend import alternatives, evaluate, recommend
 from .engine.requirements import Request
-from .policy import price_state
 from .service import CatalogService, PriceReviewPending, State
 
 PROFILES = ("gaming", "editing", "office", "ai")
@@ -55,12 +56,23 @@ def to_request(req: dict, settings: dict, parts: dict[str, dict], exclude_parts:
     budget = int(req["budget"]) - os_price if has_budget(req) else None
     if budget is not None and budget < MIN_BUDGET:
         raise ScreenError(f"예산은 {MIN_BUDGET + os_price:,}원 이상이어야 합니다.")
+    online = None
+    if req.get('profile') == 'gaming' and not graph().match(str(req.get('text') or '')):
+        lookup = steam_games.lookup(str(req.get('text') or ''), req.get('resolution') or 'FHD')
+        if lookup:
+            if lookup['status'] != 'found':
+                raise ScreenError(lookup['message'])
+            online = lookup['evidence']
+    uses = (req.get("profile") or "gaming",)
+    text = str(req.get('text') or '')
+    if broadcast_purpose(text):
+        uses = ('gaming', 'editing') if graph().match(text) or re.search(r'게임|게이밍|gaming', text, re.I) else ('editing',)
     try:
-        return Request(budget=budget, uses=(req.get("profile") or "gaming",), resolution=req.get("resolution") or "QHD",
+        return Request(budget=budget, uses=uses, resolution=req.get("resolution") or "QHD",
                        white=bool(req.get("white")), wifi=bool(req.get("wifi")),
                        exclude_brands=tuple(settings.get("excludedBrands") or ()), exclude_parts=tuple(exclude_parts),
                        assembly_fee=int(settings.get("assembly") or 0), memo=str(req.get("text") or "")[:2000],
-                       **customer_preferences(str(req.get("text") or ""), parts.values()))
+                       game_evidence=online, **customer_preferences(str(req.get("text") or ""), parts.values()))
     except ValueError as e:
         raise ScreenError(str(e)) from e
 
@@ -136,7 +148,7 @@ def map_result(result: dict, state: State, req: dict, settings: dict) -> dict:
 
 def recommend_fresh(service: CatalogService, req: dict, settings: dict, collect: Callable[[dict], dict] | None,
                     rounds: int = 6) -> dict:
-    """Recommend, refresh stale prices of the chosen parts, re-plan until every chosen part is current.
+    """Verify source prices of every chosen part, including recent observations, then re-plan.
 
     ``collect(record)`` returns a Danawa price observation. Parts whose refresh fails
     are excluded from the next round.
@@ -147,23 +159,40 @@ def recommend_fresh(service: CatalogService, req: dict, settings: dict, collect:
         req["resolutionBasis"] = "service_default"  # A policy default, not a publisher claim.
     failed: list[str] = []
     attempted: set[str] = set()
+    verified: set[str] = set()
     errors: list[dict] = []
     updated = 0
+    previous_inputs = None
     for round_ in range(rounds + 1):
         state = service.get()
-        result = recommend(state.catalog, to_request(req, settings, state.parts, failed)).as_dict(state.catalog)
-        if collect is None or round_ == rounds:
+        request = to_request(req, settings, state.parts, failed)
+        # Observation timestamps/version change even when source prices do not.
+        # Compare all search inputs, including other concurrent catalog changes,
+        # so unchanged observations do not trigger another combinatorial search.
+        inputs = (request, request.game_evidence, [(p.id, p.category, p.name, p.brand, p.price, p.in_stock, p.specs,
+                             p.benchmark, p.benchmark_name, p.quotable, state.catalog.rank(p))
+                            for p in sorted(state.catalog.parts, key=lambda p: p.id)])
+        if inputs != previous_inputs:
+            result = recommend(state.catalog, request).as_dict(state.catalog)
+            previous_inputs = inputs
+        if collect is None:
             break
-        now = state.loaded_at
         chosen = {p["id"] for plan in result["plans"] for p in plan["parts"].values() if p}
-        stale = [state.parts[i] for i in sorted(chosen)
-                 if i in state.parts and i not in attempted and price_state(state.parts[i], now) != "fresh"]
-        if not stale:
+        pending = [state.parts[i] for i in sorted(chosen) if i in state.parts and i not in attempted]
+        if not pending:
             break
-        for record in stale:
+        if round_ == rounds:
+            # Price changes can introduce a new candidate in the final plan. Never
+            # return its cached price as though it was checked during this request.
+            result["plans"] = [plan for plan in result["plans"]
+                               if all(p["id"] in verified for p in plan["parts"].values() if p)]
+            result["notes"].append("현재 가격 확인을 마친 구성만 제안합니다. 나머지 구성은 다시 요청해 주세요.")
+            break
+        for record in pending:
             attempted.add(record["id"])
             try:
                 service.accept_price(record["id"], collect(record))
+                verified.add(record["id"])
                 updated += 1
             except (PriceReviewPending, Exception) as e:  # noqa: BLE001 — any collection failure excludes the part
                 failed.append(record["id"])

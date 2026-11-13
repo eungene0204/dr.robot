@@ -759,6 +759,7 @@ Fields under each profile are direct factual normalization from that game's link
       "game_id": "cyberpunk_2077",
       "name": "Cyberpunk 2077",
       "aliases": [
+        "사이버펑크",
         "사이버펑크2077",
         "사이버펑크 2077",
         "사펑",

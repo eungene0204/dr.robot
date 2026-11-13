@@ -18,7 +18,7 @@ export function modelKey(part){
 export function isQuestion(text){
  const value=String(text||'').trim();
  // A quote request asks for a build; a sentence that only mentions the current quote ("이 견적으로 배그 되나?") is still a question.
- if(/견적\s*$|(?:견적|구성|사양|pc|컴퓨터).{0,8}?(?:짜|맞춰|뽑아|만들어|내\s*줘|부탁|요청|추천)|맞춰\s*줘|구성해|짜\s*줘|추천해|뽑아\s*줘|만들어\s*줘/i.test(value))return false;
+ if(/견적\s*(?:은|는|도)?\s*[?？]?\s*$|(?:견적|구성|사양|pc|컴퓨터).{0,8}?(?:짜|맞춰|뽑아|만들어|내\s*줘|부탁|요청|추천)|맞춰\s*줘|구성해|짜\s*줘|추천해|뽑아\s*줘|만들어\s*줘/i.test(value))return false;
  return /\?$|？$|(?:수\s*있(?:나|나요|을까|어|습니까)|되나|되나요|될까|돌아가|가능(?:한가|할까|해|한지)|어때|어떤가|차이|뭐가|무엇|얼마|괜찮)/.test(value);
 }
 const money=n=>new Intl.NumberFormat('ko-KR').format(n)+'원';

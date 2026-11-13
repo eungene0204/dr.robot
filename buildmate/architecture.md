@@ -171,3 +171,27 @@ BIOS 버전 문자열의 대소 관계를 제조사 공통 규칙으로 추정�
 백엔드 `pcquote.knowledge`의 버전 property graph를 추천 엔진이 조회한다. UI `game-knowledge.mjs`는 health의 별칭으로 알려진 게임을 확인하여 모델 해석을 생략하고, 해상도 명시 여부를 전달한다. 견적 응답 `requirement`로 적용 해상도를 맞추고 `gameEvidence`로 출처·실측 적용 범위를 표시한다. 그래프는 Python 패키지 JSON으로 보관하며 읽기 API `/api/knowledge/graph`, `/api/knowledge/resolve`를 제공한다. [상세 설계와 갱신](../pcquote/docs/knowledge/game-graph.md).
 
 - 2026-11-11(게임 확대): 그래프 `.2`는 공식 조사3개와 실측 조사2개 파일을 생성기로 병합한다. 게임 notes/edition/region 및 excluded_aliases를 보존한다. resolver는 공식 해상도별 프로필, 실측의 실제 해상도·업스케일·FG/RT/PT·selection_eligible·품질저하를 검사하고 GPU model+VRAM+brand 변형의 교집합을 계산한다. 엔진은 MinSpecs.game_gpu_variants로 SKU 후보를 제한한다. UI는 서버에서 받은 에디션 제외 별칭도 동일하게 처리한다. 외부 DB/API 경로는 기존 구조를 유지한다.
+
+### 2026-11-12 로컬 우선 게임 검색
+- `pcquote.game_search.SteamGames`는 로컬 그래프를 먼저 조회하고 미등록 단일 제목만 Steam `/api/storesearch/`와 `/api/appdetails`로 검색한다. 요청당 두 고정 호스트 GET, 각 5초 timeout, 응답 크기 검사, 리다이렉트 미허용. 결과 제목이 정규화 후 정확히 일치하는 하나의 Windows 본편일 때만 사양을 사용한다. 공개 스토어 엔드포인트라 응답 형식/접근 변경 시 조회 실패로 처리한다.
+- 긍정 결과 1시간/실패 30초, 최대256개 프로세스 메모리 캐시. 온라인 자료는 `steam-live`, `reviewed=false`, `official_only`로 검수 그래프와 분리한다. 원문 HTML은 Lexbor로 텍스트화하고 Memory/Storage 라벨의 용량만 정규화한다.
+- `/api/requirements`는 게임 식별을 먼저 수행해 `gameLookup`/`needsGame`을 반환한다. `/api/answer`는 모델 미설정이어도 게임 근거와 `references`를 반환한다. 일반 제품 질문의 기존 LLM/카탈로그 경로를 유지한다.
+- 화면은 `gameQuery`로 검색 필요 여부만 판단하고 서버가 신원을 확인한다. 게임 후보 확인 실패 시 추천 호출을 멈춘다. 견적 생성·교체·평가·발행은 `screen.to_request`가 서버 조회한 온라인 근거를 내부 Request.game_evidence에 전달한다. 클라이언트의 사양 필드는 사용하지 않는다. 엔진은 공식 용량 하한을 추천·예산 완화·선호 포기에도 보존하며 CPU/GPU는 일반 정책임을 표시한다.
+- `references`는 답변 아래 출처와 확인일 링크로 표시한다. 기존 `gameEvidence`는 견적의 온라인 출처·조회일·적용 한계를 표시한다. 외부 상세 원문을 LLM 프롬프트에 넣지 않는다.
+
+### 2026-11-12 견적 시 현재 가격 재확인
+- `screen.recommend_fresh`는24시간 신선도 판정 대신 해당 요청의 attempted/verified 집합으로 선택 부품을 수집한다. 성공 갱신 후 재계획하며 재조회 한도에서 새로 선택된 미확인 부품이 있는 구성은 반환하지 않는다. 공유 부품은 한 번만 조회한다. HTTP 조건부 재검증과 원문 해시, 기존30% 검수 정책은 유지한다.
+- 화면은 카탈로그 갱신 시 더 새로운 동일 ID의 가격 관측을 미발행 plans와 initial에 반영하고 total을 재계산한다. 카탈로그 버전은 자동 승인하지 않아 기존 발행 차단·재생성 절차를 유지한다. 발행 문서 모달에서는 스냅샷 가격을 변경하지 않는다. DB 스키마 변경은 없다.
+- 수동 교체는 `/api/quotes/evaluate`의 `refreshPartId`로 선택 구성에 속한 부품 하나의 가격을 재확인한다. 실패하면 교체를 적용하지 않는다. 서버의 canonical `parts`·`total`·`catalogVersion`과 검증 결과를 화면에 반영한다.
+
+### 2026-11-12 견적 탐색 성능
+- Python `_Search`는 케이스 장착 적합성, CPU별 쿨러 높이 적합성, 케이스·쿨러 조합의 점수를 독립 캐시로 관리한다. 조합 정렬은 CPU/모드당 한 번 수행하고 GPU/보드 조건으로 최선의 유효 조합을 조회한다. 후보와 호환 규칙·점수 정책은 동일하다.
+- `screen.recommend_fresh`는 원문 가격 확인 이후 실제 추천 입력이 변할 때만 재탐색한다. 전체 카탈로그의 ID 정렬 비교에 가격·재고·사양·벤치마크·추천 가능 여부·유효 인기순위와 요구조건/온라인 근거를 포함하며, 관측시각/버전만 갱신되면 계산 결과를 재사용한다. API 응답의 부품/합계/버전은 최신 상태에서 매핑한다. 캐시는 단일 요청 안에 한정한다.
+- 매 견적 원문 재확인과 출처당2초 간격은 유지한다. [측정 및 검증](troubleshooting.md#2026-11-12-견적-생성-지연과-중복-탐색).
+
+## 2026-11-13 견적 에이전트
+live 화면은 POST /api/agent/quote로 견적을 생성한다. Agents SDK가 기존 LLM_PROVIDER의 Chat Completions 모델을 사용하고, catalog 조회와 build_quote 도구를 실행한다. 가격·호환성·예산은 기존 screen.recommend_fresh가 판정한다. 완료 도구에서 즉시 종료하여 추가 설명용 LLM 호출을 줄인다. 최대 4턴·180초, 제공자 재시도 2회이며 tracing은 비활성이다.
+실행 상태·대화·요구사항·결과는 PostgreSQL documents의 agent-run:{UUID}에 저장한다. GET /api/agent/runs/{UUID}로 조회하고 previous_run_id로 후속 대화를 이어갈 수 있다. 현재 화면은 기존 DB 상담 초안에 누적 대화를 저장·복원해 전달한다. 임의 셸·SQL 실행 도구는 노출하지 않는다.
+
+### 2026-11-13 응답 지연 개선
+서버에서 용도가 명확히 판별되면 같은 검증 도구를 직접 실행하여 모델 왕복을 생략한다. 모호한 입력은 기존 EXAONE/OpenRouter Agents SDK 경로를 유지한다. 대화형 가격 수집은 공유 SourceClient의 0.25초 최소 간격(최대 초당 4회, 직렬)을 사용하며 robots Crawl-delay와 Retry-After가 우선한다. 야간 수집의 기본 2초 간격과 가격 캐시 유효기간은 변경하지 않는다.

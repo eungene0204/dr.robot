@@ -159,3 +159,49 @@ def test_minimum_price_note_kept_when_even_lower_specs_do_not_fit(catalog):
     result = recommend(catalog, Request(budget=1_000_000, uses=("gaming",), resolution="QHD"))
     assert not result.plans and result.relaxed == ()
     assert any("최저 견적" in n for n in result.notes)
+
+
+def test_case_cooler_search_reuses_height_checks_across_gpu_lengths(catalog, monkeypatch):
+    """GPU variants must not rescan the same cooler fit for every case."""
+    from dataclasses import replace
+    from pcquote.engine.recommend import _Search
+    from pcquote.engine import compatibility
+
+    pools = {c: catalog.usable(c) for c in catalog.by_category}
+    search = _Search(catalog, Request(budget=1_800_000), pools)
+    cpu, board, gpu = pools['cpu'][0], pools['board'][0], pools['gpu'][0]
+    calls = 0
+    original = compatibility.passes
+    def counted(parts, only_with=None):
+        nonlocal calls
+        if only_with == 'cooler' and 'case' in parts:
+            calls += 1
+        return original(parts, only_with)
+    monkeypatch.setattr(compatibility, 'passes', counted)
+    for length in range(100, 120):
+        variant = replace(gpu, specs={**gpu.specs, 'length': length})
+        assert search._case_cooler('popular', cpu, variant, board)
+    assert calls <= len(pools['case']) * len(pools['cooler']), f'redundant cooler scans: {calls}'
+
+
+def test_case_cooler_factoring_matches_exhaustive_selection(catalog):
+    from dataclasses import replace
+    from pcquote.engine.recommend import _Search
+    from pcquote.engine import compatibility
+    pools = {c: sorted(catalog.usable(c), key=lambda p: p.price) for c in catalog.by_category}
+    search = _Search(catalog, Request(budget=1_800_000), pools)
+    for mode in search.MODES:
+        for cpu in pools['cpu']:
+            for board in pools['board']:
+                for length in (100, 280, 330, 500):
+                    gpu = replace(pools['gpu'][0], specs={**pools['gpu'][0].specs, 'length': length})
+                    options = []
+                    for case in pools['case']:
+                        if not compatibility.passes({'gpu': gpu, 'board': board, 'case': case}, 'case'):
+                            continue
+                        cooler = next((c for c in search._coolers(mode, cpu) if compatibility.passes(
+                            {'cpu': cpu, 'case': case, 'cooler': c}, 'cooler')), None)
+                        if cooler:
+                            options.append((case, cooler))
+                    expected = min(options, key=lambda pair: search._utility(mode, dict(zip(('case', 'cooler'), pair))), default=None)
+                    assert search._case_cooler(mode, cpu, gpu, board) == expected

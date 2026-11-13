@@ -322,3 +322,224 @@ def test_game_graph_api_and_normalized_quote(client):
     assert explicit['requirement']['resolution']=='QHD'
     assert not explicit['gameEvidence']['restrictGpu']
     assert client.get('/api/knowledge/resolve',params={'text':'오버워치','resolution':'bogus'}).status_code==422
+
+
+@pytest.fixture
+def game_store(monkeypatch):
+    import httpx
+    from pcquote import main, screen
+    from pcquote.game_search import SteamGames
+    from test_game_search import steam_mock
+    lookup = SteamGames(client=httpx.Client(transport=httpx.MockTransport(steam_mock)))
+    monkeypatch.setattr(main, 'steam_games', lookup)
+    monkeypatch.setattr(screen, 'steam_games', lookup)
+    return lookup
+
+
+def test_game_answer_is_available_without_llm_and_known_title_stays_local(client, game_store):
+    response = client.post('/api/answer', json={'text': '사이버 펑크 권장 사양은?'})
+    assert response.status_code == 200
+    answer = response.json()
+    assert answer['method'] == 'game' and answer['sources'] == ['game']
+    assert 'Cyberpunk 2077' in answer['text'] and answer['references']
+    assert not game_store.cache
+
+
+def test_online_game_requirements_answer_and_quote_share_server_evidence(client, game_store):
+    text = 'Hades II FHD 200만원 견적은?'
+    reading = client.post('/api/requirements', json={'text': text}).json()
+    assert reading['profile'] == 'gaming' and reading['budget'] == 2_000_000
+    assert not reading.get('needsGame') and reading['gameLookup']['method'] == 'steam'
+    response = client.post('/api/answer', json={'text': 'Hades II 게임 권장 사양은?'})
+    assert response.json()['sources'] == ['web'] and response.json()['references'][0]['url'].endswith('/1145350/')
+    result = fresh(client, {**reading, 'game_evidence': {'ramGb': 9999}, 'resolutionExplicit': True})
+    assert result['gameEvidence']['ramGb'] == 32  # ignores browser-supplied facts
+    assert result['gameEvidence']['games'][0]['status'] == 'official_only'
+    assert not result['gameEvidence']['fpsGuaranteed']
+    plans = [p for p in result['plans'] if p]
+    assert plans
+    for plan in plans:
+        assert plan['parts']['ram']['capacity'] >= 32 and plan['total'] <= 2_000_000
+        assert not any(c['ok'] is False for c in plan['checks'])
+
+
+def test_unconfirmed_game_blocks_quote_instead_of_silently_using_generic_specs(client, game_store):
+    reading = client.post('/api/requirements', json={'text': 'Hades III 견적은?'}).json()
+    assert reading['needsGame'] and reading['gameLookup']['status'] == 'ambiguous'
+    response = client.post('/api/recommend/fresh', json={
+        'requirement': {**REQ, 'text': 'Hades III 견적은?'}, 'settings': SETTINGS})
+    assert response.status_code == 422
+    assert '정확한 제목' in response.json()['error']
+
+
+def test_game_mention_does_not_override_explicit_editing_purpose(client, game_store):
+    reading = client.post('/api/requirements', json={'text': '사이버펑크 영상 편집용 200만원 견적'}).json()
+    assert reading['profile'] == 'editing' and not reading.get('gameLookup')
+
+
+def test_new_quote_checks_even_recent_prices_against_source(client):
+    initial = fresh(client)
+    gpu = initial['plans'][0]['parts']['gpu']['id']
+    calls = []
+    def collect(record):
+        calls.append(record['id'])
+        return {'partId': record['id'], 'amount': record['price'] + (9850 if record['id'] == gpu else 0),
+                'sourceUrl': record['priceEvidence']['sourceUrl'], 'observedAt': now_iso(),
+                'hash': 'current-' + record['id'], 'availability': 'listed-unconfirmed'}
+    app.state.collect = collect
+    result = fresh(client)
+    assert gpu in calls, '24시간 이내 가격도 새 견적에서 원문을 확인해야 함'
+    for plan in filter(None, result['plans']):
+        for part in plan['parts'].values():
+            if not part.get('virtual'):
+                assert part['id'] in calls
+        assert plan['total'] == sum(p['price'] for p in plan['parts'].values())
+    assert len(calls) == len(set(calls)), 'Reused parts are fetched once per request'
+
+
+def test_price_check_limit_never_returns_unverified_cached_configuration(client):
+    from pcquote.screen import recommend_fresh
+    calls = []
+    result = recommend_fresh(app.state.service, REQ, SETTINGS, lambda part: calls.append(part['id']), rounds=0)
+    assert calls == [] and not any(result['plans'])
+    assert '현재 가격 확인' in result['message']
+
+
+def test_recent_but_unavailable_price_is_excluded_instead_of_reused(client):
+    gpu = fresh(client)['plans'][0]['parts']['gpu']['id']
+    def collect(record):
+        if record['id'] == gpu:
+            raise RuntimeError('원문 조회 실패')
+        return {'partId': record['id'], 'amount': record['price'], 'sourceUrl': record['priceEvidence']['sourceUrl'],
+                'observedAt': now_iso(), 'hash': 'verified-' + record['id']}
+    app.state.collect = collect
+    result = fresh(client)
+    assert {'id': gpu, 'error': '원문 조회 실패'} in result['refresh']['errors']
+    assert all(plan['parts']['gpu']['id'] != gpu for plan in result['plans'] if plan)
+
+
+def test_manual_replacement_rechecks_selected_price_and_returns_canonical_parts(client):
+    plan = fresh(client)['plans'][0]
+    gpu = plan['parts']['gpu']['id']
+    ids = {c: p['id'] for c, p in plan['parts'].items()}
+    calls = []
+    def collect(record):
+        calls.append(record['id'])
+        return {'partId': record['id'], 'amount': record['price'] + 9850, 'sourceUrl': record['priceEvidence']['sourceUrl'],
+                'observedAt': now_iso(), 'hash': 'manual-current'}
+    app.state.collect = collect
+    response = client.post('/api/quotes/evaluate', json={
+        'requirement': REQ, 'settings': SETTINGS, 'parts': ids, 'refreshPartId': gpu})
+    assert response.status_code == 200
+    result = response.json()
+    assert calls == [gpu]
+    assert result['parts']['gpu']['price'] == plan['parts']['gpu']['price'] + 9850
+    assert result['total'] == plan['total'] + 9850 and result['catalogVersion'] != 'v1'
+    assert client.post('/api/quotes/evaluate', json={
+        'requirement': REQ, 'settings': SETTINGS, 'parts': ids, 'refreshPartId': 'not-selected'}).status_code == 400
+
+
+def test_unchanged_source_prices_do_not_repeat_full_recommendation(client, monkeypatch):
+    from pcquote import screen
+    calls = 0
+    original = screen.recommend
+    def counted(*args, **kwargs):
+        nonlocal calls
+        calls += 1
+        return original(*args, **kwargs)
+    monkeypatch.setattr(screen, 'recommend', counted)
+    app.state.collect = lambda record: {
+        'partId': record['id'], 'amount': record['price'],
+        'sourceUrl': record['priceEvidence']['sourceUrl'], 'observedAt': now_iso(), 'hash': 'same-' + record['id']}
+    body = fresh(client)
+    assert len([p for p in body['plans'] if p]) == 3 and body['refresh']['updated'] > 0
+    assert calls == 1, f'unchanged prices triggered {calls} full searches'
+
+
+def test_changed_source_price_still_replans(client, monkeypatch):
+    from pcquote import screen
+    calls = 0
+    original = screen.recommend
+    def counted(*args, **kwargs):
+        nonlocal calls
+        calls += 1
+        return original(*args, **kwargs)
+    monkeypatch.setattr(screen, 'recommend', counted)
+    app.state.collect = lambda record: {
+        'partId': record['id'], 'amount': record['price'] + 1000,
+        'sourceUrl': record['priceEvidence']['sourceUrl'], 'observedAt': now_iso(), 'hash': 'changed-' + record['id']}
+    body = fresh(client)
+    assert any(body['plans']) and calls >= 2
+    for plan in filter(None, body['plans']):
+        assert plan['total'] == sum(p['price'] for p in plan['parts'].values())
+        assert all(c['ok'] for c in plan['checks'])
+
+
+def test_agent_executes_verified_tool_and_persists(client, monkeypatch):
+    import agents
+    from pcquote import quote_agent
+    from pcquote.db import get_document
+    class Client:
+        async def close(self): pass
+    monkeypatch.setattr(quote_agent, 'configured_agent_model', lambda: ('test-model', agents.ModelSettings(), Client()))
+    async def run(agent, text, **kwargs):
+        tool = next(t for t in agent.tools if t.name == 'build_quote')
+        from agents.tool_context import ToolContext
+        await tool.on_invoke_tool(ToolContext(None, tool_name='build_quote', tool_call_id='test', tool_arguments='{"profile":"gaming"}'), '{"profile":"gaming"}')
+    monkeypatch.setattr(agents.Runner, 'run', run)
+    app.state.collect = lambda p: {**p['priceEvidence'], 'hash': 'test-agent', 'availability': 'in-stock'}
+    response = client.post('/api/agent/quote', json={'text': 'LaTeX 180만원', 'requirement': REQ})
+    assert response.status_code == 200, response.text
+    result = response.json()
+    assert result['status'] == 'completed'
+    assert result['quote']['refresh']['updated'] > 0
+    with session_factory()() as s:
+        assert get_document(s, 'agent-run:' + result['runId'])['status'] == 'completed'
+
+
+def test_agent_does_not_return_model_invented_quote(client, monkeypatch):
+    import agents
+    from pcquote import quote_agent
+    class Client:
+        async def close(self): pass
+    monkeypatch.setattr(quote_agent, 'configured_agent_model', lambda: ('test-model', agents.ModelSettings(), Client()))
+    async def run(*args, **kwargs): return {'price': 1}
+    monkeypatch.setattr(agents.Runner, 'run', run)
+    response = client.post('/api/agent/quote', json={'text': '추천해줘'})
+    assert response.json()['status'] == 'needs_purpose'
+    assert 'quote' not in response.json()
+
+
+def test_agent_price_failure_blocks_quote(client, monkeypatch):
+    import agents
+    from agents.tool_context import ToolContext
+    from pcquote import quote_agent
+    class Client:
+        async def close(self): pass
+    monkeypatch.setattr(quote_agent, 'configured_agent_model', lambda: ('test-model', agents.ModelSettings(), Client()))
+    async def run(agent, text, **kwargs):
+        tool = next(t for t in agent.tools if t.name == 'build_quote')
+        await tool.on_invoke_tool(ToolContext(None, tool_name='build_quote', tool_call_id='test', tool_arguments='{}'), '{"profile":"gaming"}')
+    monkeypatch.setattr(agents.Runner, 'run', run)
+    result = client.post('/api/agent/quote', json={'text': '게임 180만원'})
+    assert result.status_code == 400
+    assert 'quote' not in result.json()
+
+
+def test_clear_agent_request_skips_model_roundtrip(client, monkeypatch):
+    from pcquote import quote_agent
+    def forbidden():
+        raise AssertionError('명확한 용도에 모델 왕복이 발생했습니다.')
+    monkeypatch.setattr(quote_agent, 'configured_agent_model', forbidden)
+    app.state.collect = lambda p: {**p['priceEvidence'], 'hash': 'fast-agent', 'availability': 'in-stock'}
+    response = client.post('/api/agent/quote', json={'text': '게임 180만원'})
+    assert response.status_code == 200, response.text
+    assert response.json()['quote']['refresh']['updated'] > 0
+
+
+def test_broadcast_requirements_do_not_search_steam(client, monkeypatch):
+    from pcquote.main import steam_games
+    monkeypatch.setattr(steam_games, 'lookup', lambda *args: pytest.fail('방송 요청이 Steam으로 전달됨'))
+    response = client.post('/api/requirements', json={'text': '유튜브 방송용 견적을 뽑아줘'})
+    assert response.status_code == 200
+    assert response.json()['profile'] == 'editing'

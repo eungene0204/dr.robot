@@ -23,3 +23,12 @@ def parse_price(html: str, part: dict, page: dict) -> dict:
 def collect_price(client: SourceClient, part: dict) -> dict:
     product = {"id": part["id"], "category": part.get("category") or "cpu", "danawaPcode": part.get("danawaPcode")}
     return collect_product(client, product)["price"]
+
+
+def quote_source_client(**kwargs) -> SourceClient:
+    """Interactive requests: four starts/second, still honoring robots and Retry-After.
+
+    Nightly collectors retain their conservative two-second default.
+    Share this client across quote requests so the per-origin limiter is shared.
+    """
+    return SourceClient(min_delay=0.25, **kwargs)

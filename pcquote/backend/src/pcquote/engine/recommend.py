@@ -12,6 +12,8 @@
 
 from __future__ import annotations
 
+from copy import deepcopy
+
 import math
 from dataclasses import dataclass, field
 
@@ -160,7 +162,7 @@ class Result:
     def game_evidence(self):
         if self.request.uses != ("gaming",):
             return None
-        evidence = graph().resolve(self.request.memo, self.request.resolution)
+        evidence = deepcopy(self.request.game_evidence) if self.request.game_evidence else graph().resolve(self.request.memo, self.request.resolution)
         evidence["selectionApplied"] = bool(self.min_specs.game_gpu_models)
         if evidence["restrictGpu"] and not evidence["selectionApplied"]:
             evidence["selectionNote"] = "사용자 GPU 모델·브랜드·VRAM 또는 최고 성능 요청을 우선했습니다. 실측 후보 제한은 적용하지 않았습니다."
@@ -391,26 +393,30 @@ class _Search:
         key = (mode, gpu.spec("length") if gpu else None, board.spec("form"), cpu.spec("socket"),
                cpu.spec("tdp"), cpu.spec("watts"))
 
-        def compute():
-            if not coolers:
-                return None
-            best, best_u = None, None
-            cheapest_cooler = min(c.price for c in coolers)
-            for case in self.pools["case"]:
-                if mode == "cheap" and best_u is not None and case.price + cheapest_cooler >= best_u[0]:
-                    break
-                if not compat.passes({"gpu": gpu, "board": board, "case": case}, "case"):
-                    continue
-                cooler = next((c for c in coolers
-                               if compat.passes({"cpu": cpu, "case": case, "cooler": c}, "cooler")), None)
-                if cooler is None:
-                    continue
-                u = self._utility(mode, {"case": case, "cooler": cooler})
-                if best_u is None or u < best_u:
-                    best, best_u = (case, cooler), u
-            return best
+        # Case fit is independent of the CPU; cooler height is independent of
+        # GPU length and board form. Do not rescan either for every combination.
+        cases = self._cached("case_fit", (gpu.spec("length") if gpu else None, board.spec("form")),
+                             lambda: {case.id for case in self.pools["case"]
+                                      if compat.passes({"gpu": gpu, "board": board, "case": case}, "case")})
 
-        return self._cached("case", key, compute)
+        def cooler_for(case):
+            return self._cached("cooler_fit", (mode, cpu.spec("socket"), cpu.spec("tdp"),
+                                               cpu.spec("watts"), case.spec("coolerHeight")),
+                                lambda: next((c for c in coolers if compat.passes(
+                                    {"cpu": cpu, "case": case, "cooler": c}, "cooler")), None))
+
+        def ranked_pairs():
+            pairs = []
+            for case in self.pools["case"]:
+                cooler = cooler_for(case)
+                if cooler is not None:
+                    pairs.append((case, cooler))
+            return sorted(pairs, key=lambda pair: self._utility(mode, {"case": pair[0], "cooler": pair[1]}))
+
+        pairs = self._cached("case_cooler_pairs", (mode, cpu.spec("socket"), cpu.spec("tdp"), cpu.spec("watts")),
+                             ranked_pairs)
+
+        return self._cached("case", key, lambda: next((pair for pair in pairs if pair[0].id in cases), None))
 
     @staticmethod
     def _rest_key(cpu: Part, gpu: Part | None) -> tuple:

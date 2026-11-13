@@ -25,9 +25,11 @@ from sqlalchemy.dialects.postgresql import insert
 
 from . import importer, llm, screen
 from .knowledge import graph
+from .game_search import steam_games, game_answer
+from .consult import parse_requirement, detect_profile
 from .catalog import CATEGORIES
 from .collector.store import PgPageCache, lock_held
-from .danawa import SourceClient, collect_price
+from .danawa import SourceClient, collect_price, quote_source_client
 from .db import AppSettingRow, LlmUsageRow, SavedQuoteRow, create_schema, session_factory
 from .engine.recommend import recommend
 from .engine.requirements import RESOLUTIONS, USES, Request as EngineRequest
@@ -58,7 +60,7 @@ async def lifespan(app: FastAPI):
     create_schema()
     llm.load_env_files([BACKEND / ".env", importer.BUILDMATE / ".env"])
     app.state.complete = llm.configured_llm(on_usage=_record_usage)
-    source = SourceClient(cache=PgPageCache())
+    source = quote_source_client(cache=PgPageCache())
     app.state.collect = lambda record: collect_price(source, record)
     yield
 
@@ -205,6 +207,12 @@ def requirements(data: dict = Body(...)):
     text = _text(data, "")
     if text is None:
         return error(400, "요청 내용을 1~2,000자로 입력하세요.")
+    lookup = steam_games.lookup(text) if detect_profile(text) in (None, "gaming") else None
+    if lookup:
+        found = lookup['status'] == 'found'
+        return {**parse_requirement(text), 'profile': 'gaming' if found else None,
+                'method': 'local', 'questions': [], 'needsGame': not found,
+                'gameLookup': lookup, 'message': game_answer(lookup)['text'] if not found else None}
     try:
         return llm.interpret(text, app.state.complete)
     except RuntimeError as e:
@@ -216,6 +224,9 @@ def answer(data: dict = Body(...)):
     text = _text(data, "")
     if text is None:
         return error(400, "질문을 1~2,000자로 입력하세요.")
+    lookup = steam_games.lookup(text)
+    if lookup:
+        return game_answer(lookup)
     state = service().get()
     history = [m for m in data.get("history") or [] if isinstance(m, dict) and isinstance(m.get("text"), str)]
     return llm.answer(text.strip(), complete=app.state.complete, catalog=list(state.parts.values()),
@@ -248,7 +259,27 @@ def quotes_evaluate(data: dict = Body(...)):
     parsed = _quote_parts(data)
     if isinstance(parsed, JSONResponse):
         return parsed
-    return screen.evaluate_quote(service().get(), *parsed)
+    target = data.get("refreshPartId")
+    state = service().get()
+    if target is not None:
+        selected = [value.get("id") if isinstance(value, dict) else value for value in parsed[2].values()]
+        if not isinstance(target, str) or target not in selected or target not in state.parts:
+            return error(400, "교체 구성에 있는 부품만 가격을 확인할 수 있습니다.")
+        record = state.parts[target]
+        if not record.get("virtual"):
+            if app.state.collect is None:
+                return error(503, "현재 가격 확인에 연결하지 못했습니다.")
+            try:
+                service().accept_price(target, app.state.collect(record))
+            except Exception as e:
+                return error(422, f"교체 부품의 현재 가격을 확인하지 못했습니다: {e}")
+            state = service().get()
+    result = screen.evaluate_quote(state, *parsed)
+    if target is not None:
+        result.update(parts={c: state.parts[pid] for c, value in parsed[2].items()
+                             if (pid := value.get("id") if isinstance(value, dict) else value) in state.parts},
+                      catalogVersion=state.version)
+    return result
 
 
 @app.post("/api/quotes/alternatives")
@@ -362,6 +393,31 @@ def recommend_endpoint(body: dict = Body(...)):
     out = recommend(catalog, req).as_dict(catalog)
     out["elapsedMs"] = round((time.perf_counter() - started) * 1000)
     return out
+
+
+# Agent API keeps the existing validated quote payload intact.
+from .quote_agent import AgentRequest, create_quote
+
+@app.post('/api/agent/quote')
+async def agent_quote(data: AgentRequest):
+    import asyncio
+    try:
+        return await create_quote(data, service(), app.state.collect)
+    except ValueError as exc:
+        return error(400, str(exc))
+    except asyncio.TimeoutError:
+        return error(504, '견적 생성 시간이 초과되었습니다.')
+    except Exception:
+        import logging
+        logging.getLogger(__name__).exception('Quote agent failed')
+        return error(503, '견적 에이전트에 연결하지 못했습니다. 다시 시도해 주세요.')
+
+@app.get('/api/agent/runs/{run_id}')
+def agent_run(run_id: uuid.UUID):
+    from .db import get_document
+    with session_factory()() as session:
+        result = get_document(session, f'agent-run:{run_id}')
+    return result if result is not None else error(404, '실행 기록을 찾지 못했습니다.')
 
 
 # The built consultation screen (``npm run build`` in buildmate) is served from the same server.

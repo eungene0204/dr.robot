@@ -16,7 +16,7 @@ from pathlib import Path
 
 import httpx
 
-from .consult import answer_question, detect_profile, explicit_budget, merge_interpretation, model_key, model_tokens, parse_requirement, unlimited_budget_requested
+from .consult import broadcast_purpose, answer_question, detect_profile, explicit_budget, merge_interpretation, model_key, model_tokens, parse_requirement, unlimited_budget_requested
 from .policy import usable_part
 
 OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions"
@@ -154,7 +154,7 @@ def _local(text: str, reason: str | None = None) -> dict:
 def can_interpret_locally(text: str) -> bool:
     """Graph-known games, or known purposes with explicit budgets, need no model."""
     from .knowledge import graph
-    return bool(graph().match(text)) or (any(detect_profile(v) for v in text.split("\n추가 요청:"))
+    return broadcast_purpose(text) or bool(graph().match(text)) or (any(detect_profile(v) for v in text.split("\n추가 요청:"))
             and (explicit_budget(text) is not None or unlimited_budget_requested(text)))
 
 
